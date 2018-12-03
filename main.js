@@ -12177,7 +12177,8 @@ var author$project$Main$view = function (model) {
 								mdgriffith$elm_ui$Element$Background$color(
 								A3(mdgriffith$elm_ui$Element$rgb, 0.7, 0.7, 0.7)),
 								mdgriffith$elm_ui$Element$Font$color(
-								A3(mdgriffith$elm_ui$Element$rgb, 0.2, 0.2, 0.2))
+								A3(mdgriffith$elm_ui$Element$rgb, 0.2, 0.2, 0.2)),
+								mdgriffith$elm_ui$Element$alignTop
 							]),
 						_List_fromArray(
 							[
