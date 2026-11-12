@@ -256,3 +256,57 @@ button:disabled {
     #source, .output-code, .output-message { height: 19rem; }
     .output-message:not(.output-error) { height: 10rem; }
 }
+
+.output-header {
+    flex-wrap: wrap;
+}
+
+.output-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+.output-toggle {
+    display: inline-flex;
+    gap: .15rem;
+    padding: .15rem;
+    border: 1px solid var(--line);
+    border-radius: .65rem;
+    background: #f3f5f2;
+}
+
+.output-toggle button {
+    border-color: transparent;
+    padding: .36rem .6rem;
+    background: transparent;
+}
+
+.output-toggle button[aria-pressed="true"] {
+    border-color: #c6e2cd;
+    background: #ddf0e2;
+}
+
+.diagram-preview {
+    height: clamp(19rem, 48vh, 34rem);
+    overflow: auto;
+    padding: 1.25rem;
+    background: #fff;
+    text-align: center;
+}
+
+.diagram-preview img {
+    max-width: 100%;
+    height: auto;
+}
+
+.diagram-preview:focus-visible {
+    outline-offset: -3px;
+}
+
+@media (max-width: 44rem) {
+    .diagram-preview { height: 19rem; }
+    #preview-sharing { font-size: .875rem; }
+    .output-message:has(#preview-sharing) { height: auto; min-height: 10rem; }
+}
