@@ -1,5 +1,5 @@
 #!/bin/sh
-# Rebuild with the Elm version in plantuml-generator/elm.json.
+# Rebuild with the Elm version in elm.json.
 # Pass the generator checkout as the first argument if it is not next to this repo.
 set -eu
 
@@ -9,9 +9,9 @@ build_dir=$(mktemp -d)
 trap 'rm -rf "$build_dir"' EXIT
 
 mkdir "$build_dir/src"
-cp "$generator_dir/elm.json" "$build_dir/"
+cp "$site_dir/elm.json" "$build_dir/"
 cp -R "$generator_dir/src/SequenceDiagram" "$build_dir/src/"
-cp "$site_dir/src/Main.elm" "$build_dir/src/"
+cp "$site_dir"/src/*.elm "$build_dir/src/"
 
 cd "$build_dir"
 elm make src/Main.elm --optimize --output=main.js

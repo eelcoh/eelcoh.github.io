@@ -1,6 +1,7 @@
 port module Main exposing (main)
 
 import Browser
+import Diagram
 import Html exposing (Html, a, button, code, div, h1, h2, header, img, input, label, main_, p, pre, section, span, text, textarea)
 import Html.Attributes exposing (alt, attribute, checked, class, disabled, for, hidden, href, id, placeholder, spellcheck, src, type_, value)
 import Html.Events exposing (on, onCheck, onClick, onInput)
@@ -11,6 +12,9 @@ import SequenceDiagram.Renderer exposing (toPlantUml)
 
 
 port copyOutput : String -> Cmd msg
+
+
+port downloadDiagram : () -> Cmd msg
 
 
 port copyResult : (Bool -> msg) -> Sub msg
@@ -25,6 +29,7 @@ port previewResult : ({ request : Int, url : Maybe String } -> msg) -> Sub msg
 type OutputMode
     = Code
     | Diagram
+    | ServerPreview
 
 
 type Preview
@@ -42,6 +47,7 @@ type alias Model =
     , includeTheme : Bool
     , copyStatus : String
     , outputMode : OutputMode
+    , fitDiagram : Bool
     , preview : Preview
     , previewRequest : Int
     }
@@ -55,6 +61,8 @@ type Msg
     | Copy String
     | Copied Bool
     | SetOutputMode OutputMode
+    | ToggleDiagramFit
+    | DownloadDiagram
     | RenderPreview String
     | PreviewPrepared { request : Int, url : Maybe String }
     | PreviewLoaded Int String
@@ -72,6 +80,7 @@ main =
                   , includeTheme = False
                   , copyStatus = ""
                   , outputMode = Code
+                  , fitDiagram = True
                   , preview = NotRequested
                   , previewRequest = 0
                   }
@@ -94,7 +103,7 @@ update msg model =
                         Nothing
 
                     else
-                        Just (parse source)
+                        Just (parse (String.join "\n" (List.map (expandIndentTabs 0) (String.lines source))))
                 , copyStatus = ""
                 , preview = NotRequested
               }
@@ -127,6 +136,12 @@ update msg model =
 
         SetOutputMode mode ->
             ( { model | outputMode = mode, copyStatus = "" }, Cmd.none )
+
+        ToggleDiagramFit ->
+            ( { model | fitDiagram = not model.fitDiagram }, Cmd.none )
+
+        DownloadDiagram ->
+            ( model, downloadDiagram () )
 
         RenderPreview source ->
             let
@@ -191,15 +206,7 @@ view model =
                         [ h2 [ id "source-heading" ] [ label [ for "source" ] [ text "Sequence input" ] ]
                         , button [ class "example-button", onClick LoadExample ] [ text "Load example" ]
                         ]
-                    , textarea
-                        [ id "source"
-                        , value model.source
-                        , onInput Edit
-                        , spellcheck False
-                        , attribute "autocapitalize" "off"
-                        , placeholder "sequence user\n    browser: open dashboard\n        api: load data"
-                        ]
-                        []
+                    , editor model.source
                     ]
                 , section [ class "panel", attribute "aria-labelledby" "output-heading" ]
                     [ div [ class "panel-header output-header" ]
@@ -208,6 +215,7 @@ view model =
                             [ div [ class "output-toggle", attribute "role" "group", attribute "aria-label" "Output view" ]
                                 [ modeButton model.outputMode Code "Code"
                                 , modeButton model.outputMode Diagram "Diagram"
+                                , modeButton model.outputMode ServerPreview "PlantUML preview"
                                 ]
                             , button [ disabled (output == Nothing), onClick (Copy (Maybe.withDefault "" output)) ] [ text "Copy code" ]
                             ]
@@ -222,8 +230,84 @@ view model =
                     ]
                 , p [ class "copy-status", attribute "role" "status" ] [ text model.copyStatus ]
                 ]
+            , p [ id "editor-shortcuts", class "editor-shortcuts" ]
+                [ text "Tab indents. Shift+Tab outdents. Press Esc then Tab to leave the editor." ]
             ]
         ]
+
+
+editor : String -> Html Msg
+editor source =
+    div [ class "source-editor" ]
+        [ pre [ class "source-highlight", attribute "aria-hidden" "true" ]
+            (List.intersperse [ text "\n" ] (List.map highlightLine (String.lines source))
+                |> List.concat
+                |> (\lines -> lines ++ [ text "\n" ])
+            )
+        , textarea
+            [ id "source"
+            , value source
+            , onInput Edit
+            , spellcheck False
+            , attribute "autocapitalize" "off"
+            , attribute "aria-describedby" "editor-shortcuts"
+            , attribute "wrap" "off"
+            , placeholder "sequence user\n    browser: open dashboard\n        api: load data"
+            ]
+            []
+        ]
+
+
+highlightLine : String -> List (Html Msg)
+highlightLine line =
+    let
+        heading =
+            String.trimLeft line
+
+        indentation =
+            text (String.left (String.length line - String.length heading) line)
+
+        ( prefix, rest ) =
+            splitAtFirst ":" heading
+
+        ( participant, options ) =
+            splitAtFirst "[" prefix
+
+        token name content =
+            span [ class ("syntax-" ++ name) ] [ text content ]
+    in
+    if String.startsWith "sequence " heading && heading == line then
+        [ token "keyword" "sequence", token "participant" (String.dropLeft 8 heading) ]
+
+    else
+        [ indentation, token "participant" participant, token "option" options, token "caption" rest ]
+
+
+splitAtFirst : String -> String -> ( String, String )
+splitAtFirst separator source =
+    case List.head (String.indexes separator source) of
+        Just index ->
+            ( String.left index source, String.dropLeft index source )
+
+        Nothing ->
+            ( source, "" )
+
+
+expandIndentTabs : Int -> String -> String
+expandIndentTabs column line =
+    case String.uncons line of
+        Just ( ' ', rest ) ->
+            " " ++ expandIndentTabs (column + 1) rest
+
+        Just ( '\t', rest ) ->
+            let
+                spaces =
+                    4 - modBy 4 column
+            in
+            String.repeat spaces " " ++ expandIndentTabs (column + spaces) rest
+
+        _ ->
+            line
 
 
 modeButton : OutputMode -> OutputMode -> String -> Html Msg
@@ -238,12 +322,30 @@ modeButton selected mode caption =
 outputView : Model -> Maybe String -> Html Msg
 outputView model output =
     case ( model.diagram, output ) of
-        ( _, Just source ) ->
+        ( Just (Ok sequence), Just source ) ->
             case model.outputMode of
                 Code ->
                     pre [ class "output-code", attribute "tabindex" "0" ] [ code [] [ text source ] ]
 
                 Diagram ->
+                    div [ class "local-diagram-output" ]
+                        [ div [ class "diagram-tools" ]
+                            [ button
+                                [ onClick ToggleDiagramFit
+                                , attribute "aria-pressed" (if model.fitDiagram then "true" else "false")
+                                ]
+                                [ text "Fit to panel" ]
+                            , button [ onClick DownloadDiagram ] [ text "Download SVG" ]
+                            ]
+                        , div
+                            [ class (if model.fitDiagram then "diagram-preview local-diagram diagram-fit" else "diagram-preview local-diagram")
+                            , attribute "tabindex" "0"
+                            , attribute "aria-label" "Diagram preview"
+                            ]
+                            [ Diagram.view model.showReturns model.includeTheme sequence ]
+                        ]
+
+                ServerPreview ->
                     previewView model.previewRequest model.preview source
 
         ( Just (Err message), _ ) ->
@@ -316,7 +418,7 @@ example =
     browser: click
         api: get this
             database: read this
-        otherApi
+        otherApi [async]: queue audit event
     browser: enter changes
     browser: submit
         api: post that

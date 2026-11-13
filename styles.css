@@ -6,6 +6,7 @@
     --accent: #286247;
     --muted: #526258;
     --line: #d8e0d7;
+    --workspace-height: clamp(26rem, 64vh, 48rem);
     --code: "IBM Plex Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
@@ -14,7 +15,7 @@
 body { margin: 0; }
 
 .page {
-    width: min(100% - 3rem, 75rem);
+    width: min(100% - 3rem, 100rem);
     margin-inline: auto;
 }
 
@@ -140,33 +141,72 @@ button:disabled {
 .example-button:hover:not(:disabled) { background: #cce9d4; }
 
 #source,
+.source-highlight,
 .output-code,
 .output-message {
-    height: clamp(19rem, 48vh, 34rem);
+    height: var(--workspace-height);
     margin: 0;
     padding: 1.25rem;
     overflow: auto;
 }
 
 #source,
+.source-highlight,
 .output-code,
 .output-message code {
     font: .875rem/1.65 var(--code);
     tab-size: 4;
 }
 
+.source-editor {
+    position: relative;
+    background: #182820;
+    color: #e1f2e6;
+}
+
+.source-highlight {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
 #source {
+    position: relative;
     display: block;
     width: 100%;
     resize: none;
     border: 0;
     border-radius: 0;
-    background: #182820;
-    color: #e1f2e6;
+    background: transparent;
+    color: transparent;
     caret-color: #aee3bd;
 }
 
+#source, .source-highlight {
+    white-space: pre;
+    font-variant-ligatures: none;
+}
+
 #source::placeholder { color: #a8bcb0; }
+#source::selection { background: #c6edc74d; color: transparent; }
+
+.syntax-keyword { color: #f2cd8c; }
+.syntax-participant { color: #a2e5b8; }
+.syntax-option { color: #c9b5fa; }
+.syntax-caption { color: #d6e4dc; }
+
+.editor-shortcuts {
+    margin: 0 0 1.5rem;
+    color: var(--muted);
+    font-size: .8rem;
+}
+
+@media (forced-colors: active) {
+    .source-highlight { visibility: hidden; }
+    #source { color: CanvasText; caret-color: auto; }
+    #source::selection { background: Highlight; color: HighlightText; }
+}
 
 .output-code {
     background: #fcfdfa;
@@ -249,11 +289,11 @@ button:disabled {
 #source:focus-visible { outline-color: #9bd8ac; }
 
 @media (max-width: 44rem) {
+    :root { --workspace-height: clamp(23rem, 55vh, 32rem); }
     .page { width: calc(100% - 1.5rem); }
     .site-header { min-height: 4rem; }
     .workbench { grid-template-columns: minmax(0, 1fr); }
-    #source { font-size: 1rem; }
-    #source, .output-code, .output-message { height: 19rem; }
+    #source, .source-highlight { font-size: 1rem; }
     .output-message:not(.output-error) { height: 10rem; }
 }
 
@@ -289,7 +329,7 @@ button:disabled {
 }
 
 .diagram-preview {
-    height: clamp(19rem, 48vh, 34rem);
+    height: var(--workspace-height);
     overflow: auto;
     padding: 1.25rem;
     background: #fff;
@@ -306,7 +346,104 @@ button:disabled {
 }
 
 @media (max-width: 44rem) {
-    .diagram-preview { height: 19rem; }
     #preview-sharing { font-size: .875rem; }
     .output-message:has(#preview-sharing) { height: auto; min-height: 10rem; }
 }
+
+.local-diagram {
+    background-color: #f6faf7;
+    background-image: radial-gradient(#ccdcd2 1px, transparent 1px);
+    background-size: 16px 16px;
+    text-align: start;
+}
+
+.local-diagram-output {
+    display: flex;
+    flex-direction: column;
+    height: var(--workspace-height);
+}
+
+.diagram-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    padding: .5rem 1rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.diagram-tools button[aria-pressed="true"] {
+    background: #ddf0e2;
+    border-color: #c6e2cd;
+}
+
+.local-diagram-output .local-diagram {
+    flex: 1;
+    height: auto;
+    min-height: 0;
+}
+
+.local-diagram-output .diagram-fit {
+    display: grid;
+    grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+    overflow: hidden;
+}
+
+.diagram-fit .sequence-svg {
+    width: 100%;
+    height: 100%;
+}
+
+.sequence-svg {
+    display: block;
+    margin-inline: auto;
+    background: #fff;
+    border: 1px solid #d8e0d7;
+    border-radius: .9rem;
+    --diagram-ink: #244f3c;
+    --diagram-surface: #e5f4eb;
+    --diagram-line: #759184;
+    --diagram-active: #bfe5d0;
+}
+
+.sequence-monochrome {
+    --diagram-ink: #303630;
+    --diagram-surface: #eef0ee;
+    --diagram-line: #747c76;
+    --diagram-active: #d2d7d2;
+}
+
+.sequence-participant {
+    fill: var(--diagram-surface);
+    stroke: var(--diagram-line);
+}
+
+.sequence-name,
+.sequence-caption {
+    fill: var(--diagram-ink);
+    font-family: var(--code);
+    font-size: 13px;
+}
+
+.sequence-name { font-weight: 700; }
+
+.sequence-lifeline {
+    stroke: var(--diagram-line);
+    stroke-dasharray: 4 5;
+}
+
+.sequence-activation {
+    fill: var(--diagram-active);
+    stroke: var(--diagram-line);
+}
+
+.sequence-arrow {
+    fill: none;
+    stroke: var(--diagram-ink);
+    stroke-width: 1.5px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+.sequence-return { stroke-dasharray: 5 4; }
+
+.sequence-arrowhead { fill: var(--diagram-ink); }

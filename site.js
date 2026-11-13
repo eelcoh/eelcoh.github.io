@@ -1,5 +1,40 @@
 const app = Elm.Main.init();
 
+app.ports.downloadDiagram.subscribe(() => {
+    const svg = document.querySelector('.local-diagram .sequence-svg');
+    if (!svg) return;
+
+    const exported = svg.cloneNode(true);
+    const properties = [
+        'fill', 'stroke', 'stroke-width', 'stroke-dasharray', 'stroke-linejoin',
+        'stroke-linecap', 'font-family', 'font-size', 'font-weight',
+    ];
+    const originals = svg.querySelectorAll('[class]');
+    exported.querySelectorAll('[class]').forEach((node, index) => {
+        const computed = getComputedStyle(originals[index]);
+        for (const property of properties) {
+            node.style.setProperty(property, computed.getPropertyValue(property));
+        }
+    });
+
+    // Put the background inside the SVG so it also appears in image viewers.
+    const background = document.createElementNS(svg.namespaceURI, 'rect');
+    background.setAttribute('width', '100%');
+    background.setAttribute('height', '100%');
+    background.setAttribute('fill', getComputedStyle(svg).backgroundColor);
+    exported.prepend(background);
+
+    const xml = new XMLSerializer().serializeToString(exported);
+    const url = URL.createObjectURL(new Blob([xml], { type: 'image/svg+xml;charset=utf-8' }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'sequence-diagram.svg';
+    document.body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
+
 app.ports.copyOutput.subscribe(async (output) => {
     try {
         await navigator.clipboard.writeText(output);
