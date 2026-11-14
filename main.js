@@ -519,11 +519,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.W.M === region.ak.M)
+	if (region.X.N === region.am.N)
 	{
-		return 'on line ' + region.W.M;
+		return 'on line ' + region.X.N;
 	}
-	return 'on lines ' + region.W.M + ' through ' + region.ak.M;
+	return 'on lines ' + region.X.N + ' through ' + region.am.N;
 }
 
 
@@ -1861,9 +1861,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aU,
 		impl.a3,
-		impl.bf,
+		impl.be,
+		impl.bq,
 		function() { return function() {} }
 	);
 });
@@ -2727,9 +2727,9 @@ var _VirtualDom_mapEventTuple = F2(function(func, tuple)
 var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
-		a6: func(record.a6),
-		ag: record.ag,
-		af: record.af
+		bh: func(record.bh),
+		ai: record.ai,
+		ah: record.ah
 	}
 });
 
@@ -2997,11 +2997,11 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 		// 3 = Custom
 
 		var value = result.a;
-		var message = !tag ? value : tag < 3 ? value.a : value.a6;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.ag;
+		var message = !tag ? value : tag < 3 ? value.a : value.bh;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.ai;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.af) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.ah) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -4118,11 +4118,11 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aU,
 		impl.a3,
-		impl.bf,
+		impl.be,
+		impl.bq,
 		function(sendToApp, initialModel) {
-			var view = impl.aY;
+			var view = impl.a7;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -4154,12 +4154,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aU,
 		impl.a3,
-		impl.bf,
+		impl.be,
+		impl.bq,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl._ && impl._(sendToApp)
-			var view = impl.aY;
+			var divertHrefToApp = impl.ab && impl.ab(sendToApp)
+			var view = impl.a7;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -4167,12 +4167,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.aS);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.a1);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.a_) && (_VirtualDom_doc.title = title = doc.a_);
+				(title !== doc.a9) && (_VirtualDom_doc.title = title = doc.a9);
 			});
 		}
 	);
@@ -4228,12 +4228,12 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.ba;
-	var onUrlRequest = impl.bc;
+	var onUrlChange = impl.bl;
+	var onUrlRequest = impl.bn;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		_: function(sendToApp)
+		ab: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4249,9 +4249,9 @@ function _Browser_application(impl)
 					var next = $elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.aM === next.aM
-							&& curr.aq === next.aq
-							&& curr.aB.a === next.aB.a
+							&& curr.aR === next.aR
+							&& curr.at === next.at
+							&& curr.aF.a === next.aF.a
 						)
 							? $elm$browser$Browser$Internal(next)
 							: $elm$browser$Browser$External(href)
@@ -4259,13 +4259,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		aU: function(flags)
+		a3: function(flags)
 		{
-			return A3(impl.aU, flags, _Browser_getUrl(), key);
+			return A3(impl.a3, flags, _Browser_getUrl(), key);
 		},
-		aY: impl.aY,
-		a3: impl.a3,
-		bf: impl.bf
+		a7: impl.a7,
+		be: impl.be,
+		bq: impl.bq
 	});
 }
 
@@ -4331,17 +4331,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { a0: 'hidden', a$: 'visibilitychange' }
+		? { bb: 'hidden', ba: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { a0: 'mozHidden', a$: 'mozvisibilitychange' }
+		? { bb: 'mozHidden', ba: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { a0: 'msHidden', a$: 'msvisibilitychange' }
+		? { bb: 'msHidden', ba: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { a0: 'webkitHidden', a$: 'webkitvisibilitychange' }
-		: { a0: 'hidden', a$: 'visibilitychange' };
+		? { bb: 'webkitHidden', ba: 'webkitvisibilitychange' }
+		: { bb: 'hidden', ba: 'visibilitychange' };
 }
 
 
@@ -4422,12 +4422,12 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		aD: _Browser_getScene(),
-		aO: {
-			ah: _Browser_window.pageXOffset,
+		aH: _Browser_getScene(),
+		aT: {
+			aj: _Browser_window.pageXOffset,
 			i: _Browser_window.pageYOffset,
-			aE: _Browser_doc.documentElement.clientWidth,
-			aG: _Browser_doc.documentElement.clientHeight
+			aI: _Browser_doc.documentElement.clientWidth,
+			aK: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4437,8 +4437,8 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		aE: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		aG: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		aI: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		aK: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4461,15 +4461,15 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			aD: {
-				aE: node.scrollWidth,
-				aG: node.scrollHeight
+			aH: {
+				aI: node.scrollWidth,
+				aK: node.scrollHeight
 			},
-			aO: {
-				ah: node.scrollLeft,
+			aT: {
+				aj: node.scrollLeft,
 				i: node.scrollTop,
-				aE: node.clientWidth,
-				aG: node.clientHeight
+				aI: node.clientWidth,
+				aK: node.clientHeight
 			}
 		};
 	});
@@ -4499,18 +4499,18 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			aD: _Browser_getScene(),
-			aO: {
-				ah: x,
+			aH: _Browser_getScene(),
+			aT: {
+				aj: x,
 				i: y,
-				aE: _Browser_doc.documentElement.clientWidth,
-				aG: _Browser_doc.documentElement.clientHeight
+				aI: _Browser_doc.documentElement.clientWidth,
+				aK: _Browser_doc.documentElement.clientHeight
 			},
-			a4: {
-				ah: x + rect.left,
+			bf: {
+				aj: x + rect.left,
 				i: y + rect.top,
-				aE: rect.width,
-				aG: rect.height
+				aI: rect.width,
+				aK: rect.height
 			}
 		};
 	});
@@ -4625,7 +4625,6 @@ var $elm$core$Array$toList = function (array) {
 var $elm$core$Basics$EQ = 1;
 var $elm$core$Basics$GT = 2;
 var $elm$core$Basics$LT = 0;
-var $author$project$Main$Code = 0;
 var $elm$core$Basics$True = 0;
 var $elm$core$Result$Ok = function (a) {
 	return {$: 0, a: a};
@@ -5063,8 +5062,10 @@ var $elm$core$Maybe$map = F2(
 			return $elm$core$Maybe$Nothing;
 		}
 	});
+var $elm$core$Basics$neq = _Utils_notEqual;
+var $author$project$Main$Code = 0;
 var $author$project$Main$Copy = function (a) {
-	return {$: 4, a: a};
+	return {$: 9, a: a};
 };
 var $elm$html$Html$Attributes$href = function (url) {
 	return A2(
@@ -5362,7 +5363,7 @@ var $author$project$Main$editor = function (source) {
 						A2($elm$html$Html$Attributes$attribute, 'autocapitalize', 'off'),
 						A2($elm$html$Html$Attributes$attribute, 'aria-describedby', 'editor-shortcuts'),
 						A2($elm$html$Html$Attributes$attribute, 'wrap', 'off'),
-						$elm$html$Html$Attributes$placeholder('sequence user\u000A    browser: open dashboard\u000A        api: load data')
+						$elm$html$Html$Attributes$placeholder('Type a sequence or choose Load example.')
 					]),
 				_List_Nil)
 			]));
@@ -5378,6 +5379,7 @@ var $elm$core$Maybe$andThen = F2(
 			return $elm$core$Maybe$Nothing;
 		}
 	});
+var $elm$html$Html$details = _VirtualDom_node('details');
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 0, a: a};
 };
@@ -5395,6 +5397,7 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		$elm$json$Json$Decode$succeed(msg));
 };
 var $elm$html$Html$section = _VirtualDom_node('section');
+var $elm$html$Html$summary = _VirtualDom_node('summary');
 var $elm$core$Result$toMaybe = function (result) {
 	if (!result.$) {
 		var v = result.a;
@@ -5439,7 +5442,7 @@ var $author$project$Main$checkbox = F3(
 	});
 var $elm$html$Html$Attributes$disabled = $elm$html$Html$Attributes$boolProperty('disabled');
 var $author$project$Main$SetOutputMode = function (a) {
-	return {$: 6, a: a};
+	return {$: 11, a: a};
 };
 var $author$project$Main$modeButton = F3(
 	function (selected, mode, caption) {
@@ -5516,9 +5519,36 @@ var $elm$core$Dict$get = F2(
 var $elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
 var $elm$svg$Svg$svg = $elm$svg$Svg$trustedNode('svg');
 var $elm$svg$Svg$Attributes$class = _VirtualDom_attribute('class');
+var $elm$svg$Svg$Attributes$style = _VirtualDom_attribute('style');
 var $elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
 var $elm$svg$Svg$Attributes$height = _VirtualDom_attribute('height');
 var $elm$core$List$sortBy = _List_sortBy;
+var $author$project$DiagramTheme$styles = function (theme) {
+	return _List_fromArray(
+		[
+			_Utils_Tuple2('--diagram-background', theme.aY),
+			_Utils_Tuple2('--diagram-ink', theme.ax),
+			_Utils_Tuple2('--diagram-header', theme.aZ),
+			_Utils_Tuple2('--diagram-header-border', theme.a0),
+			_Utils_Tuple2('--diagram-header-text', theme.a_),
+			_Utils_Tuple2('--diagram-active', theme.aX),
+			_Utils_Tuple2('--diagram-line', theme.aP),
+			_Utils_Tuple2('--diagram-active-edge', theme.a$),
+			_Utils_Tuple2(
+			'--diagram-font',
+			function () {
+				var _v0 = theme.as;
+				switch (_v0) {
+					case 'sans':
+						return 'var(--diagram-sans)';
+					case 'serif':
+						return 'Georgia, serif';
+					default:
+						return 'var(--code)';
+				}
+			}())
+		]);
+};
 var $elm$core$Dict$RBEmpty_elm_builtin = {$: -2};
 var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
 var $elm$core$Dict$Black = 1;
@@ -5668,7 +5698,7 @@ var $author$project$Diagram$intAttr = function (attr) {
 var $elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
 var $author$project$Diagram$Endpoint = F2(
 	function (participant, depth) {
-		return {Z: depth, w: participant};
+		return {aa: depth, aZ: participant};
 	});
 var $elm$core$Dict$fromList = function (assocs) {
 	return A3(
@@ -5705,12 +5735,12 @@ var $elm$core$Basics$negate = function (n) {
 };
 var $author$project$Diagram$Message = F5(
 	function (from, to, caption, y, arrow) {
-		return {i: y, L: to, V: from, Y: arrow, ab: caption};
+		return {i: y, M: to, W: from, _: arrow, ad: caption};
 	});
 var $author$project$Diagram$AsyncCall = 1;
 var $author$project$Diagram$Activation = F3(
 	function (endpoint, start, end) {
-		return {ak: end, W: start, ad: endpoint};
+		return {am: end, X: start, af: endpoint};
 	});
 var $elm$core$Maybe$withDefault = F2(
 	function (_default, maybe) {
@@ -5754,7 +5784,7 @@ var $author$project$Diagram$placeStep = F5(
 		var caption = _v0.c;
 		var children = _v0.d;
 		var asynchronous = A2($elm$core$List$member, 0, options);
-		var loopHeight = _Utils_eq(caller.w, name) ? 22 : 0;
+		var loopHeight = _Utils_eq(caller.aZ, name) ? 22 : 0;
 		var labels = $author$project$Diagram$wrapCaption(
 			A2($elm$core$Maybe$withDefault, '', caption));
 		var depth = A2(
@@ -5770,7 +5800,7 @@ var $author$project$Diagram$placeStep = F5(
 			layout,
 			{
 				i: (y + loopHeight) + 36,
-				u: A2(
+				v: A2(
 					$elm$core$List$cons,
 					A5(
 						$author$project$Diagram$Message,
@@ -5779,7 +5809,7 @@ var $author$project$Diagram$placeStep = F5(
 						labels,
 						y,
 						asynchronous ? 1 : 0),
-					layout.u)
+					layout.v)
 			});
 		var afterChildren = A3(
 			$elm$core$List$foldl,
@@ -5794,10 +5824,10 @@ var $author$project$Diagram$placeStep = F5(
 			afterChildren,
 			{
 				i: (afterChildren.i + loopHeight) + 36,
-				u: A2(
+				v: A2(
 					$elm$core$List$cons,
 					A5($author$project$Diagram$Message, callee, caller, _List_Nil, afterChildren.i, 2),
-					afterChildren.u)
+					afterChildren.v)
 			}) : afterChildren;
 		var activationEnd = (showReturns && (!asynchronous)) ? (afterChildren.i + loopHeight) : (afterChildren.i - 14);
 		return _Utils_update(
@@ -5844,19 +5874,19 @@ var $elm$svg$Svg$Attributes$textAnchor = _VirtualDom_attribute('text-anchor');
 var $author$project$Diagram$drawMessage = F2(
 	function (x, message) {
 		var arrowClass = function () {
-			var _v0 = message.Y;
+			var _v0 = message._;
 			switch (_v0) {
 				case 0:
 					return 'sequence-arrow';
 				case 1:
-					return 'sequence-arrow sequence-async';
+					return 'sequence-arrow';
 				default:
 					return 'sequence-arrow sequence-return';
 			}
 		}();
-		var self = _Utils_eq(message.V.w, message.L.w);
-		var from = x(message.V);
-		var to = x(message.L);
+		var self = _Utils_eq(message.W.aZ, message.M.aZ);
+		var from = x(message.W);
+		var to = x(message.M);
 		var direction = (_Utils_cmp(to, from) > -1) ? 1 : (-1);
 		var end = to + (self ? 5 : ((-direction) * 5));
 		var start = from + (self ? 5 : (direction * 5));
@@ -5897,7 +5927,7 @@ var $author$project$Diagram$drawMessage = F2(
 								$author$project$Diagram$svgPoints(points))
 							]),
 						_List_Nil),
-						(!message.Y) ? A2(
+						(!message._) ? A2(
 						$elm$svg$Svg$polygon,
 						_List_fromArray(
 							[
@@ -5928,7 +5958,7 @@ var $author$project$Diagram$drawMessage = F2(
 										A2(
 										$author$project$Diagram$intAttr,
 										$elm$svg$Svg$Attributes$y,
-										(y - 9) - (16 * (($elm$core$List$length(message.ab) - index) - 1))),
+										(y - 9) - (16 * (($elm$core$List$length(message.ad) - index) - 1))),
 										$elm$svg$Svg$Attributes$textAnchor(
 										self ? 'start' : 'middle')
 									]),
@@ -5937,7 +5967,7 @@ var $author$project$Diagram$drawMessage = F2(
 										$elm$svg$Svg$text(caption)
 									]));
 						}),
-					message.ab)));
+					message.ad)));
 	});
 var $elm$svg$Svg$Attributes$rx = _VirtualDom_attribute('rx');
 var $elm$svg$Svg$rect = $elm$svg$Svg$trustedNode('rect');
@@ -5961,11 +5991,11 @@ var $author$project$Diagram$drawActivation = F2(
 		return A6(
 			$author$project$Diagram$box,
 			'sequence-activation',
-			x(activation.ad) - 5,
-			activation.W,
+			x(activation.af) - 5,
+			activation.X,
 			10,
-			A2($elm$core$Basics$max, 4, activation.ak - activation.W),
-			3);
+			A2($elm$core$Basics$max, 4, activation.am - activation.X),
+			0);
 	});
 var $elm$svg$Svg$Attributes$x1 = _VirtualDom_attribute('x1');
 var $elm$svg$Svg$Attributes$x2 = _VirtualDom_attribute('x2');
@@ -5987,8 +6017,8 @@ var $author$project$Diagram$line = F5(
 			_List_Nil);
 	});
 var $elm$svg$Svg$title = $elm$svg$Svg$trustedNode('title');
-var $author$project$Diagram$drawParticipant = F3(
-	function (columns, bottom, name) {
+var $author$project$Diagram$drawParticipant = F4(
+	function (radius, columns, bottom, name) {
 		var visibleName = ($elm$core$String$length(name) > 16) ? (A2($elm$core$String$left, 15, name) + '…') : name;
 		var center = A2(
 			$elm$core$Maybe$withDefault,
@@ -6007,7 +6037,7 @@ var $author$project$Diagram$drawParticipant = F3(
 							$elm$svg$Svg$text(name)
 						])),
 					A5($author$project$Diagram$line, 'sequence-lifeline', center, 52, center, bottom),
-					A6($author$project$Diagram$box, 'sequence-participant', center - 67, 14, 134, 38, 9),
+					A6($author$project$Diagram$box, 'sequence-participant', center - 67, 14, 134, 38, radius),
 					A2(
 					$elm$svg$Svg$text_,
 					_List_fromArray(
@@ -6024,7 +6054,7 @@ var $author$project$Diagram$drawParticipant = F3(
 				]));
 	});
 var $author$project$Diagram$view = F3(
-	function (showReturns, monochrome, _v0) {
+	function (showReturns, theme, _v0) {
 		var initiator = _v0.a;
 		var steps = _v0.b;
 		var names = $author$project$Diagram$unique(
@@ -6045,15 +6075,15 @@ var $author$project$Diagram$view = F3(
 				showReturns,
 				root,
 				A2($elm$core$Dict$singleton, initiator, 0)),
-			{i: 94, u: _List_Nil, U: _List_Nil},
+			{i: 94, v: _List_Nil, U: _List_Nil},
 			steps);
 		var height = layout.i + 12;
 		var rightPadding = A2(
 			$elm$core$List$any,
 			function (message) {
-				return _Utils_eq(message.V.w, message.L.w) && _Utils_eq(message.L.w, lastParticipant);
+				return _Utils_eq(message.W.aZ, message.M.aZ) && _Utils_eq(message.M.aZ, lastParticipant);
 			},
-			layout.u) ? 226 : $author$project$Diagram$columnInset;
+			layout.v) ? 226 : $author$project$Diagram$columnInset;
 		var activations = A2(
 			$elm$core$List$cons,
 			A3($author$project$Diagram$Activation, root, 58, layout.i - 12),
@@ -6062,7 +6092,7 @@ var $author$project$Diagram$view = F3(
 			$elm$core$List$foldl,
 			F2(
 				function (bar, largest) {
-					return A2($elm$core$Basics$max, largest, bar.ad.Z);
+					return A2($elm$core$Basics$max, largest, bar.af.aa);
 				}),
 			0,
 			activations);
@@ -6077,17 +6107,28 @@ var $author$project$Diagram$view = F3(
 					}),
 				names));
 		var x = function (endpoint) {
-			return (8 * endpoint.Z) + A2(
+			return (8 * endpoint.aa) + A2(
 				$elm$core$Maybe$withDefault,
 				$author$project$Diagram$columnInset,
-				A2($elm$core$Dict$get, endpoint.w, columns));
+				A2($elm$core$Dict$get, endpoint.aZ, columns));
 		};
 		return A2(
 			$elm$svg$Svg$svg,
 			_List_fromArray(
 				[
-					$elm$svg$Svg$Attributes$class(
-					monochrome ? 'sequence-svg sequence-monochrome' : 'sequence-svg'),
+					$elm$svg$Svg$Attributes$class('sequence-svg'),
+					$elm$svg$Svg$Attributes$style(
+					A2(
+						$elm$core$String$join,
+						'; ',
+						A2(
+							$elm$core$List$map,
+							function (_v1) {
+								var name = _v1.a;
+								var value = _v1.b;
+								return name + (': ' + value);
+							},
+							$author$project$DiagramTheme$styles(theme)))),
 					A2($author$project$Diagram$intAttr, $elm$svg$Svg$Attributes$width, width),
 					A2($author$project$Diagram$intAttr, $elm$svg$Svg$Attributes$height, height),
 					$elm$svg$Svg$Attributes$viewBox(
@@ -6098,7 +6139,7 @@ var $author$project$Diagram$view = F3(
 			_Utils_ap(
 				A2(
 					$elm$core$List$map,
-					A2($author$project$Diagram$drawParticipant, columns, height - 20),
+					A3($author$project$Diagram$drawParticipant, theme.Y, columns, height - 20),
 					names),
 				_Utils_ap(
 					A2(
@@ -6107,13 +6148,13 @@ var $author$project$Diagram$view = F3(
 						A2(
 							$elm$core$List$sortBy,
 							function ($) {
-								return $.W;
+								return $.X;
 							},
 							activations)),
 					A2(
 						$elm$core$List$map,
 						$author$project$Diagram$drawMessage(x),
-						$elm$core$List$reverse(layout.u)))));
+						$elm$core$List$reverse(layout.v)))));
 	});
 var $elm$html$Html$Attributes$alt = $elm$html$Html$Attributes$stringProperty('alt');
 var $elm$html$Html$img = _VirtualDom_node('img');
@@ -6125,14 +6166,14 @@ var $elm$html$Html$Attributes$src = function (url) {
 };
 var $elm$html$Html$Attributes$hidden = $elm$html$Html$Attributes$boolProperty('hidden');
 var $author$project$Main$PreviewFailed = function (a) {
-	return {$: 13, a: a};
+	return {$: 18, a: a};
 };
 var $author$project$Main$PreviewLoaded = F2(
 	function (a, b) {
-		return {$: 12, a: a, b: b};
+		return {$: 17, a: a, b: b};
 	});
 var $author$project$Main$RenderPreview = function (a) {
-	return {$: 10, a: a};
+	return {$: 15, a: a};
 };
 var $author$project$Main$previewView = F3(
 	function (request, preview, source) {
@@ -6248,9 +6289,49 @@ var $author$project$Main$previewView = F3(
 				return A2(prompt, 'Could not load the diagram.', 'Try again');
 		}
 	});
-var $author$project$Main$DownloadDiagram = {$: 8};
-var $author$project$Main$ToggleDiagramFit = {$: 7};
-var $author$project$Main$OpenDiagramViewer = {$: 9};
+var $author$project$DiagramTheme$Theme = function (background) {
+	return function (text) {
+		return function (participant) {
+			return function (participantText) {
+				return function (activation) {
+					return function (lifeline) {
+						return function (activationBorder) {
+							return function (font) {
+								return function (radius) {
+									return function (participantBorder) {
+										return {as: font, ax: text, Y: radius, aP: lifeline, aX: activation, aY: background, aZ: participant, a_: participantText, a$: activationBorder, a0: participantBorder};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
+var $author$project$DiagramTheme$dark = $author$project$DiagramTheme$Theme('#172321')('#e4f0ea')('#315845')('#ffffff')('#436c57')('#80988c')('#9ccdaf')('mono')(9)('#80988c');
+var $author$project$DiagramTheme$classic = $author$project$DiagramTheme$Theme('#ffffff')('#17382a')('#21543e')('#ffffff')('#c7ebd7')('#899d92')('#39815d')('mono')(3)('#17382a');
+var $author$project$DiagramTheme$monochrome = $author$project$DiagramTheme$Theme('#ffffff')('#202521')('#323a34')('#ffffff')('#e1e6e2')('#929292')('#565656')('mono')(9)('#202521');
+var $author$project$DiagramTheme$highContrastBlack = {as: 'mono', ax: '#fafffd', Y: 0, aP: '#ffffff', aX: '#000000', aY: '#000000', aZ: '#000000', a_: '#ffffff', a$: '#ffffff', a0: '#faf9f9'};
+var $author$project$DiagramTheme$inverseMonochrome = $author$project$DiagramTheme$Theme('#202020')('#f4f4f4')('#ededed')('#202020')('#454545')('#929292')('#bdbdbd')('mono')(9)('#bdbdbd');
+var $author$project$Main$diagramTheme = function (model) {
+	var _v0 = model.E;
+	switch (_v0) {
+		case 'monochrome':
+			return $author$project$DiagramTheme$monochrome;
+		case 'inverse-monochrome':
+			return $author$project$DiagramTheme$inverseMonochrome;
+		case 'dark':
+			return $author$project$DiagramTheme$dark;
+		case 'high-contrast-black':
+			return $author$project$DiagramTheme$highContrastBlack;
+		case 'custom':
+			return model.K;
+		default:
+			return $author$project$DiagramTheme$classic;
+	}
+};
 var $author$project$Main$outputView = F2(
 	function (model, output) {
 		var _v0 = _Utils_Tuple2(model.T, output);
@@ -6261,7 +6342,7 @@ var $author$project$Main$outputView = F2(
 					if (!_v0.b.$) {
 						var sequence = _v0.a.a.a;
 						var source = _v0.b.a;
-						var _v1 = model.D;
+						var _v1 = model.o;
 						switch (_v1) {
 							case 0:
 								return A2(
@@ -6286,66 +6367,18 @@ var $author$project$Main$outputView = F2(
 									$elm$html$Html$div,
 									_List_fromArray(
 										[
-											$elm$html$Html$Attributes$class('local-diagram-output')
+											$elm$html$Html$Attributes$class(
+											model.J ? 'diagram-preview local-diagram diagram-fit' : 'diagram-preview local-diagram'),
+											A2($elm$html$Html$Attributes$attribute, 'tabindex', '0'),
+											A2($elm$html$Html$Attributes$attribute, 'aria-label', 'Diagram preview')
 										]),
 									_List_fromArray(
 										[
-											A2(
-											$elm$html$Html$div,
-											_List_fromArray(
-												[
-													$elm$html$Html$Attributes$class('diagram-tools')
-												]),
-											_List_fromArray(
-												[
-													A2(
-													$elm$html$Html$button,
-													_List_fromArray(
-														[
-															$elm$html$Html$Events$onClick($author$project$Main$ToggleDiagramFit),
-															A2(
-															$elm$html$Html$Attributes$attribute,
-															'aria-pressed',
-															model.I ? 'true' : 'false')
-														]),
-													_List_fromArray(
-														[
-															$elm$html$Html$text('Fit to panel')
-														])),
-													A2(
-													$elm$html$Html$button,
-													_List_fromArray(
-														[
-															$elm$html$Html$Events$onClick($author$project$Main$DownloadDiagram)
-														]),
-													_List_fromArray(
-														[
-															$elm$html$Html$text('Download SVG')
-														])),
-													A2(
-													$elm$html$Html$button,
-													_List_fromArray(
-														[
-															$elm$html$Html$Events$onClick($author$project$Main$OpenDiagramViewer)
-														]),
-													_List_fromArray(
-														[
-															$elm$html$Html$text('Full screen')
-														]))
-												])),
-											A2(
-											$elm$html$Html$div,
-											_List_fromArray(
-												[
-													$elm$html$Html$Attributes$class(
-													model.I ? 'diagram-preview local-diagram diagram-fit' : 'diagram-preview local-diagram'),
-													A2($elm$html$Html$Attributes$attribute, 'tabindex', '0'),
-													A2($elm$html$Html$Attributes$attribute, 'aria-label', 'Diagram preview')
-												]),
-											_List_fromArray(
-												[
-													A3($author$project$Diagram$view, model.J, model.K, sequence)
-												]))
+											A3(
+											$author$project$Diagram$view,
+											model.L,
+											$author$project$Main$diagramTheme(model),
+											sequence)
 										]));
 							default:
 								return A3($author$project$Main$previewView, model.x, model.j, source);
@@ -6379,24 +6412,115 @@ var $author$project$Main$outputView = F2(
 			_List_fromArray(
 				[
 					A2(
-					$elm$html$Html$code,
-					_List_fromArray(
-						[
-							A2($elm$html$Html$Attributes$attribute, 'aria-hidden', 'true')
-						]),
-					_List_fromArray(
-						[
-							$elm$html$Html$text('@startuml')
-						])),
-					A2(
 					$elm$html$Html$p,
 					_List_Nil,
 					_List_fromArray(
 						[
-							$elm$html$Html$text('Enter a sequence or load the example to see the generated code.')
+							$elm$html$Html$text('Enter a sequence or load the example to see the preview.')
 						]))
 				]));
 	});
+var $elm$html$Html$li = _VirtualDom_node('li');
+var $elm$html$Html$ul = _VirtualDom_node('ul');
+var $author$project$Main$syntaxExample = 'sequence user\u000A    browser: open dashboard\u000A        api: load data\u000A        audit [async]: record visit';
+var $author$project$Main$LoadSyntaxExample = {$: 2};
+var $author$project$Main$syntaxHelp = A2(
+	$elm$html$Html$details,
+	_List_fromArray(
+		[
+			$elm$html$Html$Attributes$class('syntax-help')
+		]),
+	_List_fromArray(
+		[
+			A2(
+			$elm$html$Html$summary,
+			_List_Nil,
+			_List_fromArray(
+				[
+					$elm$html$Html$text('Syntax help')
+				])),
+			A2(
+			$elm$html$Html$ul,
+			_List_Nil,
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$li,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Start with '),
+							A2(
+							$elm$html$Html$code,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text('sequence NAME')
+								])),
+							$elm$html$Html$text(' to name the first participant.')
+						])),
+					A2(
+					$elm$html$Html$li,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Indent a line and write '),
+							A2(
+							$elm$html$Html$code,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text('NAME: message')
+								])),
+							$elm$html$Html$text(' to send a message.')
+						])),
+					A2(
+					$elm$html$Html$li,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Indent again for a nested call. Line up sibling calls at the same level.')
+						])),
+					A2(
+					$elm$html$Html$li,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Put '),
+							A2(
+							$elm$html$Html$code,
+							_List_Nil,
+							_List_fromArray(
+								[
+									$elm$html$Html$text('[async]')
+								])),
+							$elm$html$Html$text(' after the name to omit the return arrow.')
+						]))
+				])),
+			A2(
+			$elm$html$Html$pre,
+			_List_Nil,
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$code,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text($author$project$Main$syntaxExample)
+						]))
+				])),
+			A2(
+			$elm$html$Html$button,
+			_List_fromArray(
+				[
+					$elm$html$Html$Events$onClick($author$project$Main$LoadSyntaxExample)
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text('Load syntax example')
+				]))
+		]));
 var $elm$core$String$concat = function (strings) {
 	return A2($elm$core$String$join, '', strings);
 };
@@ -6495,16 +6619,290 @@ var $author$project$SequenceDiagram$Renderer$toPlantUml = F3(
 	});
 var $author$project$Main$LoadExample = {$: 1};
 var $author$project$Main$ShowReturns = function (a) {
-	return {$: 2, a: a};
-};
-var $author$project$Main$IncludeTheme = function (a) {
 	return {$: 3, a: a};
 };
+var $author$project$Main$IncludeTheme = function (a) {
+	return {$: 4, a: a};
+};
 var $author$project$Main$ServerPreview = 2;
+var $author$project$DiagramTheme$fonts = _List_fromArray(
+	[
+		_Utils_Tuple2('mono', 'Monospace'),
+		_Utils_Tuple2('sans', 'Sans serif'),
+		_Utils_Tuple2('serif', 'Serif')
+	]);
+var $elm$core$String$toInt = _String_toInt;
+var $author$project$Main$EditTheme = function (a) {
+	return {$: 6, a: a};
+};
+var $author$project$Main$SaveTheme = {$: 7};
+var $elm$html$Html$option = _VirtualDom_node('option');
+var $elm$html$Html$select = _VirtualDom_node('select');
+var $elm$html$Html$Attributes$selected = $elm$html$Html$Attributes$boolProperty('selected');
+var $author$project$Main$themeSelect = F4(
+	function (caption, current, toMsg, choices) {
+		return A2(
+			$elm$html$Html$label,
+			_List_Nil,
+			_List_fromArray(
+				[
+					$elm$html$Html$text(caption),
+					A2(
+					$elm$html$Html$select,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onInput(toMsg)
+						]),
+					A2(
+						$elm$core$List$map,
+						function (_v0) {
+							var key = _v0.a;
+							var name = _v0.b;
+							return A2(
+								$elm$html$Html$option,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$value(key),
+										$elm$html$Html$Attributes$selected(
+										_Utils_eq(key, current))
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text(name)
+									]));
+						},
+						choices))
+				]));
+	});
+var $author$project$Main$SelectDiagramTheme = function (a) {
+	return {$: 5, a: a};
+};
+var $author$project$Main$themeSettings = function (model) {
+	var colorPicker = F3(
+		function (caption, current, setColor) {
+			return A2(
+				$elm$html$Html$label,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text(caption),
+						A2(
+						$elm$html$Html$input,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$type_('color'),
+								$elm$html$Html$Attributes$value(current),
+								$elm$html$Html$Events$onInput(
+								A2($elm$core$Basics$composeR, setColor, $author$project$Main$EditTheme))
+							]),
+						_List_Nil)
+					]));
+		});
+	var theme = model.K;
+	return A2(
+		$elm$html$Html$section,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('theme-settings'),
+				A2($elm$html$Html$Attributes$attribute, 'aria-label', 'Diagram theme settings')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('theme-controls')
+					]),
+				_List_fromArray(
+					[
+						A4(
+						$author$project$Main$themeSelect,
+						'Diagram theme',
+						model.E,
+						$author$project$Main$SelectDiagramTheme,
+						_List_fromArray(
+							[
+								_Utils_Tuple2('classic', 'Classic'),
+								_Utils_Tuple2('monochrome', 'Monochrome'),
+								_Utils_Tuple2('inverse-monochrome', 'Inverse monochrome'),
+								_Utils_Tuple2('dark', 'Dark'),
+								_Utils_Tuple2('high-contrast-black', 'High Contrast Black'),
+								_Utils_Tuple2('custom', 'Custom')
+							])),
+						A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onClick($author$project$Main$SaveTheme)
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Download theme JSON')
+							])),
+						A2(
+						$elm$html$Html$label,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('theme-file-label')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Load theme JSON'),
+								A2(
+								$elm$html$Html$input,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$id('theme-file'),
+										$elm$html$Html$Attributes$type_('file'),
+										A2($elm$html$Html$Attributes$attribute, 'accept', '.json,application/json')
+									]),
+								_List_Nil)
+							]))
+					])),
+				(model.E === 'custom') ? A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('theme-custom')
+					]),
+				_List_fromArray(
+					[
+						A3(
+						colorPicker,
+						'Background',
+						theme.aY,
+						function (color) {
+							return _Utils_update(
+								theme,
+								{aY: color});
+						}),
+						A3(
+						colorPicker,
+						'Text and arrows',
+						theme.ax,
+						function (color) {
+							return _Utils_update(
+								theme,
+								{ax: color});
+						}),
+						A3(
+						colorPicker,
+						'Participants',
+						theme.aZ,
+						function (color) {
+							return _Utils_update(
+								theme,
+								{aZ: color});
+						}),
+						A3(
+						colorPicker,
+						'Participant outline',
+						theme.a0,
+						function (color) {
+							return _Utils_update(
+								theme,
+								{a0: color});
+						}),
+						A3(
+						colorPicker,
+						'Participant labels',
+						theme.a_,
+						function (color) {
+							return _Utils_update(
+								theme,
+								{a_: color});
+						}),
+						A3(
+						colorPicker,
+						'Activations',
+						theme.aX,
+						function (color) {
+							return _Utils_update(
+								theme,
+								{aX: color});
+						}),
+						A3(
+						colorPicker,
+						'Lifelines',
+						theme.aP,
+						function (color) {
+							return _Utils_update(
+								theme,
+								{aP: color});
+						}),
+						A3(
+						colorPicker,
+						'Activation border',
+						theme.a$,
+						function (color) {
+							return _Utils_update(
+								theme,
+								{a$: color});
+						}),
+						A4(
+						$author$project$Main$themeSelect,
+						'Font',
+						theme.as,
+						function (font) {
+							return $author$project$Main$EditTheme(
+								_Utils_update(
+									theme,
+									{as: font}));
+						},
+						$author$project$DiagramTheme$fonts),
+						A2(
+						$elm$html$Html$label,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text(
+								'Participant corner radius (' + ($elm$core$String$fromInt(theme.Y) + ' px)')),
+								A2(
+								$elm$html$Html$input,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$type_('range'),
+										A2($elm$html$Html$Attributes$attribute, 'min', '0'),
+										A2($elm$html$Html$Attributes$attribute, 'max', '19'),
+										$elm$html$Html$Attributes$value(
+										$elm$core$String$fromInt(theme.Y)),
+										$elm$html$Html$Events$onInput(
+										function (radius) {
+											return $author$project$Main$EditTheme(
+												_Utils_update(
+													theme,
+													{
+														Y: A2(
+															$elm$core$Maybe$withDefault,
+															theme.Y,
+															$elm$core$String$toInt(radius))
+													}));
+										})
+									]),
+								_List_Nil)
+							]))
+					])) : $elm$html$Html$text(''),
+				A2(
+				$elm$html$Html$p,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('theme-status'),
+						A2($elm$html$Html$Attributes$attribute, 'role', 'status')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text(model.D)
+					]))
+			]));
+};
+var $author$project$Main$DownloadDiagram = {$: 13};
+var $author$project$Main$ToggleDiagramFit = {$: 12};
+var $author$project$Main$OpenDiagramViewer = {$: 14};
 var $author$project$Main$view = function (model) {
 	var output = A2(
 		$elm$core$Maybe$map,
-		A2($author$project$SequenceDiagram$Renderer$toPlantUml, model.J, model.K),
+		A2($author$project$SequenceDiagram$Renderer$toPlantUml, model.L, model.V),
 		A2($elm$core$Maybe$andThen, $elm$core$Result$toMaybe, model.T));
 	return A2(
 		$elm$html$Html$div,
@@ -6541,7 +6939,7 @@ var $author$project$Main$view = function (model) {
 									[
 										$elm$html$Html$text('⇄')
 									])),
-								$elm$html$Html$text('PlantUML')
+								$elm$html$Html$text('Sequence diagrams')
 							])),
 						A2(
 						$elm$html$Html$a,
@@ -6586,7 +6984,7 @@ var $author$project$Main$view = function (model) {
 								_List_Nil,
 								_List_fromArray(
 									[
-										$elm$html$Html$text('Describe a sequence with indented text and get PlantUML code as you type.')
+										$elm$html$Html$text('Describe a sequence with indented text and see the diagram as you type.')
 									]))
 							])),
 						A2(
@@ -6645,7 +7043,8 @@ var $author$project$Main$view = function (model) {
 														$elm$html$Html$text('Load example')
 													]))
 											])),
-										$author$project$Main$editor(model.F)
+										$author$project$Main$editor(model.G),
+										$author$project$Main$syntaxHelp
 									])),
 								A2(
 								$elm$html$Html$section,
@@ -6672,7 +7071,7 @@ var $author$project$Main$view = function (model) {
 													]),
 												_List_fromArray(
 													[
-														$elm$html$Html$text('PlantUML output')
+														$elm$html$Html$text('Preview')
 													])),
 												A2(
 												$elm$html$Html$div,
@@ -6682,37 +7081,105 @@ var $author$project$Main$view = function (model) {
 													]),
 												_List_fromArray(
 													[
+														((model.o === 1) && (!_Utils_eq(output, $elm$core$Maybe$Nothing))) ? A2(
+														$elm$html$Html$div,
+														_List_fromArray(
+															[
+																$elm$html$Html$Attributes$class('diagram-tools'),
+																A2($elm$html$Html$Attributes$attribute, 'role', 'group'),
+																A2($elm$html$Html$Attributes$attribute, 'aria-label', 'Diagram controls')
+															]),
+														_List_fromArray(
+															[
+																A2(
+																$elm$html$Html$button,
+																_List_fromArray(
+																	[
+																		$elm$html$Html$Events$onClick($author$project$Main$ToggleDiagramFit),
+																		A2(
+																		$elm$html$Html$Attributes$attribute,
+																		'aria-pressed',
+																		model.J ? 'true' : 'false')
+																	]),
+																_List_fromArray(
+																	[
+																		$elm$html$Html$text('Fit to panel')
+																	])),
+																A2(
+																$elm$html$Html$button,
+																_List_fromArray(
+																	[
+																		$elm$html$Html$Events$onClick($author$project$Main$DownloadDiagram)
+																	]),
+																_List_fromArray(
+																	[
+																		$elm$html$Html$text('Download SVG')
+																	])),
+																A2(
+																$elm$html$Html$button,
+																_List_fromArray(
+																	[
+																		$elm$html$Html$Events$onClick($author$project$Main$OpenDiagramViewer)
+																	]),
+																_List_fromArray(
+																	[
+																		$elm$html$Html$text('Full screen')
+																	]))
+															])) : $elm$html$Html$text(''),
+														A3($author$project$Main$modeButton, model.o, 1, 'Diagram')
+													]))
+											])),
+										A2($author$project$Main$outputView, model, output),
+										A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('output-footer')
+											]),
+										_List_fromArray(
+											[
+												A2(
+												$elm$html$Html$details,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('plantuml-menu')
+													]),
+												_List_fromArray(
+													[
+														A2(
+														$elm$html$Html$summary,
+														_List_Nil,
+														_List_fromArray(
+															[
+																$elm$html$Html$text('PlantUML')
+															])),
 														A2(
 														$elm$html$Html$div,
 														_List_fromArray(
 															[
-																$elm$html$Html$Attributes$class('output-toggle'),
-																A2($elm$html$Html$Attributes$attribute, 'role', 'group'),
-																A2($elm$html$Html$Attributes$attribute, 'aria-label', 'Output view')
+																$elm$html$Html$Attributes$class('plantuml-actions')
 															]),
 														_List_fromArray(
 															[
-																A3($author$project$Main$modeButton, model.D, 0, 'Code'),
-																A3($author$project$Main$modeButton, model.D, 1, 'Diagram'),
-																A3($author$project$Main$modeButton, model.D, 2, 'PlantUML preview')
-															])),
-														A2(
-														$elm$html$Html$button,
-														_List_fromArray(
-															[
-																$elm$html$Html$Attributes$disabled(
-																_Utils_eq(output, $elm$core$Maybe$Nothing)),
-																$elm$html$Html$Events$onClick(
-																$author$project$Main$Copy(
-																	A2($elm$core$Maybe$withDefault, '', output)))
-															]),
-														_List_fromArray(
-															[
-																$elm$html$Html$text('Copy code')
+																A3($author$project$Main$modeButton, model.o, 0, 'View code'),
+																A3($author$project$Main$modeButton, model.o, 2, 'Preview on server'),
+																A2(
+																$elm$html$Html$button,
+																_List_fromArray(
+																	[
+																		$elm$html$Html$Attributes$disabled(
+																		_Utils_eq(output, $elm$core$Maybe$Nothing)),
+																		$elm$html$Html$Events$onClick(
+																		$author$project$Main$Copy(
+																			A2($elm$core$Maybe$withDefault, '', output)))
+																	]),
+																_List_fromArray(
+																	[
+																		$elm$html$Html$text('Copy code')
+																	]))
 															]))
 													]))
-											])),
-										A2($author$project$Main$outputView, model, output)
+											]))
 									]))
 							])),
 						A2(
@@ -6731,8 +7198,8 @@ var $author$project$Main$view = function (model) {
 									]),
 								_List_fromArray(
 									[
-										A3($author$project$Main$checkbox, 'Show return arrows', model.J, $author$project$Main$ShowReturns),
-										A3($author$project$Main$checkbox, 'Include monochrome theme', model.K, $author$project$Main$IncludeTheme)
+										A3($author$project$Main$checkbox, 'Show return arrows', model.L, $author$project$Main$ShowReturns),
+										(model.o === 1) ? $elm$html$Html$text('') : A3($author$project$Main$checkbox, 'Include monochrome theme', model.V, $author$project$Main$IncludeTheme)
 									])),
 								A2(
 								$elm$html$Html$p,
@@ -6743,9 +7210,10 @@ var $author$project$Main$view = function (model) {
 									]),
 								_List_fromArray(
 									[
-										$elm$html$Html$text(model.r)
+										$elm$html$Html$text(model.s)
 									]))
 							])),
+						(model.o === 1) ? $author$project$Main$themeSettings(model) : $elm$html$Html$text(''),
 						A2(
 						$elm$html$Html$p,
 						_List_fromArray(
@@ -6762,7 +7230,7 @@ var $author$project$Main$view = function (model) {
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $author$project$Main$Copied = function (a) {
-	return {$: 5, a: a};
+	return {$: 10, a: a};
 };
 var $elm$core$String$trim = _String_trim;
 var $elm$core$List$filter = F2(
@@ -6803,10 +7271,10 @@ var $author$project$SequenceDiagram$Parser$toLine = F2(
 			0,
 			$elm$core$String$toList(raw));
 		return {
-			O: $elm$core$String$isEmpty(
+			ax: $elm$core$String$isEmpty(
 				$elm$core$String$trim(raw)) ? '' : A2($elm$core$String$dropLeft, indent, raw),
 			z: indent,
-			aa: index + 1
+			ac: index + 1
 		};
 	});
 var $author$project$SequenceDiagram$Model$Sequence = F2(
@@ -6815,7 +7283,7 @@ var $author$project$SequenceDiagram$Model$Sequence = F2(
 	});
 var $author$project$SequenceDiagram$Parser$lineError = F3(
 	function (line, column, message) {
-		return 'Line ' + ($elm$core$String$fromInt(line.aa) + (', column ' + ($elm$core$String$fromInt(line.z + column) + (': ' + message))));
+		return 'Line ' + ($elm$core$String$fromInt(line.ac) + (', column ' + ($elm$core$String$fromInt(line.z + column) + (': ' + message))));
 	});
 var $elm$parser$Parser$Advanced$bagToList = F2(
 	function (bag, list) {
@@ -6847,7 +7315,7 @@ var $elm$parser$Parser$Advanced$run = F2(
 	function (_v0, src) {
 		var parse = _v0;
 		var _v1 = parse(
-			{ai: 1, ao: 1, a: src, z: 1, b: 0, c: _List_Nil});
+			{ak: 1, aq: 1, a: src, z: 1, b: 0, c: _List_Nil});
 		if (!_v1.$) {
 			var value = _v1.b;
 			return $elm$core$Result$Ok(value);
@@ -6859,10 +7327,10 @@ var $elm$parser$Parser$Advanced$run = F2(
 	});
 var $elm$parser$Parser$DeadEnd = F3(
 	function (row, col, problem) {
-		return {ai: col, ao: row, a7: problem};
+		return {ak: col, aq: row, bi: problem};
 	});
 var $elm$parser$Parser$problemToDeadEnd = function (p) {
-	return A3($elm$parser$Parser$DeadEnd, p.ao, p.ai, p.a7);
+	return A3($elm$parser$Parser$DeadEnd, p.aq, p.ak, p.bi);
 };
 var $elm$parser$Parser$run = F2(
 	function (parser, source) {
@@ -6906,7 +7374,7 @@ var $author$project$SequenceDiagram$Parser$describeProblem = function (problem) 
 };
 var $author$project$SequenceDiagram$Parser$parseLine = F2(
 	function (parser, line) {
-		return A2($elm$core$String$startsWith, '\u0009', line.O) ? $elm$core$Result$Err(
+		return A2($elm$core$String$startsWith, '\u0009', line.ax) ? $elm$core$Result$Err(
 			A3($author$project$SequenceDiagram$Parser$lineError, line, 1, 'Use spaces for indentation.')) : A2(
 			$elm$core$Result$mapError,
 			function (deadEnds) {
@@ -6916,7 +7384,7 @@ var $author$project$SequenceDiagram$Parser$parseLine = F2(
 						A2(
 							$elm$core$Basics$composeR,
 							function ($) {
-								return $.ai;
+								return $.ak;
 							},
 							$elm$core$Basics$negate),
 						deadEnds));
@@ -6925,13 +7393,13 @@ var $author$project$SequenceDiagram$Parser$parseLine = F2(
 					return A3(
 						$author$project$SequenceDiagram$Parser$lineError,
 						line,
-						deadEnd.ai,
-						$author$project$SequenceDiagram$Parser$describeProblem(deadEnd.a7));
+						deadEnd.ak,
+						$author$project$SequenceDiagram$Parser$describeProblem(deadEnd.bi));
 				} else {
 					return A3($author$project$SequenceDiagram$Parser$lineError, line, 1, 'Invalid syntax.');
 				}
 			},
-			A2($elm$parser$Parser$run, parser, line.O));
+			A2($elm$parser$Parser$run, parser, line.ax));
 	});
 var $elm$parser$Parser$Advanced$Bad = F2(
 	function (a, b) {
@@ -6948,7 +7416,7 @@ var $elm$parser$Parser$Advanced$Parser = $elm$core$Basics$identity;
 var $elm$parser$Parser$Advanced$Empty = {$: 0};
 var $elm$parser$Parser$Advanced$DeadEnd = F4(
 	function (row, col, problem, contextStack) {
-		return {ai: col, ao: row, a7: problem, bb: contextStack};
+		return {ak: col, aq: row, bi: problem, bm: contextStack};
 	});
 var $elm$parser$Parser$Advanced$AddRight = F2(
 	function (a, b) {
@@ -6959,7 +7427,7 @@ var $elm$parser$Parser$Advanced$fromState = F2(
 		return A2(
 			$elm$parser$Parser$Advanced$AddRight,
 			$elm$parser$Parser$Advanced$Empty,
-			A4($elm$parser$Parser$Advanced$DeadEnd, s.ao, s.ai, x, s.c));
+			A4($elm$parser$Parser$Advanced$DeadEnd, s.aq, s.ak, x, s.c));
 	});
 var $elm$parser$Parser$Advanced$end = function (x) {
 	return function (s) {
@@ -7063,7 +7531,7 @@ var $elm$parser$Parser$Advanced$chompWhileHelp = F5(
 					$elm$parser$Parser$Advanced$Good,
 					_Utils_cmp(s0.b, offset) < 0,
 					0,
-					{ai: col, ao: row, a: s0.a, z: s0.z, b: offset, c: s0.c});
+					{ak: col, aq: row, a: s0.a, z: s0.z, b: offset, c: s0.c});
 			} else {
 				if (_Utils_eq(newOffset, -2)) {
 					var $temp$isGood = isGood,
@@ -7095,7 +7563,7 @@ var $elm$parser$Parser$Advanced$chompWhileHelp = F5(
 	});
 var $elm$parser$Parser$Advanced$chompWhile = function (isGood) {
 	return function (s) {
-		return A5($elm$parser$Parser$Advanced$chompWhileHelp, isGood, s.b, s.ao, s.ai, s);
+		return A5($elm$parser$Parser$Advanced$chompWhileHelp, isGood, s.b, s.aq, s.ak, s);
 	};
 };
 var $elm$parser$Parser$chompWhile = $elm$parser$Parser$Advanced$chompWhile;
@@ -7111,7 +7579,7 @@ var $elm$parser$Parser$Advanced$token = function (_v0) {
 	var expecting = _v0.b;
 	var progress = !$elm$core$String$isEmpty(str);
 	return function (s) {
-		var _v1 = A5($elm$parser$Parser$Advanced$isSubString, str, s.b, s.ao, s.ai, s.a);
+		var _v1 = A5($elm$parser$Parser$Advanced$isSubString, str, s.b, s.aq, s.ak, s.a);
 		var newOffset = _v1.a;
 		var newRow = _v1.b;
 		var newCol = _v1.c;
@@ -7122,7 +7590,7 @@ var $elm$parser$Parser$Advanced$token = function (_v0) {
 			$elm$parser$Parser$Advanced$Good,
 			progress,
 			0,
-			{ai: newCol, ao: newRow, a: s.a, z: s.z, b: newOffset, c: s.c});
+			{ak: newCol, aq: newRow, a: s.a, z: s.z, b: newOffset, c: s.c});
 	};
 };
 var $elm$parser$Parser$Advanced$symbol = $elm$parser$Parser$Advanced$token;
@@ -7150,7 +7618,7 @@ var $elm$parser$Parser$Advanced$keyword = function (_v0) {
 	var expecting = _v0.b;
 	var progress = !$elm$core$String$isEmpty(kwd);
 	return function (s) {
-		var _v1 = A5($elm$parser$Parser$Advanced$isSubString, kwd, s.b, s.ao, s.ai, s.a);
+		var _v1 = A5($elm$parser$Parser$Advanced$isSubString, kwd, s.b, s.aq, s.ak, s.a);
 		var newOffset = _v1.a;
 		var newRow = _v1.b;
 		var newCol = _v1.c;
@@ -7167,7 +7635,7 @@ var $elm$parser$Parser$Advanced$keyword = function (_v0) {
 			$elm$parser$Parser$Advanced$Good,
 			progress,
 			0,
-			{ai: newCol, ao: newRow, a: s.a, z: s.z, b: newOffset, c: s.c});
+			{ak: newCol, aq: newRow, a: s.a, z: s.z, b: newOffset, c: s.c});
 	};
 };
 var $elm$parser$Parser$ExpectingKeyword = function (a) {
@@ -7547,17 +8015,17 @@ var $elm$parser$Parser$Advanced$sequenceEnd = F5(
 var $elm$parser$Parser$Advanced$sequence = function (i) {
 	return A2(
 		$elm$parser$Parser$Advanced$skip,
-		$elm$parser$Parser$Advanced$token(i.W),
+		$elm$parser$Parser$Advanced$token(i.X),
 		A2(
 			$elm$parser$Parser$Advanced$skip,
-			i.a2,
+			i.bd,
 			A5(
 				$elm$parser$Parser$Advanced$sequenceEnd,
-				$elm$parser$Parser$Advanced$token(i.ak),
-				i.a2,
-				i.aV,
-				$elm$parser$Parser$Advanced$token(i.a9),
-				i.a8)));
+				$elm$parser$Parser$Advanced$token(i.am),
+				i.bd,
+				i.a4,
+				$elm$parser$Parser$Advanced$token(i.bk),
+				i.bj)));
 };
 var $elm$parser$Parser$Advanced$Optional = 1;
 var $elm$parser$Parser$Advanced$Forbidden = 0;
@@ -7575,28 +8043,28 @@ var $elm$parser$Parser$toAdvancedTrailing = function (trailing) {
 var $elm$parser$Parser$sequence = function (i) {
 	return $elm$parser$Parser$Advanced$sequence(
 		{
-			ak: $elm$parser$Parser$toToken(i.ak),
-			aV: i.aV,
-			W: $elm$parser$Parser$toToken(i.W),
-			a2: i.a2,
-			a8: $elm$parser$Parser$toAdvancedTrailing(i.a8),
-			a9: $elm$parser$Parser$toToken(i.a9)
+			am: $elm$parser$Parser$toToken(i.am),
+			a4: i.a4,
+			X: $elm$parser$Parser$toToken(i.X),
+			bd: i.bd,
+			bj: $elm$parser$Parser$toAdvancedTrailing(i.bj),
+			bk: $elm$parser$Parser$toToken(i.bk)
 		});
 };
 var $elm$parser$Parser$Forbidden = 0;
 var $author$project$SequenceDiagram$Parser$options = $elm$parser$Parser$sequence(
 	{
-		ak: ']',
-		aV: A2(
+		am: ']',
+		a4: A2(
 			$elm$parser$Parser$map,
 			function (_v0) {
 				return 0;
 			},
 			$elm$parser$Parser$keyword('async')),
-		W: '[',
-		a2: $author$project$SequenceDiagram$Parser$spaces,
-		a8: 0,
-		a9: ','
+		X: '[',
+		bd: $author$project$SequenceDiagram$Parser$spaces,
+		bj: 0,
+		bk: ','
 	});
 var $author$project$SequenceDiagram$Parser$step = A2(
 	$elm$parser$Parser$keeper,
@@ -7726,7 +8194,7 @@ var $author$project$SequenceDiagram$Parser$parse = function (input) {
 		A2(
 			$elm$core$List$filter,
 			function (line) {
-				return !$elm$core$String$isEmpty(line.O);
+				return !$elm$core$String$isEmpty(line.ax);
 			},
 			A2(
 				$elm$core$List$indexedMap,
@@ -7737,13 +8205,109 @@ var $author$project$Main$Failed = {$: 4};
 var $author$project$Main$Loaded = function (a) {
 	return {$: 3, a: a};
 };
-var $author$project$Main$Loading = function (a) {
-	return {$: 2, a: a};
+var $elm$json$Json$Decode$int = _Json_decodeInt;
+var $elm$json$Json$Decode$map3 = _Json_map3;
+var $elm$json$Json$Decode$map8 = _Json_map8;
+var $elm$core$String$contains = _String_contains;
+var $elm$core$String$cons = _String_cons;
+var $elm$core$String$fromChar = function (_char) {
+	return A2($elm$core$String$cons, _char, '');
 };
-var $author$project$Main$example = 'sequence user\u000A    browser: click\u000A        api: get this\u000A            database: read this\u000A        otherApi [async]: queue audit event\u000A    browser: enter changes\u000A    browser: submit\u000A        api: post that\u000A            database: write that\u000A    ';
-var $author$project$Main$Preparing = {$: 1};
-var $author$project$Main$copyOutput = _Platform_outgoingPort('copyOutput', $elm$json$Json$Encode$string);
-var $author$project$Main$NotRequested = {$: 0};
+var $elm$json$Json$Decode$fail = _Json_fail;
+var $elm$json$Json$Decode$andThen = _Json_andThen;
+var $author$project$DiagramTheme$validate = F3(
+	function (message, isValid, decoder) {
+		return A2(
+			$elm$json$Json$Decode$andThen,
+			function (value) {
+				return isValid(value) ? $elm$json$Json$Decode$succeed(value) : $elm$json$Json$Decode$fail(message);
+			},
+			decoder);
+	});
+var $author$project$DiagramTheme$color = A3(
+	$author$project$DiagramTheme$validate,
+	'Expected a six-digit hex color',
+	function (value) {
+		return ($elm$core$String$length(value) === 7) && (A2($elm$core$String$startsWith, '#', value) && A2(
+			$elm$core$String$all,
+			function (_char) {
+				return A2(
+					$elm$core$String$contains,
+					$elm$core$String$fromChar(_char),
+					'0123456789abcdefABCDEF');
+			},
+			A2($elm$core$String$dropLeft, 1, value)));
+	},
+	$elm$json$Json$Decode$string);
+var $elm$json$Json$Decode$decodeString = _Json_runOnString;
+var $elm$json$Json$Decode$oneOf = _Json_oneOf;
+var $elm$json$Json$Decode$maybe = function (decoder) {
+	return $elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, decoder),
+				$elm$json$Json$Decode$succeed($elm$core$Maybe$Nothing)
+			]));
+};
+var $elm$json$Json$Decode$value = _Json_decodeValue;
+var $author$project$DiagramTheme$optionalColor = F2(
+	function (key, fallback) {
+		return A2(
+			$elm$json$Json$Decode$andThen,
+			function (field) {
+				if (field.$ === 1) {
+					return $elm$json$Json$Decode$succeed(fallback);
+				} else {
+					return A2($elm$json$Json$Decode$field, key, $author$project$DiagramTheme$color);
+				}
+			},
+			$elm$json$Json$Decode$maybe(
+				A2($elm$json$Json$Decode$field, key, $elm$json$Json$Decode$value)));
+	});
+var $author$project$DiagramTheme$decode = $elm$json$Json$Decode$decodeString(
+	A4(
+		$elm$json$Json$Decode$map3,
+		F3(
+			function (theme, radius, border) {
+				return A2(theme, radius, border);
+			}),
+		A9(
+			$elm$json$Json$Decode$map8,
+			$author$project$DiagramTheme$Theme,
+			A2($elm$json$Json$Decode$field, 'background', $author$project$DiagramTheme$color),
+			A2($elm$json$Json$Decode$field, 'text', $author$project$DiagramTheme$color),
+			A2($elm$json$Json$Decode$field, 'participant', $author$project$DiagramTheme$color),
+			A2($elm$json$Json$Decode$field, 'participantText', $author$project$DiagramTheme$color),
+			A2($elm$json$Json$Decode$field, 'activation', $author$project$DiagramTheme$color),
+			A2($author$project$DiagramTheme$optionalColor, 'lifeline', $author$project$DiagramTheme$classic.aP),
+			A2($author$project$DiagramTheme$optionalColor, 'activationBorder', $author$project$DiagramTheme$classic.a$),
+			A2(
+				$elm$json$Json$Decode$field,
+				'font',
+				A3(
+					$author$project$DiagramTheme$validate,
+					'Unknown font',
+					function (font) {
+						return A2(
+							$elm$core$List$member,
+							font,
+							A2($elm$core$List$map, $elm$core$Tuple$first, $author$project$DiagramTheme$fonts));
+					},
+					$elm$json$Json$Decode$string))),
+		A2(
+			$elm$json$Json$Decode$field,
+			'radius',
+			A3(
+				$author$project$DiagramTheme$validate,
+				'Radius must be between 0 and 19',
+				function (radius) {
+					return (radius >= 0) && (radius <= 19);
+				},
+				$elm$json$Json$Decode$int)),
+		A2(
+			$elm$json$Json$Decode$andThen,
+			$author$project$DiagramTheme$optionalColor('participantBorder'),
+			A2($elm$json$Json$Decode$field, 'participant', $author$project$DiagramTheme$color))));
 var $elm$json$Json$Encode$int = _Json_wrap;
 var $elm$json$Json$Encode$object = function (pairs) {
 	return _Json_wrap(
@@ -7758,6 +8322,53 @@ var $elm$json$Json$Encode$object = function (pairs) {
 			_Json_emptyObject(0),
 			pairs));
 };
+var $author$project$DiagramTheme$encode = function (theme) {
+	return A2(
+		$elm$json$Json$Encode$encode,
+		2,
+		$elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'background',
+					$elm$json$Json$Encode$string(theme.aY)),
+					_Utils_Tuple2(
+					'text',
+					$elm$json$Json$Encode$string(theme.ax)),
+					_Utils_Tuple2(
+					'participant',
+					$elm$json$Json$Encode$string(theme.aZ)),
+					_Utils_Tuple2(
+					'participantBorder',
+					$elm$json$Json$Encode$string(theme.a0)),
+					_Utils_Tuple2(
+					'participantText',
+					$elm$json$Json$Encode$string(theme.a_)),
+					_Utils_Tuple2(
+					'activation',
+					$elm$json$Json$Encode$string(theme.aX)),
+					_Utils_Tuple2(
+					'lifeline',
+					$elm$json$Json$Encode$string(theme.aP)),
+					_Utils_Tuple2(
+					'activationBorder',
+					$elm$json$Json$Encode$string(theme.a$)),
+					_Utils_Tuple2(
+					'font',
+					$elm$json$Json$Encode$string(theme.as)),
+					_Utils_Tuple2(
+					'radius',
+					$elm$json$Json$Encode$int(theme.Y))
+				])));
+};
+var $author$project$Main$Loading = function (a) {
+	return {$: 2, a: a};
+};
+var $author$project$Main$example = 'sequence user\u000A    browser: click\u000A        api: get this\u000A            database: read this\u000A        otherApi [async]: queue audit event\u000A    browser: enter changes\u000A    browser: submit\u000A        api: post that\u000A            database: write that\u000A    ';
+var $author$project$Main$Preparing = {$: 1};
+var $author$project$Main$saveTheme = _Platform_outgoingPort('saveTheme', $elm$json$Json$Encode$string);
+var $author$project$Main$copyOutput = _Platform_outgoingPort('copyOutput', $elm$json$Json$Encode$string);
+var $author$project$Main$NotRequested = {$: 0};
 var $author$project$Main$preparePreview = _Platform_outgoingPort(
 	'preparePreview',
 	function ($) {
@@ -7766,10 +8377,10 @@ var $author$project$Main$preparePreview = _Platform_outgoingPort(
 				[
 					_Utils_Tuple2(
 					'source',
-					$elm$json$Json$Encode$string($.F)),
+					$elm$json$Json$Encode$string($.G)),
 					_Utils_Tuple2(
 					'request',
-					$elm$json$Json$Encode$int($.X))
+					$elm$json$Json$Encode$int($.Z))
 				]));
 	});
 var $elm$json$Json$Encode$null = _Json_encodeNull;
@@ -7836,7 +8447,7 @@ var $author$project$Main$update = F2(
 						_Utils_update(
 							model,
 							{
-								F: source,
+								G: source,
 								T: $elm$core$String$isEmpty(
 									$elm$core$String$trim(source)) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
 									$author$project$SequenceDiagram$Parser$parse(
@@ -7848,7 +8459,7 @@ var $author$project$Main$update = F2(
 												$author$project$Main$expandIndentTabs(0),
 												$elm$core$String$lines(source))))),
 								j: $author$project$Main$NotRequested,
-								r: ''
+								s: ''
 							}),
 						$elm$core$Platform$Cmd$none);
 				case 1:
@@ -7858,57 +8469,103 @@ var $author$project$Main$update = F2(
 					model = $temp$model;
 					continue update;
 				case 2:
-					var enabled = msg.a;
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{j: $author$project$Main$NotRequested, r: '', J: enabled}),
-						$elm$core$Platform$Cmd$none);
+					var $temp$msg = $author$project$Main$Edit($author$project$Main$syntaxExample),
+						$temp$model = model;
+					msg = $temp$msg;
+					model = $temp$model;
+					continue update;
 				case 3:
 					var enabled = msg.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{j: $author$project$Main$NotRequested, r: '', K: enabled}),
+							{j: $author$project$Main$NotRequested, s: '', L: enabled}),
 						$elm$core$Platform$Cmd$none);
 				case 4:
+					var enabled = msg.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{j: $author$project$Main$NotRequested, s: '', V: enabled}),
+						$elm$core$Platform$Cmd$none);
+				case 5:
+					var preset = msg.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{D: '', E: preset}),
+						$elm$core$Platform$Cmd$none);
+				case 6:
+					var theme = msg.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{K: theme, D: ''}),
+						$elm$core$Platform$Cmd$none);
+				case 7:
+					return _Utils_Tuple2(
+						model,
+						$author$project$Main$saveTheme(
+							$author$project$DiagramTheme$encode(
+								$author$project$Main$diagramTheme(model))));
+				case 8:
+					var contents = msg.a;
+					var _v1 = A2(
+						$elm$core$Maybe$andThen,
+						A2($elm$core$Basics$composeR, $author$project$DiagramTheme$decode, $elm$core$Result$toMaybe),
+						contents);
+					if (!_v1.$) {
+						var theme = _v1.a;
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{K: theme, D: 'Theme loaded.', E: 'custom'}),
+							$elm$core$Platform$Cmd$none);
+					} else {
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{D: 'Could not load theme. Choose a valid theme JSON file.'}),
+							$elm$core$Platform$Cmd$none);
+					}
+				case 9:
 					var output = msg.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{r: ''}),
+							{s: ''}),
 						$author$project$Main$copyOutput(output));
-				case 5:
+				case 10:
 					var ok = msg.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								r: ok ? 'Copied to clipboard.' : 'Copy failed. Select the output to copy it manually.'
+								s: ok ? 'Copied to clipboard.' : 'Copy failed. Select the output to copy it manually.'
 							}),
 						$elm$core$Platform$Cmd$none);
-				case 6:
+				case 11:
 					var mode = msg.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{r: '', D: mode}),
+							{s: '', o: mode}),
 						$elm$core$Platform$Cmd$none);
-				case 7:
+				case 12:
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{I: !model.I}),
+							{J: !model.J}),
 						$elm$core$Platform$Cmd$none);
-				case 8:
+				case 13:
 					return _Utils_Tuple2(
 						model,
 						$author$project$Main$downloadDiagram(0));
-				case 9:
+				case 14:
 					return _Utils_Tuple2(
 						model,
 						$author$project$Main$openDiagramViewer(0));
-				case 10:
+				case 15:
 					var source = msg.a;
 					var request = model.x + 1;
 					return _Utils_Tuple2(
@@ -7916,20 +8573,20 @@ var $author$project$Main$update = F2(
 							model,
 							{j: $author$project$Main$Preparing, x: request}),
 						$author$project$Main$preparePreview(
-							{F: source, X: request}));
-				case 11:
+							{G: source, Z: request}));
+				case 16:
 					var result = msg.a;
-					return (_Utils_eq(result.X, model.x) && _Utils_eq(model.j, $author$project$Main$Preparing)) ? _Utils_Tuple2(
+					return (_Utils_eq(result.Z, model.x) && _Utils_eq(model.j, $author$project$Main$Preparing)) ? _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
 								j: A2(
 									$elm$core$Maybe$withDefault,
 									$author$project$Main$Failed,
-									A2($elm$core$Maybe$map, $author$project$Main$Loading, result.ap))
+									A2($elm$core$Maybe$map, $author$project$Main$Loading, result.ar))
 							}),
 						$elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-				case 12:
+				case 17:
 					var request = msg.a;
 					var url = msg.b;
 					return (_Utils_eq(request, model.x) && _Utils_eq(
@@ -7943,8 +8600,8 @@ var $author$project$Main$update = F2(
 						$elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				default:
 					var request = msg.a;
-					var _v1 = model.j;
-					if (_v1.$ === 2) {
+					var _v2 = model.j;
+					if (_v2.$ === 2) {
 						return _Utils_eq(request, model.x) ? _Utils_Tuple2(
 							_Utils_update(
 								model,
@@ -8051,10 +8708,8 @@ var $elm$url$Url$Http = 0;
 var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {aq: host, ar: path, aB: port_, aC: query, aK: fragment, aM: protocol};
+		return {at: host, au: path, aF: port_, aG: query, aO: fragment, aR: protocol};
 	});
-var $elm$core$String$toInt = _String_toInt;
-var $elm$core$String$contains = _String_contains;
 var $elm$url$Url$chompBeforePath = F5(
 	function (protocol, path, params, frag, str) {
 		if ($elm$core$String$isEmpty(str) || A2($elm$core$String$contains, '@', str)) {
@@ -8158,11 +8813,19 @@ var $elm$url$Url$fromString = function (str) {
 		A2($elm$core$String$dropLeft, 8, str)) : $elm$core$Maybe$Nothing);
 };
 var $elm$browser$Browser$document = _Browser_document;
-var $author$project$Main$copyResult = _Platform_incomingPort('copyResult', $elm$json$Json$Decode$bool);
-var $elm$json$Json$Decode$int = _Json_decodeInt;
+var $author$project$Main$LoadTheme = function (a) {
+	return {$: 8, a: a};
+};
 var $elm$json$Json$Decode$null = _Json_decodeNull;
-var $elm$json$Json$Decode$oneOf = _Json_oneOf;
-var $elm$json$Json$Decode$andThen = _Json_andThen;
+var $author$project$Main$themeFile = _Platform_incomingPort(
+	'themeFile',
+	$elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+			])));
+var $author$project$Main$copyResult = _Platform_incomingPort('copyResult', $elm$json$Json$Decode$bool);
 var $author$project$Main$previewResult = _Platform_incomingPort(
 	'previewResult',
 	A2(
@@ -8172,7 +8835,7 @@ var $author$project$Main$previewResult = _Platform_incomingPort(
 				$elm$json$Json$Decode$andThen,
 				function (url) {
 					return $elm$json$Json$Decode$succeed(
-						{ap: url, X: request});
+						{ar: url, Z: request});
 				},
 				A2(
 					$elm$json$Json$Decode$field,
@@ -8186,31 +8849,32 @@ var $author$project$Main$previewResult = _Platform_incomingPort(
 		},
 		A2($elm$json$Json$Decode$field, 'request', $elm$json$Json$Decode$int)));
 var $author$project$Main$PreviewPrepared = function (a) {
-	return {$: 11, a: a};
+	return {$: 16, a: a};
 };
 var $author$project$Main$main = $elm$browser$Browser$document(
 	{
-		aU: function (_v0) {
+		a3: function (_v0) {
 			return _Utils_Tuple2(
-				{F: '', T: $elm$core$Maybe$Nothing, j: $author$project$Main$NotRequested, r: '', I: true, D: 0, J: true, K: false, x: 0},
+				{G: '', T: $elm$core$Maybe$Nothing, j: $author$project$Main$NotRequested, s: '', J: true, o: 1, K: $author$project$DiagramTheme$classic, L: true, D: '', V: false, E: 'classic', x: 0},
 				$elm$core$Platform$Cmd$none);
 		},
-		aY: function (model) {
+		a7: function (model) {
 			return {
-				aS: _List_fromArray(
+				a1: _List_fromArray(
 					[
 						$author$project$Main$view(model)
 					]),
-				a_: 'PlantUML Sequence Diagram Generator'
+				a9: 'Sequence Diagram Generator'
 			};
 		},
-		a3: $author$project$Main$update,
-		bf: function (_v1) {
+		be: $author$project$Main$update,
+		bq: function (_v1) {
 			return $elm$core$Platform$Sub$batch(
 				_List_fromArray(
 					[
 						$author$project$Main$copyResult($author$project$Main$Copied),
-						$author$project$Main$previewResult($author$project$Main$PreviewPrepared)
+						$author$project$Main$previewResult($author$project$Main$PreviewPrepared),
+						$author$project$Main$themeFile($author$project$Main$LoadTheme)
 					]));
 		}
 	});

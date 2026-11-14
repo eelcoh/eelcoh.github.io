@@ -2,13 +2,20 @@ port module Main exposing (main)
 
 import Browser
 import Diagram
-import Html exposing (Html, a, button, code, div, h1, h2, header, img, input, label, main_, p, pre, section, span, text, textarea)
-import Html.Attributes exposing (alt, attribute, checked, class, disabled, for, hidden, href, id, placeholder, spellcheck, src, type_, value)
+import DiagramTheme exposing (Theme)
+import Html exposing (Html, a, button, code, details, div, h1, h2, header, img, input, label, li, main_, option, p, pre, section, select, span, summary, text, textarea, ul)
+import Html.Attributes exposing (alt, attribute, checked, class, disabled, for, hidden, href, id, placeholder, selected, spellcheck, src, type_, value)
 import Html.Events exposing (on, onCheck, onClick, onInput)
 import Json.Decode as Decode
 import SequenceDiagram.Model exposing (Sequence)
 import SequenceDiagram.Parser exposing (parse)
 import SequenceDiagram.Renderer exposing (toPlantUml)
+
+
+port saveTheme : String -> Cmd msg
+
+
+port themeFile : (Maybe String -> msg) -> Sub msg
 
 
 port copyOutput : String -> Cmd msg
@@ -48,6 +55,9 @@ type alias Model =
     , diagram : Maybe (Result String Sequence)
     , showReturns : Bool
     , includeTheme : Bool
+    , diagramPreset : String
+    , customTheme : Theme
+    , themeStatus : String
     , copyStatus : String
     , outputMode : OutputMode
     , fitDiagram : Bool
@@ -59,8 +69,13 @@ type alias Model =
 type Msg
     = Edit String
     | LoadExample
+    | LoadSyntaxExample
     | ShowReturns Bool
     | IncludeTheme Bool
+    | SelectDiagramTheme String
+    | EditTheme Theme
+    | SaveTheme
+    | LoadTheme (Maybe String)
     | Copy String
     | Copied Bool
     | SetOutputMode OutputMode
@@ -82,8 +97,11 @@ main =
                   , diagram = Nothing
                   , showReturns = True
                   , includeTheme = False
+                  , diagramPreset = "classic"
+                  , customTheme = DiagramTheme.classic
+                  , themeStatus = ""
                   , copyStatus = ""
-                  , outputMode = Code
+                  , outputMode = Diagram
                   , fitDiagram = True
                   , preview = NotRequested
                   , previewRequest = 0
@@ -91,8 +109,8 @@ main =
                 , Cmd.none
                 )
         , update = update
-        , view = \model -> { title = "PlantUML Sequence Diagram Generator", body = [ view model ] }
-        , subscriptions = \_ -> Sub.batch [ copyResult Copied, previewResult PreviewPrepared ]
+        , view = \model -> { title = "Sequence Diagram Generator", body = [ view model ] }
+        , subscriptions = \_ -> Sub.batch [ copyResult Copied, previewResult PreviewPrepared, themeFile LoadTheme ]
         }
 
 
@@ -117,11 +135,31 @@ update msg model =
         LoadExample ->
             update (Edit example) model
 
+        LoadSyntaxExample ->
+            update (Edit syntaxExample) model
+
         ShowReturns enabled ->
             ( { model | showReturns = enabled, copyStatus = "", preview = NotRequested }, Cmd.none )
 
         IncludeTheme enabled ->
             ( { model | includeTheme = enabled, copyStatus = "", preview = NotRequested }, Cmd.none )
+
+        SelectDiagramTheme preset ->
+            ( { model | diagramPreset = preset, themeStatus = "" }, Cmd.none )
+
+        EditTheme theme ->
+            ( { model | customTheme = theme, themeStatus = "" }, Cmd.none )
+
+        SaveTheme ->
+            ( model, saveTheme (DiagramTheme.encode (diagramTheme model)) )
+
+        LoadTheme contents ->
+            case Maybe.andThen (DiagramTheme.decode >> Result.toMaybe) contents of
+                Just theme ->
+                    ( { model | diagramPreset = "custom", customTheme = theme, themeStatus = "Theme loaded." }, Cmd.none )
+
+                Nothing ->
+                    ( { model | themeStatus = "Could not load theme. Choose a valid theme JSON file." }, Cmd.none )
 
         Copy output ->
             ( { model | copyStatus = "" }, copyOutput output )
@@ -198,14 +236,14 @@ view model =
         [ header [ class "site-header" ]
             [ span [ class "brand" ]
                 [ span [ class "brand-icon", attribute "aria-hidden" "true" ] [ text "⇄" ]
-                , text "PlantUML"
+                , text "Sequence diagrams"
                 ]
             , a [ href "https://github.com/eelcoh/plantuml-generator" ] [ text "View on GitHub ↗" ]
             ]
         , main_ []
             [ div [ class "intro" ]
                 [ h1 [] [ text "Sequence diagram", span [] [ text " generator" ] ]
-                , p [] [ text "Describe a sequence with indented text and get PlantUML code as you type." ]
+                , p [] [ text "Describe a sequence with indented text and see the diagram as you type." ]
                 ]
             , div [ class "workbench" ]
                 [ section [ class "panel", attribute "aria-labelledby" "source-heading" ]
@@ -214,29 +252,57 @@ view model =
                         , button [ class "example-button", onClick LoadExample ] [ text "Load example" ]
                         ]
                     , editor model.source
+                    , syntaxHelp
                     ]
                 , section [ class "panel", attribute "aria-labelledby" "output-heading" ]
                     [ div [ class "panel-header output-header" ]
-                        [ h2 [ id "output-heading" ] [ text "PlantUML output" ]
+                        [ h2 [ id "output-heading" ] [ text "Preview" ]
                         , div [ class "output-actions" ]
-                            [ div [ class "output-toggle", attribute "role" "group", attribute "aria-label" "Output view" ]
-                                [ modeButton model.outputMode Code "Code"
-                                , modeButton model.outputMode Diagram "Diagram"
-                                , modeButton model.outputMode ServerPreview "PlantUML preview"
-                                ]
-                            , button [ disabled (output == Nothing), onClick (Copy (Maybe.withDefault "" output)) ] [ text "Copy code" ]
+                            [ if model.outputMode == Diagram && output /= Nothing then
+                                div [ class "diagram-tools", attribute "role" "group", attribute "aria-label" "Diagram controls" ]
+                                    [ button
+                                        [ onClick ToggleDiagramFit
+                                        , attribute "aria-pressed" (if model.fitDiagram then "true" else "false")
+                                        ]
+                                        [ text "Fit to panel" ]
+                                    , button [ onClick DownloadDiagram ] [ text "Download SVG" ]
+                                    , button [ onClick OpenDiagramViewer ] [ text "Full screen" ]
+                                    ]
+
+                              else
+                                text ""
+                            , modeButton model.outputMode Diagram "Diagram"
                             ]
                         ]
                     , outputView model output
+                    , div [ class "output-footer" ]
+                        [ details [ class "plantuml-menu" ]
+                            [ summary [] [ text "PlantUML" ]
+                            , div [ class "plantuml-actions" ]
+                                [ modeButton model.outputMode Code "View code"
+                                , modeButton model.outputMode ServerPreview "Preview on server"
+                                , button [ disabled (output == Nothing), onClick (Copy (Maybe.withDefault "" output)) ] [ text "Copy code" ]
+                                ]
+                            ]
+                        ]
                     ]
                 ]
             , div [ class "settings" ]
                 [ div [ class "options" ]
                     [ checkbox "Show return arrows" model.showReturns ShowReturns
-                    , checkbox "Include monochrome theme" model.includeTheme IncludeTheme
+                    , if model.outputMode == Diagram then
+                        text ""
+
+                      else
+                        checkbox "Include monochrome theme" model.includeTheme IncludeTheme
                     ]
                 , p [ class "copy-status", attribute "role" "status" ] [ text model.copyStatus ]
                 ]
+            , if model.outputMode == Diagram then
+                themeSettings model
+
+              else
+                text ""
             , p [ id "editor-shortcuts", class "editor-shortcuts" ]
                 [ text "Tab indents. Shift+Tab outdents. Press Esc then Tab to leave the editor." ]
             ]
@@ -259,10 +325,33 @@ editor source =
             , attribute "autocapitalize" "off"
             , attribute "aria-describedby" "editor-shortcuts"
             , attribute "wrap" "off"
-            , placeholder "sequence user\n    browser: open dashboard\n        api: load data"
+            , placeholder "Type a sequence or choose Load example."
             ]
             []
         ]
+
+
+syntaxHelp : Html Msg
+syntaxHelp =
+    details [ class "syntax-help" ]
+        [ summary [] [ text "Syntax help" ]
+        , ul []
+            [ li [] [ text "Start with ", code [] [ text "sequence NAME" ], text " to name the first participant." ]
+            , li [] [ text "Indent a line and write ", code [] [ text "NAME: message" ], text " to send a message." ]
+            , li [] [ text "Indent again for a nested call. Line up sibling calls at the same level." ]
+            , li [] [ text "Put ", code [] [ text "[async]" ], text " after the name to omit the return arrow." ]
+            ]
+        , pre [] [ code [] [ text syntaxExample ] ]
+        , button [ onClick LoadSyntaxExample ] [ text "Load syntax example" ]
+        ]
+
+
+syntaxExample : String
+syntaxExample =
+    """sequence user
+    browser: open dashboard
+        api: load data
+        audit [async]: record visit"""
 
 
 highlightLine : String -> List (Html Msg)
@@ -335,23 +424,12 @@ outputView model output =
                     pre [ class "output-code", attribute "tabindex" "0" ] [ code [] [ text source ] ]
 
                 Diagram ->
-                    div [ class "local-diagram-output" ]
-                        [ div [ class "diagram-tools" ]
-                            [ button
-                                [ onClick ToggleDiagramFit
-                                , attribute "aria-pressed" (if model.fitDiagram then "true" else "false")
-                                ]
-                                [ text "Fit to panel" ]
-                            , button [ onClick DownloadDiagram ] [ text "Download SVG" ]
-                            , button [ onClick OpenDiagramViewer ] [ text "Full screen" ]
-                            ]
-                        , div
-                            [ class (if model.fitDiagram then "diagram-preview local-diagram diagram-fit" else "diagram-preview local-diagram")
-                            , attribute "tabindex" "0"
-                            , attribute "aria-label" "Diagram preview"
-                            ]
-                            [ Diagram.view model.showReturns model.includeTheme sequence ]
+                    div
+                        [ class (if model.fitDiagram then "diagram-preview local-diagram diagram-fit" else "diagram-preview local-diagram")
+                        , attribute "tabindex" "0"
+                        , attribute "aria-label" "Diagram preview"
                         ]
+                        [ Diagram.view model.showReturns (diagramTheme model) sequence ]
 
                 ServerPreview ->
                     previewView model.previewRequest model.preview source
@@ -361,9 +439,7 @@ outputView model output =
 
         _ ->
             div [ class "output-message" ]
-                [ code [ attribute "aria-hidden" "true" ] [ text "@startuml" ]
-                , p [] [ text "Enter a sequence or load the example to see the generated code." ]
-                ]
+                [ p [] [ text "Enter a sequence or load the example to see the preview." ] ]
 
 
 previewView : Int -> Preview -> String -> Html Msg
@@ -410,6 +486,92 @@ previewView request preview source =
 
         Failed ->
             prompt "Could not load the diagram." "Try again"
+
+
+diagramTheme : Model -> Theme
+diagramTheme model =
+    case model.diagramPreset of
+        "monochrome" ->
+            DiagramTheme.monochrome
+
+        "inverse-monochrome" ->
+            DiagramTheme.inverseMonochrome
+
+        "dark" ->
+            DiagramTheme.dark
+
+        "high-contrast-black" ->
+            DiagramTheme.highContrastBlack
+
+        "custom" ->
+            model.customTheme
+
+        _ ->
+            DiagramTheme.classic
+
+
+themeSettings : Model -> Html Msg
+themeSettings model =
+    let
+        theme =
+            model.customTheme
+
+        colorPicker caption current setColor =
+            label []
+                [ text caption
+                , input [ type_ "color", value current, onInput (setColor >> EditTheme) ] []
+                ]
+    in
+    section [ class "theme-settings", attribute "aria-label" "Diagram theme settings" ]
+        [ div [ class "theme-controls" ]
+            [ themeSelect "Diagram theme" model.diagramPreset SelectDiagramTheme
+                [ ( "classic", "Classic" )
+                , ( "monochrome", "Monochrome" )
+                , ( "inverse-monochrome", "Inverse monochrome" )
+                , ( "dark", "Dark" )
+                , ( "high-contrast-black", "High Contrast Black" )
+                , ( "custom", "Custom" )
+                ]
+            , button [ onClick SaveTheme ] [ text "Download theme JSON" ]
+            , label [ class "theme-file-label" ]
+                [ text "Load theme JSON"
+                , input [ id "theme-file", type_ "file", attribute "accept" ".json,application/json" ] []
+                ]
+            ]
+        , if model.diagramPreset == "custom" then
+            div [ class "theme-custom" ]
+                [ colorPicker "Background" theme.background (\color -> { theme | background = color })
+                , colorPicker "Text and arrows" theme.text (\color -> { theme | text = color })
+                , colorPicker "Participants" theme.participant (\color -> { theme | participant = color })
+                , colorPicker "Participant outline" theme.participantBorder (\color -> { theme | participantBorder = color })
+                , colorPicker "Participant labels" theme.participantText (\color -> { theme | participantText = color })
+                , colorPicker "Activations" theme.activation (\color -> { theme | activation = color })
+                , colorPicker "Lifelines" theme.lifeline (\color -> { theme | lifeline = color })
+                , colorPicker "Activation border" theme.activationBorder (\color -> { theme | activationBorder = color })
+                , themeSelect "Font" theme.font (\font -> EditTheme { theme | font = font }) DiagramTheme.fonts
+                , label []
+                    [ text ("Participant corner radius (" ++ String.fromInt theme.radius ++ " px)")
+                    , input
+                        [ type_ "range", attribute "min" "0", attribute "max" "19", value (String.fromInt theme.radius)
+                        , onInput (\radius -> EditTheme { theme | radius = Maybe.withDefault theme.radius (String.toInt radius) })
+                        ]
+                        []
+                    ]
+                ]
+
+          else
+            text ""
+        , p [ class "theme-status", attribute "role" "status" ] [ text model.themeStatus ]
+        ]
+
+
+themeSelect : String -> String -> (String -> Msg) -> List ( String, String ) -> Html Msg
+themeSelect caption current toMsg choices =
+    label []
+        [ text caption
+        , select [ onInput toMsg ]
+            (List.map (\( key, name ) -> option [ value key, selected (key == current) ] [ text name ]) choices)
+        ]
 
 
 checkbox : String -> Bool -> (Bool -> Msg) -> Html Msg

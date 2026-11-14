@@ -30,15 +30,36 @@ function saveDiagram(svg) {
     exported.prepend(background);
 
     const xml = new XMLSerializer().serializeToString(exported);
-    const url = URL.createObjectURL(new Blob([xml], { type: 'image/svg+xml;charset=utf-8' }));
+    downloadFile(xml, 'image/svg+xml;charset=utf-8', 'sequence-diagram.svg');
+}
+
+function downloadFile(contents, type, filename) {
+    const url = URL.createObjectURL(new Blob([contents], { type }));
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'sequence-diagram.svg';
+    link.download = filename;
     document.body.append(link);
     link.click();
     link.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
+
+app.ports.saveTheme.subscribe(contents => {
+    downloadFile(contents, 'application/json;charset=utf-8', 'sequence-theme.json');
+});
+
+document.addEventListener('change', async event => {
+    if (event.target.id !== 'theme-file') return;
+    const file = event.target.files[0];
+    if (!file) return;
+
+    try {
+        app.ports.themeFile.send(await file.text());
+    } catch {
+        app.ports.themeFile.send(null);
+    }
+    event.target.value = '';
+});
 
 app.ports.copyOutput.subscribe(async (output) => {
     try {

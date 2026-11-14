@@ -1,5 +1,6 @@
 module Diagram exposing (view)
 
+import DiagramTheme exposing (Theme)
 import Dict exposing (Dict)
 import Html exposing (Html)
 import Html.Attributes as Html
@@ -35,8 +36,8 @@ type alias Layout =
     { y : Int, messages : List Message, activations : List Activation }
 
 
-view : Bool -> Bool -> Sequence -> Html msg
-view showReturns monochrome (Sequence initiator steps) =
+view : Bool -> Theme -> Sequence -> Html msg
+view showReturns theme (Sequence initiator steps) =
     let
         root =
             Endpoint initiator 0
@@ -81,14 +82,15 @@ view showReturns monochrome (Sequence initiator steps) =
             layout.y + 12
     in
     Svg.svg
-        [ A.class (if monochrome then "sequence-svg sequence-monochrome" else "sequence-svg")
+        [ A.class "sequence-svg"
+        , A.style (DiagramTheme.styles theme |> List.map (\( name, value ) -> name ++ ": " ++ value) |> String.join "; ")
         , intAttr A.width width
         , intAttr A.height height
         , A.viewBox ("0 0 " ++ String.fromInt width ++ " " ++ String.fromInt height)
         , Html.attribute "role" "img"
         , Html.attribute "aria-label" "Sequence diagram"
         ]
-        (List.map (drawParticipant columns (height - 20)) names
+        (List.map (drawParticipant theme.radius columns (height - 20)) names
             ++ List.map (drawActivation x) (List.sortBy .start activations)
             ++ List.map (drawMessage x) (List.reverse layout.messages)
         )
@@ -194,8 +196,8 @@ wrapCaption caption =
         String.left size caption :: wrapCaption (String.trimLeft (String.dropLeft size caption))
 
 
-drawParticipant : Dict String Int -> Int -> String -> Svg msg
-drawParticipant columns bottom name =
+drawParticipant : Int -> Dict String Int -> Int -> String -> Svg msg
+drawParticipant radius columns bottom name =
     let
         center =
             Dict.get name columns |> Maybe.withDefault columnInset
@@ -206,7 +208,7 @@ drawParticipant columns bottom name =
     Svg.g []
         [ Svg.title [] [ Svg.text name ]
         , line "sequence-lifeline" center 52 center bottom
-        , box "sequence-participant" (center - 67) 14 134 38 9
+        , box "sequence-participant" (center - 67) 14 134 38 radius
         , Svg.text_ [ A.class "sequence-name", intAttr A.x center, intAttr A.y 38, A.textAnchor "middle" ]
             [ Svg.text visibleName ]
         ]
@@ -214,7 +216,7 @@ drawParticipant columns bottom name =
 
 drawActivation : (Endpoint -> Int) -> Activation -> Svg msg
 drawActivation x activation =
-    box "sequence-activation" (x activation.endpoint - 5) activation.start 10 (max 4 (activation.end - activation.start)) 3
+    box "sequence-activation" (x activation.endpoint - 5) activation.start 10 (max 4 (activation.end - activation.start)) 0
 
 
 drawMessage : (Endpoint -> Int) -> Message -> Svg msg
@@ -263,7 +265,7 @@ drawMessage x message =
                     "sequence-arrow"
 
                 AsyncCall ->
-                    "sequence-arrow sequence-async"
+                    "sequence-arrow"
 
                 Return ->
                     "sequence-arrow sequence-return"
