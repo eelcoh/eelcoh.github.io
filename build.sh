@@ -1,6 +1,6 @@
 #!/bin/sh
 # Rebuild with the Elm version in elm.json.
-# Pass the generator checkout as the first argument if it is not next to this repo.
+# Pass the generator checkout as an argument or set SEQDIAGRAM_GENERATOR_DIR.
 set -eu
 
 site_dir=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
@@ -11,7 +11,11 @@ case "${1:-}" in
     --vscode) target=vscode; shift ;;
 esac
 
-generator_dir=${1:-"$site_dir/../plantuml-generator"}
+generator_dir=${1:-"${SEQDIAGRAM_GENERATOR_DIR:-"$site_dir/../plantuml-generator"}"}
+if [ ! -d "$generator_dir/src/SequenceDiagram" ]; then
+    echo "SequenceDiagram sources not found in $generator_dir. Set SEQDIAGRAM_GENERATOR_DIR to the plantuml-generator checkout." >&2
+    exit 1
+fi
 build_dir=$(mktemp -d)
 trap 'rm -rf "$build_dir"' EXIT
 

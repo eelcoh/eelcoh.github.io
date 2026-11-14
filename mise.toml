@@ -1,0 +1,30 @@
+[tools]
+node = "26.13.1"
+"github:elm/compiler" = "0.19.3"
+"npm:@vscode/vsce" = "3.9.2"
+python = "3.15.2"
+
+[tasks.build]
+description = "Build the website, standalone CLI, and VS Code extension"
+depends = ["build:web", "build:cli", "build:vscode"]
+
+[tasks."build:web"]
+description = "Compile the website to main.js"
+run = "./build.sh"
+
+[tasks."build:cli"]
+description = "Build the standalone CLI for this platform"
+run = "./build.sh --cli"
+
+[tasks."build:cli-js"]
+description = "Build the Node.js version of the CLI"
+run = "./build.sh --cli-js"
+
+[tasks."build:vscode"]
+description = "Package the VS Code extension as a VSIX"
+run = "./build.sh --vscode"
+
+[tasks.serve]
+description = "Build the website and serve it on localhost:8000"
+depends = ["build:web"]
+run = 'python -m http.server "${SEQDIAGRAM_PORT:-8000}" --bind 127.0.0.1'
