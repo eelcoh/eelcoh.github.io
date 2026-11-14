@@ -8,6 +8,11 @@ import Svg exposing (Svg)
 import Svg.Attributes as A
 
 
+columnInset : Int
+columnInset =
+    86
+
+
 type alias Endpoint =
     { participant : String, depth : Int }
 
@@ -38,11 +43,11 @@ view showReturns monochrome (Sequence initiator steps) =
 
         layout =
             List.foldl (placeStep showReturns root (Dict.singleton initiator 0))
-                { y = 114, messages = [], activations = [] }
+                { y = 94, messages = [], activations = [] }
                 steps
 
         activations =
-            Activation root 68 (layout.y - 12) :: layout.activations
+            Activation root 58 (layout.y - 12) :: layout.activations
 
         names =
             unique (initiator :: List.concatMap stepNames steps)
@@ -51,26 +56,26 @@ view showReturns monochrome (Sequence initiator steps) =
             8 * List.foldl (\bar largest -> max largest bar.endpoint.depth) 0 activations
 
         columnGap =
-            248 + depthPadding
+            182 + depthPadding
 
         columns =
-            Dict.fromList (List.indexedMap (\index name -> ( name, 112 + index * columnGap )) names)
+            Dict.fromList (List.indexedMap (\index name -> ( name, columnInset + index * columnGap )) names)
 
         x endpoint =
-            Dict.get endpoint.participant columns |> Maybe.withDefault 112 |> (+) (8 * endpoint.depth)
+            Dict.get endpoint.participant columns |> Maybe.withDefault columnInset |> (+) (8 * endpoint.depth)
 
         lastParticipant =
             List.reverse names |> List.head |> Maybe.withDefault initiator
 
         rightPadding =
             if List.any (\message -> message.from.participant == message.to.participant && message.to.participant == lastParticipant) layout.messages then
-                254
+                226
 
             else
-                112
+                columnInset
 
         width =
-            112 + (List.length names - 1) * columnGap + rightPadding + depthPadding
+            columnInset + (List.length names - 1) * columnGap + rightPadding + depthPadding
 
         height =
             layout.y + 12
@@ -133,7 +138,7 @@ placeStep showReturns caller depths (Step name options caption children) layout 
 
         called =
             { layout
-                | y = y + loopHeight + 46
+                | y = y + loopHeight + 36
                 , messages = Message caller callee labels y (if asynchronous then AsyncCall else Call) :: layout.messages
             }
 
@@ -143,7 +148,7 @@ placeStep showReturns caller depths (Step name options caption children) layout 
         finished =
             if showReturns && not asynchronous then
                 { afterChildren
-                    | y = afterChildren.y + loopHeight + 46
+                    | y = afterChildren.y + loopHeight + 36
                     , messages = Message callee caller [] afterChildren.y Return :: afterChildren.messages
                 }
 
@@ -155,7 +160,7 @@ placeStep showReturns caller depths (Step name options caption children) layout 
                 afterChildren.y + loopHeight
 
             else
-                afterChildren.y - 20
+                afterChildren.y - 14
     in
     { finished | activations = Activation callee (y + loopHeight) activationEnd :: finished.activations }
 
@@ -168,7 +173,7 @@ wrapCaption caption =
     else
         let
             limit =
-                25
+                19
 
             prefix =
                 String.left (limit + 1) caption
@@ -193,16 +198,16 @@ drawParticipant : Dict String Int -> Int -> String -> Svg msg
 drawParticipant columns bottom name =
     let
         center =
-            Dict.get name columns |> Maybe.withDefault 112
+            Dict.get name columns |> Maybe.withDefault columnInset
 
         visibleName =
-            if String.length name > 21 then String.left 20 name ++ "…" else name
+            if String.length name > 16 then String.left 15 name ++ "…" else name
     in
     Svg.g []
         [ Svg.title [] [ Svg.text name ]
-        , line "sequence-lifeline" center 58 center bottom
-        , box "sequence-participant" (center - 84) 18 168 40 11
-        , Svg.text_ [ A.class "sequence-name", intAttr A.x center, intAttr A.y 43, A.textAnchor "middle" ]
+        , line "sequence-lifeline" center 52 center bottom
+        , box "sequence-participant" (center - 67) 14 134 38 9
+        , Svg.text_ [ A.class "sequence-name", intAttr A.x center, intAttr A.y 38, A.textAnchor "middle" ]
             [ Svg.text visibleName ]
         ]
 
@@ -240,7 +245,7 @@ drawMessage x message =
             if self then y + 22 else y
 
         tailX =
-            end + (if self then 8 else -direction * 8)
+            end + (if self then 9 else -direction * 9)
 
         turnX =
             max start end + 42
@@ -252,8 +257,16 @@ drawMessage x message =
             else
                 (start + end) // 2
 
-        strokeClass =
-            if message.arrow == Return then "sequence-arrow sequence-return" else "sequence-arrow"
+        arrowClass =
+            case message.arrow of
+                Call ->
+                    "sequence-arrow"
+
+                AsyncCall ->
+                    "sequence-arrow sequence-async"
+
+                Return ->
+                    "sequence-arrow sequence-return"
 
         points =
             if self then
@@ -263,15 +276,15 @@ drawMessage x message =
                 [ ( start, y ), ( end, y ) ]
 
         head =
-            [ ( tailX, tipY - 4 ), ( end, tipY ), ( tailX, tipY + 4 ) ]
+            [ ( tailX, tipY - 5 ), ( end, tipY ), ( tailX, tipY + 5 ) ]
     in
     Svg.g []
-        ([ Svg.polyline [ A.class strokeClass, A.points (svgPoints points) ] []
+        ([ Svg.polyline [ A.class arrowClass, A.points (svgPoints points) ] []
          , if message.arrow == Call then
             Svg.polygon [ A.class "sequence-arrowhead", A.points (svgPoints head) ] []
 
            else
-            Svg.polyline [ A.class "sequence-arrow", A.points (svgPoints head) ] []
+            Svg.polyline [ A.class (arrowClass ++ " sequence-open-head"), A.points (svgPoints head) ] []
          ]
             ++ List.indexedMap
                 (\index caption ->

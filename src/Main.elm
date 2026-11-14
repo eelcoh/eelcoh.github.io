@@ -17,6 +17,9 @@ port copyOutput : String -> Cmd msg
 port downloadDiagram : () -> Cmd msg
 
 
+port openDiagramViewer : () -> Cmd msg
+
+
 port copyResult : (Bool -> msg) -> Sub msg
 
 
@@ -63,6 +66,7 @@ type Msg
     | SetOutputMode OutputMode
     | ToggleDiagramFit
     | DownloadDiagram
+    | OpenDiagramViewer
     | RenderPreview String
     | PreviewPrepared { request : Int, url : Maybe String }
     | PreviewLoaded Int String
@@ -142,6 +146,9 @@ update msg model =
 
         DownloadDiagram ->
             ( model, downloadDiagram () )
+
+        OpenDiagramViewer ->
+            ( model, openDiagramViewer () )
 
         RenderPreview source ->
             let
@@ -336,6 +343,7 @@ outputView model output =
                                 ]
                                 [ text "Fit to panel" ]
                             , button [ onClick DownloadDiagram ] [ text "Download SVG" ]
+                            , button [ onClick OpenDiagramViewer ] [ text "Full screen" ]
                             ]
                         , div
                             [ class (if model.fitDiagram then "diagram-preview local-diagram diagram-fit" else "diagram-preview local-diagram")

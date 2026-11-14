@@ -5728,7 +5728,7 @@ var $author$project$Diagram$wrapCaption = function (caption) {
 	if ($elm$core$String$isEmpty(caption)) {
 		return _List_Nil;
 	} else {
-		var limit = 25;
+		var limit = 19;
 		var prefix = A2($elm$core$String$left, limit + 1, caption);
 		var boundary = A2(
 			$elm$core$Maybe$withDefault,
@@ -5769,7 +5769,7 @@ var $author$project$Diagram$placeStep = F5(
 		var called = _Utils_update(
 			layout,
 			{
-				i: (y + loopHeight) + 46,
+				i: (y + loopHeight) + 36,
 				u: A2(
 					$elm$core$List$cons,
 					A5(
@@ -5793,13 +5793,13 @@ var $author$project$Diagram$placeStep = F5(
 		var finished = (showReturns && (!asynchronous)) ? _Utils_update(
 			afterChildren,
 			{
-				i: (afterChildren.i + loopHeight) + 46,
+				i: (afterChildren.i + loopHeight) + 36,
 				u: A2(
 					$elm$core$List$cons,
 					A5($author$project$Diagram$Message, callee, caller, _List_Nil, afterChildren.i, 2),
 					afterChildren.u)
 			}) : afterChildren;
-		var activationEnd = (showReturns && (!asynchronous)) ? (afterChildren.i + loopHeight) : (afterChildren.i - 20);
+		var activationEnd = (showReturns && (!asynchronous)) ? (afterChildren.i + loopHeight) : (afterChildren.i - 14);
 		return _Utils_update(
 			finished,
 			{
@@ -5821,6 +5821,7 @@ var $author$project$Diagram$stepNames = function (_v0) {
 		name,
 		A2($elm$core$List$concatMap, $author$project$Diagram$stepNames, children));
 };
+var $author$project$Diagram$columnInset = 86;
 var $elm$svg$Svg$g = $elm$svg$Svg$trustedNode('g');
 var $elm$svg$Svg$Attributes$x = _VirtualDom_attribute('x');
 var $elm$svg$Svg$Attributes$y = _VirtualDom_attribute('y');
@@ -5842,7 +5843,17 @@ var $author$project$Diagram$svgPoints = A2(
 var $elm$svg$Svg$Attributes$textAnchor = _VirtualDom_attribute('text-anchor');
 var $author$project$Diagram$drawMessage = F2(
 	function (x, message) {
-		var strokeClass = (message.Y === 2) ? 'sequence-arrow sequence-return' : 'sequence-arrow';
+		var arrowClass = function () {
+			var _v0 = message.Y;
+			switch (_v0) {
+				case 0:
+					return 'sequence-arrow';
+				case 1:
+					return 'sequence-arrow sequence-async';
+				default:
+					return 'sequence-arrow sequence-return';
+			}
+		}();
 		var self = _Utils_eq(message.V.w, message.L.w);
 		var from = x(message.V);
 		var to = x(message.L);
@@ -5851,14 +5862,14 @@ var $author$project$Diagram$drawMessage = F2(
 		var start = from + (self ? 5 : (direction * 5));
 		var turnX = A2($elm$core$Basics$max, start, end) + 42;
 		var captionX = self ? (turnX - 18) : (((start + end) / 2) | 0);
-		var tailX = end + (self ? 8 : ((-direction) * 8));
+		var tailX = end + (self ? 9 : ((-direction) * 9));
 		var y = message.i;
 		var tipY = self ? (y + 22) : y;
 		var head = _List_fromArray(
 			[
-				_Utils_Tuple2(tailX, tipY - 4),
+				_Utils_Tuple2(tailX, tipY - 5),
 				_Utils_Tuple2(end, tipY),
-				_Utils_Tuple2(tailX, tipY + 4)
+				_Utils_Tuple2(tailX, tipY + 5)
 			]);
 		var points = self ? _List_fromArray(
 			[
@@ -5881,7 +5892,7 @@ var $author$project$Diagram$drawMessage = F2(
 						$elm$svg$Svg$polyline,
 						_List_fromArray(
 							[
-								$elm$svg$Svg$Attributes$class(strokeClass),
+								$elm$svg$Svg$Attributes$class(arrowClass),
 								$elm$svg$Svg$Attributes$points(
 								$author$project$Diagram$svgPoints(points))
 							]),
@@ -5898,7 +5909,7 @@ var $author$project$Diagram$drawMessage = F2(
 						$elm$svg$Svg$polyline,
 						_List_fromArray(
 							[
-								$elm$svg$Svg$Attributes$class('sequence-arrow'),
+								$elm$svg$Svg$Attributes$class(arrowClass + ' sequence-open-head'),
 								$elm$svg$Svg$Attributes$points(
 								$author$project$Diagram$svgPoints(head))
 							]),
@@ -5978,10 +5989,10 @@ var $author$project$Diagram$line = F5(
 var $elm$svg$Svg$title = $elm$svg$Svg$trustedNode('title');
 var $author$project$Diagram$drawParticipant = F3(
 	function (columns, bottom, name) {
-		var visibleName = ($elm$core$String$length(name) > 21) ? (A2($elm$core$String$left, 20, name) + '…') : name;
+		var visibleName = ($elm$core$String$length(name) > 16) ? (A2($elm$core$String$left, 15, name) + '…') : name;
 		var center = A2(
 			$elm$core$Maybe$withDefault,
-			112,
+			$author$project$Diagram$columnInset,
 			A2($elm$core$Dict$get, name, columns));
 		return A2(
 			$elm$svg$Svg$g,
@@ -5995,15 +6006,15 @@ var $author$project$Diagram$drawParticipant = F3(
 						[
 							$elm$svg$Svg$text(name)
 						])),
-					A5($author$project$Diagram$line, 'sequence-lifeline', center, 58, center, bottom),
-					A6($author$project$Diagram$box, 'sequence-participant', center - 84, 18, 168, 40, 11),
+					A5($author$project$Diagram$line, 'sequence-lifeline', center, 52, center, bottom),
+					A6($author$project$Diagram$box, 'sequence-participant', center - 67, 14, 134, 38, 9),
 					A2(
 					$elm$svg$Svg$text_,
 					_List_fromArray(
 						[
 							$elm$svg$Svg$Attributes$class('sequence-name'),
 							A2($author$project$Diagram$intAttr, $elm$svg$Svg$Attributes$x, center),
-							A2($author$project$Diagram$intAttr, $elm$svg$Svg$Attributes$y, 43),
+							A2($author$project$Diagram$intAttr, $elm$svg$Svg$Attributes$y, 38),
 							$elm$svg$Svg$Attributes$textAnchor('middle')
 						]),
 					_List_fromArray(
@@ -6034,7 +6045,7 @@ var $author$project$Diagram$view = F3(
 				showReturns,
 				root,
 				A2($elm$core$Dict$singleton, initiator, 0)),
-			{i: 114, u: _List_Nil, U: _List_Nil},
+			{i: 94, u: _List_Nil, U: _List_Nil},
 			steps);
 		var height = layout.i + 12;
 		var rightPadding = A2(
@@ -6042,10 +6053,10 @@ var $author$project$Diagram$view = F3(
 			function (message) {
 				return _Utils_eq(message.V.w, message.L.w) && _Utils_eq(message.L.w, lastParticipant);
 			},
-			layout.u) ? 254 : 112;
+			layout.u) ? 226 : $author$project$Diagram$columnInset;
 		var activations = A2(
 			$elm$core$List$cons,
-			A3($author$project$Diagram$Activation, root, 68, layout.i - 12),
+			A3($author$project$Diagram$Activation, root, 58, layout.i - 12),
 			layout.U);
 		var depthPadding = 8 * A3(
 			$elm$core$List$foldl,
@@ -6055,20 +6066,20 @@ var $author$project$Diagram$view = F3(
 				}),
 			0,
 			activations);
-		var columnGap = 248 + depthPadding;
-		var width = ((112 + (($elm$core$List$length(names) - 1) * columnGap)) + rightPadding) + depthPadding;
+		var columnGap = 182 + depthPadding;
+		var width = (($author$project$Diagram$columnInset + (($elm$core$List$length(names) - 1) * columnGap)) + rightPadding) + depthPadding;
 		var columns = $elm$core$Dict$fromList(
 			A2(
 				$elm$core$List$indexedMap,
 				F2(
 					function (index, name) {
-						return _Utils_Tuple2(name, 112 + (index * columnGap));
+						return _Utils_Tuple2(name, $author$project$Diagram$columnInset + (index * columnGap));
 					}),
 				names));
 		var x = function (endpoint) {
 			return (8 * endpoint.Z) + A2(
 				$elm$core$Maybe$withDefault,
-				112,
+				$author$project$Diagram$columnInset,
 				A2($elm$core$Dict$get, endpoint.w, columns));
 		};
 		return A2(
@@ -6114,14 +6125,14 @@ var $elm$html$Html$Attributes$src = function (url) {
 };
 var $elm$html$Html$Attributes$hidden = $elm$html$Html$Attributes$boolProperty('hidden');
 var $author$project$Main$PreviewFailed = function (a) {
-	return {$: 12, a: a};
+	return {$: 13, a: a};
 };
 var $author$project$Main$PreviewLoaded = F2(
 	function (a, b) {
-		return {$: 11, a: a, b: b};
+		return {$: 12, a: a, b: b};
 	});
 var $author$project$Main$RenderPreview = function (a) {
-	return {$: 9, a: a};
+	return {$: 10, a: a};
 };
 var $author$project$Main$previewView = F3(
 	function (request, preview, source) {
@@ -6239,6 +6250,7 @@ var $author$project$Main$previewView = F3(
 	});
 var $author$project$Main$DownloadDiagram = {$: 8};
 var $author$project$Main$ToggleDiagramFit = {$: 7};
+var $author$project$Main$OpenDiagramViewer = {$: 9};
 var $author$project$Main$outputView = F2(
 	function (model, output) {
 		var _v0 = _Utils_Tuple2(model.T, output);
@@ -6309,6 +6321,16 @@ var $author$project$Main$outputView = F2(
 													_List_fromArray(
 														[
 															$elm$html$Html$text('Download SVG')
+														])),
+													A2(
+													$elm$html$Html$button,
+													_List_fromArray(
+														[
+															$elm$html$Html$Events$onClick($author$project$Main$OpenDiagramViewer)
+														]),
+													_List_fromArray(
+														[
+															$elm$html$Html$text('Full screen')
 														]))
 												])),
 											A2(
@@ -7798,6 +7820,11 @@ var $author$project$Main$expandIndentTabs = F2(
 		}
 		return line;
 	});
+var $author$project$Main$openDiagramViewer = _Platform_outgoingPort(
+	'openDiagramViewer',
+	function ($) {
+		return $elm$json$Json$Encode$null;
+	});
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		update:
@@ -7878,6 +7905,10 @@ var $author$project$Main$update = F2(
 						model,
 						$author$project$Main$downloadDiagram(0));
 				case 9:
+					return _Utils_Tuple2(
+						model,
+						$author$project$Main$openDiagramViewer(0));
+				case 10:
 					var source = msg.a;
 					var request = model.x + 1;
 					return _Utils_Tuple2(
@@ -7886,7 +7917,7 @@ var $author$project$Main$update = F2(
 							{j: $author$project$Main$Preparing, x: request}),
 						$author$project$Main$preparePreview(
 							{F: source, X: request}));
-				case 10:
+				case 11:
 					var result = msg.a;
 					return (_Utils_eq(result.X, model.x) && _Utils_eq(model.j, $author$project$Main$Preparing)) ? _Utils_Tuple2(
 						_Utils_update(
@@ -7898,7 +7929,7 @@ var $author$project$Main$update = F2(
 									A2($elm$core$Maybe$map, $author$project$Main$Loading, result.ap))
 							}),
 						$elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-				case 11:
+				case 12:
 					var request = msg.a;
 					var url = msg.b;
 					return (_Utils_eq(request, model.x) && _Utils_eq(
@@ -8155,7 +8186,7 @@ var $author$project$Main$previewResult = _Platform_incomingPort(
 		},
 		A2($elm$json$Json$Decode$field, 'request', $elm$json$Json$Decode$int)));
 var $author$project$Main$PreviewPrepared = function (a) {
-	return {$: 10, a: a};
+	return {$: 11, a: a};
 };
 var $author$project$Main$main = $elm$browser$Browser$document(
 	{
