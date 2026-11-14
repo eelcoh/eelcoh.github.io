@@ -8,7 +8,8 @@ import Html.Attributes exposing (alt, attribute, checked, class, disabled, for, 
 import Html.Events exposing (on, onCheck, onClick, onInput)
 import Json.Decode as Decode
 import SequenceDiagram.Model exposing (Sequence)
-import SequenceDiagram.Parser exposing (parse)
+import SequenceInput exposing (parse)
+import Set exposing (Set)
 import SequenceDiagram.Renderer exposing (toPlantUml)
 
 
@@ -25,6 +26,9 @@ port downloadDiagram : () -> Cmd msg
 
 
 port openDiagramViewer : () -> Cmd msg
+
+
+port foldDiagram : (String -> msg) -> Sub msg
 
 
 port copyResult : (Bool -> msg) -> Sub msg
@@ -61,6 +65,8 @@ type alias Model =
     , copyStatus : String
     , outputMode : OutputMode
     , fitDiagram : Bool
+    , collapsed : Set String
+    , fixedDiagram : Bool
     , preview : Preview
     , previewRequest : Int
     }
@@ -80,6 +86,8 @@ type Msg
     | Copied Bool
     | SetOutputMode OutputMode
     | ToggleDiagramFit
+    | FoldDiagram String
+    | SetFixedDiagram Bool
     | DownloadDiagram
     | OpenDiagramViewer
     | RenderPreview String
@@ -103,6 +111,8 @@ main =
                   , copyStatus = ""
                   , outputMode = Diagram
                   , fitDiagram = True
+                  , collapsed = Set.empty
+                  , fixedDiagram = True
                   , preview = NotRequested
                   , previewRequest = 0
                   }
@@ -110,7 +120,7 @@ main =
                 )
         , update = update
         , view = \model -> { title = "Sequence Diagram Generator", body = [ view model ] }
-        , subscriptions = \_ -> Sub.batch [ copyResult Copied, previewResult PreviewPrepared, themeFile LoadTheme ]
+        , subscriptions = \_ -> Sub.batch [ copyResult Copied, previewResult PreviewPrepared, themeFile LoadTheme, foldDiagram FoldDiagram ]
         }
 
 
@@ -118,14 +128,18 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Edit source ->
-            ( { model
-                | source = source
-                , diagram =
+            let
+                diagram =
                     if String.isEmpty (String.trim source) then
                         Nothing
 
                     else
-                        Just (parse (String.join "\n" (List.map (expandIndentTabs 0) (String.lines source))))
+                        Just (parse source)
+            in
+            ( { model
+                | source = source
+                , diagram = diagram
+                , collapsed = if diagram == model.diagram then model.collapsed else Set.empty
                 , copyStatus = ""
                 , preview = NotRequested
               }
@@ -181,6 +195,28 @@ update msg model =
 
         ToggleDiagramFit ->
             ( { model | fitDiagram = not model.fitDiagram }, Cmd.none )
+
+        SetFixedDiagram enabled ->
+            ( { model | fixedDiagram = enabled }, Cmd.none )
+
+        FoldDiagram target ->
+            let
+                collapsed =
+                    case target of
+                        "expand" ->
+                            Set.empty
+
+                        "collapse" ->
+                            foldableCalls model
+
+                        path ->
+                            if Set.member path model.collapsed then
+                                Set.remove path model.collapsed
+
+                            else
+                                Set.insert path model.collapsed
+            in
+            ( { model | collapsed = collapsed }, Cmd.none )
 
         DownloadDiagram ->
             ( model, downloadDiagram () )
@@ -267,6 +303,7 @@ view model =
                                         [ text "Fit to panel" ]
                                     , button [ onClick DownloadDiagram ] [ text "Download SVG" ]
                                     , button [ onClick OpenDiagramViewer ] [ text "Full screen" ]
+
                                     ]
 
                               else
@@ -275,6 +312,35 @@ view model =
                             ]
                         ]
                     , outputView model output
+                    , if model.outputMode == Diagram && not (Set.isEmpty (foldableCalls model)) then
+                        div [ class "fold-settings" ]
+                            [ div [ class "diagram-tools" ]
+                                [ button [ onClick (FoldDiagram "collapse"), disabled (model.collapsed == foldableCalls model) ] [ text "Collapse all" ]
+                                , button [ onClick (FoldDiagram "expand"), disabled (Set.isEmpty model.collapsed) ] [ text "Expand all" ]
+                                , checkbox "Keep positions fixed" model.fixedDiagram SetFixedDiagram
+                                ]
+                            , details [ class "walkthrough-help" ]
+                                [ summary [] [ text "Walk through a flow" ]
+                                , p []
+                                    [ text "For a complex sequence, start with "
+                                    , Html.strong [] [ text "Collapse all" ]
+                                    , text " to show the main flow. Select an activation bar marked with two short lines to reveal its nested calls one level at a time. Select it again to hide them."
+                                    ]
+                                , p []
+                                    [ text "Leave "
+                                    , Html.strong [] [ text "Keep positions fixed" ]
+                                    , text " on so the audience can follow the same arrows as you reveal details. Turn it off to close the gaps left by hidden calls."
+                                    ]
+                                , p []
+                                    [ text "Use "
+                                    , Html.strong [] [ text "Full screen" ]
+                                    , text " to present. It opens with your current theme and the same calls expanded or collapsed."
+                                    ]
+                                ]
+                            ]
+
+                      else
+                        text ""
                     , div [ class "output-footer" ]
                         [ details [ class "plantuml-menu" ]
                             [ summary [] [ text "PlantUML" ]
@@ -389,23 +455,6 @@ splitAtFirst separator source =
             ( source, "" )
 
 
-expandIndentTabs : Int -> String -> String
-expandIndentTabs column line =
-    case String.uncons line of
-        Just ( ' ', rest ) ->
-            " " ++ expandIndentTabs (column + 1) rest
-
-        Just ( '\t', rest ) ->
-            let
-                spaces =
-                    4 - modBy 4 column
-            in
-            String.repeat spaces " " ++ expandIndentTabs (column + spaces) rest
-
-        _ ->
-            line
-
-
 modeButton : OutputMode -> OutputMode -> String -> Html Msg
 modeButton selected mode caption =
     button
@@ -429,7 +478,7 @@ outputView model output =
                         , attribute "tabindex" "0"
                         , attribute "aria-label" "Diagram preview"
                         ]
-                        [ Diagram.view model.showReturns (diagramTheme model) sequence ]
+                        [ Diagram.view model.collapsed model.fixedDiagram model.showReturns (diagramTheme model) sequence ]
 
                 ServerPreview ->
                     previewView model.previewRequest model.preview source
@@ -440,6 +489,14 @@ outputView model output =
         _ ->
             div [ class "output-message" ]
                 [ p [] [ text "Enter a sequence or load the example to see the preview." ] ]
+
+
+foldableCalls : Model -> Set String
+foldableCalls model =
+    model.diagram
+        |> Maybe.andThen Result.toMaybe
+        |> Maybe.map Diagram.foldableCalls
+        |> Maybe.withDefault Set.empty
 
 
 previewView : Int -> Preview -> String -> Html Msg
@@ -490,24 +547,11 @@ previewView request preview source =
 
 diagramTheme : Model -> Theme
 diagramTheme model =
-    case model.diagramPreset of
-        "monochrome" ->
-            DiagramTheme.monochrome
+    if model.diagramPreset == "custom" then
+        model.customTheme
 
-        "inverse-monochrome" ->
-            DiagramTheme.inverseMonochrome
-
-        "dark" ->
-            DiagramTheme.dark
-
-        "high-contrast-black" ->
-            DiagramTheme.highContrastBlack
-
-        "custom" ->
-            model.customTheme
-
-        _ ->
-            DiagramTheme.classic
+    else
+        DiagramTheme.preset model.diagramPreset |> Maybe.withDefault DiagramTheme.classic
 
 
 themeSettings : Model -> Html Msg

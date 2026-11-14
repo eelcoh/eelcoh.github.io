@@ -1,4 +1,4 @@
-module DiagramTheme exposing (Theme, classic, dark, decode, encode, fonts, highContrastBlack, inverseMonochrome, monochrome, styles)
+module DiagramTheme exposing (Theme, classic, dark, decode, encode, fonts, highContrastBlack, inverseMonochrome, monochrome, preset, styles)
 
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -51,6 +51,28 @@ highContrastBlack =
     , font = "mono"
     , radius = 0
     }
+
+
+preset : String -> Maybe Theme
+preset name =
+    case name of
+        "classic" ->
+            Just classic
+
+        "monochrome" ->
+            Just monochrome
+
+        "inverse-monochrome" ->
+            Just inverseMonochrome
+
+        "dark" ->
+            Just dark
+
+        "high-contrast-black" ->
+            Just highContrastBlack
+
+        _ ->
+            Nothing
 
 
 fonts : List ( String, String )

@@ -410,66 +410,7 @@ button:disabled {
     background: var(--diagram-background);
     border: 1px solid #d8e0d7;
     border-radius: .75rem;
-    --diagram-sans: "Instrument Sans", "Avenir Next", system-ui, sans-serif;
-    --diagram-return: color-mix(in srgb, var(--diagram-ink) 72%, var(--diagram-background));
 }
-
-.sequence-participant {
-    fill: var(--diagram-header);
-    stroke: var(--diagram-header-border);
-    stroke-width: 1.5px;
-}
-
-.sequence-name,
-.sequence-caption {
-    font-family: var(--diagram-font);
-    font-size: 14px;
-}
-
-.sequence-name {
-    fill: var(--diagram-header-text);
-    font-weight: 700;
-}
-
-.sequence-caption {
-    fill: var(--diagram-ink);
-    stroke: var(--diagram-background);
-    stroke-width: 4px;
-    stroke-linejoin: round;
-    paint-order: stroke fill;
-}
-
-.sequence-lifeline {
-    stroke: var(--diagram-line);
-    stroke-width: 1.5px;
-    stroke-dasharray: 2 5;
-    stroke-linecap: round;
-}
-
-.sequence-activation {
-    fill: var(--diagram-active);
-    stroke: var(--diagram-active-edge);
-    stroke-width: 1.5px;
-}
-
-.sequence-arrow {
-    fill: none;
-    stroke: var(--diagram-ink);
-    stroke-width: 2px;
-    stroke-linejoin: round;
-    stroke-linecap: round;
-}
-
-
-.sequence-return {
-    stroke: var(--diagram-return);
-    stroke-width: 1.5px;
-    stroke-dasharray: 5 4;
-}
-
-.sequence-open-head { stroke-dasharray: none; }
-
-.sequence-arrowhead { fill: var(--diagram-ink); }
 
 .diagram-viewer {
     position: fixed;
@@ -613,3 +554,36 @@ button:disabled {
 }
 
 .syntax-help code { font-family: var(--code); }
+
+.fold-settings {
+    padding: .65rem 1rem;
+    border-top: 1px solid var(--line);
+    font-size: .82rem;
+}
+
+.fold-settings .diagram-tools { align-items: center; }
+
+.fold-settings label {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+}
+
+.fold-settings input { accent-color: var(--accent); }
+
+.walkthrough-help {
+    margin-top: .5rem;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+.walkthrough-help summary {
+    width: fit-content;
+    color: var(--accent);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.walkthrough-help p {
+    margin: .5rem 0 0;
+}

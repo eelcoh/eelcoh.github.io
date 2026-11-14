@@ -22,6 +22,18 @@ function saveDiagram(svg) {
         }
     });
 
+    exported.querySelectorAll('[data-fold]').forEach(control => {
+        const title = control.querySelector('title');
+        if (control.getAttribute('aria-expanded') === 'false') title.textContent = 'Nested calls hidden';
+        else title.remove();
+        for (const name of ['tabindex', 'role', 'aria-expanded', 'aria-label', 'data-fold']) {
+            control.removeAttribute(name);
+        }
+        control.querySelector('.sequence-fold-hit').remove();
+    });
+    exported.setAttribute('role', 'img');
+    exported.removeAttribute('data-can-collapse');
+
     // Put the background inside the SVG so it also appears in image viewers.
     const background = document.createElementNS(svg.namespaceURI, 'rect');
     background.setAttribute('width', '100%');
@@ -104,12 +116,29 @@ async function encodePlantUml(source) {
     ));
 }
 
+function foldControl(target) {
+    return target?.closest('[data-fold]');
+}
+
+document.addEventListener('click', event => {
+    const control = foldControl(event.target);
+    if (control) app.ports.foldDiagram.send(control.dataset.fold);
+});
+
+document.addEventListener('keydown', event => {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    const control = foldControl(event.target);
+    if (!control) return;
+    event.preventDefault();
+    if (!event.repeat) app.ports.foldDiagram.send(control.dataset.fold);
+});
+
 app.ports.openDiagramViewer.subscribe(() => {
     const preview = document.querySelector('.local-diagram .sequence-svg');
     if (!preview) return;
 
     const opener = document.activeElement;
-    const diagram = preview.cloneNode(true);
+    let diagram = preview.cloneNode(true);
     const dialog = document.createElement('dialog');
     dialog.className = 'diagram-viewer';
     dialog.setAttribute('aria-labelledby', 'diagram-viewer-title');
@@ -122,6 +151,10 @@ app.ports.openDiagramViewer.subscribe(() => {
                 <button type="button" data-action="in" aria-label="Zoom in">+</button>
                 <button type="button" data-action="actual">Actual size</button>
                 <button type="button" data-action="fit" aria-pressed="true">Fit to screen</button>
+            </div>
+            <div class="diagram-tools" role="group" aria-label="Diagram detail">
+                <button type="button" data-action="collapse">Collapse all</button>
+                <button type="button" data-action="expand">Expand all</button>
             </div>
             <button type="button" data-action="download">Download SVG</button>
             <button type="button" data-action="close" autofocus>Close</button>
@@ -136,8 +169,10 @@ app.ports.openDiagramViewer.subscribe(() => {
     const zoomOut = dialog.querySelector('[data-action="out"]');
     const zoomIn = dialog.querySelector('[data-action="in"]');
     const fitButton = dialog.querySelector('[data-action="fit"]');
-    const width = Number(diagram.getAttribute('width'));
-    const height = Number(diagram.getAttribute('height'));
+    const expand = dialog.querySelector('[data-action="expand"]');
+    const collapse = dialog.querySelector('[data-action="collapse"]');
+    let width = Number(diagram.getAttribute('width'));
+    let height = Number(diagram.getAttribute('height'));
     let scale = 1;
     let fitted = true;
     let drag;
@@ -188,6 +223,10 @@ app.ports.openDiagramViewer.subscribe(() => {
                 fitted = true;
                 fit();
                 break;
+            case 'expand':
+            case 'collapse':
+                app.ports.foldDiagram.send(event.target.dataset.action);
+                break;
             case 'download':
                 saveDiagram(diagram);
                 break;
@@ -198,7 +237,7 @@ app.ports.openDiagramViewer.subscribe(() => {
     });
 
     viewport.addEventListener('pointerdown', event => {
-        if (event.pointerType === 'touch' || event.button !== 0 || !stage.contains(event.target)) return;
+        if (event.pointerType === 'touch' || event.button !== 0 || !stage.contains(event.target) || foldControl(event.target)) return;
         if (viewport.scrollWidth <= viewport.clientWidth && viewport.scrollHeight <= viewport.clientHeight) return;
         viewport.focus({ preventScroll: true });
         viewport.setPointerCapture(event.pointerId);
@@ -217,15 +256,44 @@ app.ports.openDiagramViewer.subscribe(() => {
         viewport.classList.remove('is-dragging');
     });
 
+    function updateExpandButton() {
+        expand.disabled = !diagram.querySelector('[data-fold][aria-expanded="false"]');
+        collapse.disabled = diagram.dataset.canCollapse !== 'true';
+        if (document.activeElement === expand && expand.disabled) collapse.focus();
+        else if (document.activeElement === collapse && collapse.disabled) expand.focus();
+    }
+
+    const diagramObserver = new MutationObserver(() => {
+        const focused = foldControl(document.activeElement)?.dataset.fold;
+        const scrollLeft = viewport.scrollLeft;
+        const scrollTop = viewport.scrollTop;
+        diagram = preview.cloneNode(true);
+        width = Number(diagram.getAttribute('width'));
+        height = Number(diagram.getAttribute('height'));
+        stage.replaceChildren(diagram);
+        const nextControl = focused && diagram.querySelector(`[data-fold="${CSS.escape(focused)}"]`);
+        if (nextControl) nextControl.focus({ preventScroll: true });
+        else if (focused) viewport.focus({ preventScroll: true });
+        updateExpandButton();
+        if (fitted) fit();
+        else {
+            zoom(scale);
+            viewport.scrollTo(scrollLeft, scrollTop);
+        }
+    });
+    diagramObserver.observe(preview, { subtree: true, attributes: true, childList: true, characterData: true });
+
     const observer = new ResizeObserver(() => {
         if (fitted) fit();
     });
     observer.observe(viewport);
     dialog.addEventListener('close', () => {
         observer.disconnect();
+        diagramObserver.disconnect();
         dialog.remove();
         opener?.focus();
     }, { once: true });
 
+    updateExpandButton();
     fit();
 });

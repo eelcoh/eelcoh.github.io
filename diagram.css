@@ -1,0 +1,95 @@
+.sequence-svg {
+    --code: "IBM Plex Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+    --diagram-sans: "Instrument Sans", "Avenir Next", system-ui, sans-serif;
+    --diagram-return: color-mix(in srgb, var(--diagram-ink) 72%, var(--diagram-background));
+}
+
+.sequence-participant {
+    fill: var(--diagram-header);
+    stroke: var(--diagram-header-border);
+    stroke-width: 1.5px;
+}
+
+.sequence-name,
+.sequence-caption {
+    font-family: var(--diagram-font);
+    font-size: 14px;
+}
+
+.sequence-name {
+    fill: var(--diagram-header-text);
+    font-weight: 700;
+}
+
+.sequence-caption {
+    fill: var(--diagram-ink);
+    stroke: var(--diagram-background);
+    stroke-width: 4px;
+    stroke-linejoin: round;
+    paint-order: stroke fill;
+}
+
+.sequence-lifeline {
+    stroke: var(--diagram-line);
+    stroke-width: 1.5px;
+    stroke-dasharray: 2 5;
+    stroke-linecap: round;
+}
+
+.sequence-activation {
+    fill: var(--diagram-active);
+    stroke: var(--diagram-active-edge);
+    stroke-width: 1.5px;
+}
+
+.sequence-arrow {
+    fill: none;
+    stroke: var(--diagram-ink);
+    stroke-width: 2px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+
+.sequence-return {
+    stroke: var(--diagram-return);
+    stroke-width: 1.5px;
+    stroke-dasharray: 5 4;
+}
+
+.sequence-open-head { stroke-dasharray: none; }
+
+.sequence-arrowhead { fill: var(--diagram-ink); }
+
+.sequence-fold { cursor: pointer; }
+
+.sequence-fold-hit {
+    fill: transparent;
+    pointer-events: all;
+}
+
+.sequence-fold-mark {
+    stroke: var(--diagram-ink);
+    stroke-width: 1.5px;
+    pointer-events: none;
+}
+
+.sequence-fold:hover .sequence-activation {
+    fill: color-mix(in srgb, var(--diagram-active) 86%, var(--diagram-ink));
+}
+
+.sequence-fold:focus {
+    outline: none;
+}
+
+.sequence-fold:focus-visible .sequence-activation {
+    stroke: var(--diagram-ink);
+    stroke-width: 2px;
+    vector-effect: non-scaling-stroke;
+}
+
+@media (forced-colors: active) {
+    .sequence-fold:focus-visible .sequence-activation {
+        stroke: Highlight;
+    }
+}

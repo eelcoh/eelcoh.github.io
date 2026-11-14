@@ -1,12 +1,12 @@
-module Diagram exposing (view)
+module Diagram exposing (foldableCalls, toSvg, view)
 
 import DiagramTheme exposing (Theme)
 import Dict exposing (Dict)
 import Html exposing (Html)
 import Html.Attributes as Html
+import Set exposing (Set)
 import SequenceDiagram.Model exposing (Option(..), Sequence(..), Step(..))
-import Svg exposing (Svg)
-import Svg.Attributes as A
+import VirtualDom
 
 
 columnInset : Int
@@ -25,33 +25,89 @@ type Arrow
 
 
 type alias Message =
-    { from : Endpoint, to : Endpoint, caption : List String, y : Int, arrow : Arrow }
+    { from : Endpoint, to : Endpoint, caption : List String, y : Int, arrow : Arrow, visible : Bool }
 
 
 type alias Activation =
-    { endpoint : Endpoint, start : Int, end : Int }
+    { endpoint : Endpoint, start : Int, end : Int, visible : Bool, fold : Maybe ( String, Bool ) }
 
 
 type alias Layout =
     { y : Int, messages : List Message, activations : List Activation }
 
 
-view : Bool -> Theme -> Sequence -> Html msg
-view showReturns theme (Sequence initiator steps) =
+view : Set String -> Bool -> Bool -> Theme -> Sequence -> Html msg
+view collapsed fixed showReturns theme sequence =
+    diagram (Just { collapsed = collapsed, fixed = fixed }) showReturns theme sequence |> toDom
+
+
+toSvg : String -> Bool -> Theme -> Sequence -> String
+toSvg stylesheet showReturns theme sequence =
+    case diagram Nothing showReturns theme sequence of
+        Element name attrs children ->
+            Element name
+                (( "xmlns", "http://www.w3.org/2000/svg" ) :: attrs)
+                (Element "style" [] [ Text stylesheet ]
+                    :: Element "rect" [ ( "width", "100%" ), ( "height", "100%" ), ( "fill", theme.background ) ] []
+                    :: children
+                )
+                |> serialize
+
+        Text _ ->
+            ""
+
+
+type alias Folding =
+    { collapsed : Set String, fixed : Bool }
+
+
+foldableCalls : Sequence -> Set String
+foldableCalls (Sequence _ steps) =
+    foldPaths "" steps |> Set.fromList
+
+
+foldPaths : String -> List Step -> List String
+foldPaths parent steps =
+    steps
+        |> List.indexedMap
+            (\index (Step _ _ _ children) ->
+                if List.isEmpty children then
+                    []
+
+                else
+                    let
+                        path = stepPath parent index
+                    in
+                    path :: foldPaths path children
+            )
+        |> List.concat
+
+
+stepPath : String -> Int -> String
+stepPath parent index =
+    parent ++ "/" ++ String.fromInt index
+
+
+diagram : Maybe Folding -> Bool -> Theme -> Sequence -> SvgNode
+diagram folding showReturns theme (Sequence initiator steps) =
     let
         root =
             Endpoint initiator 0
 
         layout =
-            List.foldl (placeStep showReturns root (Dict.singleton initiator 0))
+            List.foldl (placeStep folding showReturns root (Dict.singleton initiator 0) "" True)
                 { y = 94, messages = [], activations = [] }
-                steps
+                (List.indexedMap Tuple.pair steps)
 
         activations =
-            Activation root 58 (layout.y - 12) :: layout.activations
+            Activation root 58 (layout.y - 12) True Nothing :: layout.activations
+
+        visible =
+            Set.fromList (initiator :: List.map (.to >> .participant) layout.messages)
 
         names =
             unique (initiator :: List.concatMap stepNames steps)
+                |> List.filter (\name -> Set.member name visible)
 
         depthPadding =
             8 * List.foldl (\bar largest -> max largest bar.endpoint.depth) 0 activations
@@ -81,18 +137,26 @@ view showReturns theme (Sequence initiator steps) =
         height =
             layout.y + 12
     in
-    Svg.svg
-        [ A.class "sequence-svg"
-        , A.style (DiagramTheme.styles theme |> List.map (\( name, value ) -> name ++ ": " ++ value) |> String.join "; ")
-        , intAttr A.width width
-        , intAttr A.height height
-        , A.viewBox ("0 0 " ++ String.fromInt width ++ " " ++ String.fromInt height)
-        , Html.attribute "role" "img"
-        , Html.attribute "aria-label" "Sequence diagram"
+    Element "svg"
+        ([ attr "class" "sequence-svg"
+        , attr "style" (DiagramTheme.styles theme |> List.map (\( name, value ) -> name ++ ": " ++ value) |> String.join "; ")
+        , intAttr "width" width
+        , intAttr "height" height
+        , attr "viewBox" ("0 0 " ++ String.fromInt width ++ " " ++ String.fromInt height)
+        , attr "role" (if folding == Nothing then "img" else "group")
+        , attr "aria-label" "Sequence diagram"
         ]
+            ++ (case folding of
+                    Just state ->
+                        [ attr "data-can-collapse" (if state.collapsed == Set.fromList (foldPaths "" steps) then "false" else "true") ]
+
+                    Nothing ->
+                        []
+               )
+        )
         (List.map (drawParticipant theme.radius columns (height - 20)) names
-            ++ List.map (drawActivation x) (List.sortBy .start activations)
-            ++ List.map (drawMessage x) (List.reverse layout.messages)
+            ++ (activations |> List.filter .visible |> List.sortBy .start |> List.map (drawActivation x))
+            ++ (layout.messages |> List.filter .visible |> List.reverse |> List.map (drawMessage x))
         )
 
 
@@ -117,14 +181,27 @@ unique names =
         |> List.reverse
 
 
-placeStep : Bool -> Endpoint -> Dict String Int -> Step -> Layout -> Layout
-placeStep showReturns caller depths (Step name options caption children) layout =
+placeStep : Maybe Folding -> Bool -> Endpoint -> Dict String Int -> String -> Bool -> ( Int, Step ) -> Layout -> Layout
+placeStep folding showReturns caller depths parent visible ( index, Step name options caption children ) layout =
     let
         depth =
             (Dict.get name depths |> Maybe.withDefault -1) + 1
 
         callee =
             Endpoint name depth
+
+        path =
+            stepPath parent index
+
+        collapsed =
+            Maybe.map (.collapsed >> Set.member path) folding |> Maybe.withDefault False
+
+        fold =
+            if List.isEmpty children then
+                Nothing
+
+            else
+                Maybe.map (\_ -> ( path, collapsed )) folding
 
         asynchronous =
             List.member Async options
@@ -141,17 +218,23 @@ placeStep showReturns caller depths (Step name options caption children) layout 
         called =
             { layout
                 | y = y + loopHeight + 36
-                , messages = Message caller callee labels y (if asynchronous then AsyncCall else Call) :: layout.messages
+                , messages = Message caller callee labels y (if asynchronous then AsyncCall else Call) visible :: layout.messages
             }
 
         afterChildren =
-            List.foldl (placeStep showReturns callee (Dict.insert name depth depths)) called children
+            if collapsed && not (Maybe.map .fixed folding |> Maybe.withDefault False) then
+                called
+
+            else
+                List.foldl (placeStep folding showReturns callee (Dict.insert name depth depths) path (visible && not collapsed))
+                    called
+                    (List.indexedMap Tuple.pair children)
 
         finished =
             if showReturns && not asynchronous then
                 { afterChildren
                     | y = afterChildren.y + loopHeight + 36
-                    , messages = Message callee caller [] afterChildren.y Return :: afterChildren.messages
+                    , messages = Message callee caller [] afterChildren.y Return visible :: afterChildren.messages
                 }
 
             else
@@ -164,7 +247,10 @@ placeStep showReturns caller depths (Step name options caption children) layout 
             else
                 afterChildren.y - 14
     in
-    { finished | activations = Activation callee (y + loopHeight) activationEnd :: finished.activations }
+    { finished
+        | activations =
+            Activation callee (y + loopHeight) activationEnd visible fold :: finished.activations
+    }
 
 
 wrapCaption : String -> List String
@@ -196,7 +282,7 @@ wrapCaption caption =
         String.left size caption :: wrapCaption (String.trimLeft (String.dropLeft size caption))
 
 
-drawParticipant : Int -> Dict String Int -> Int -> String -> Svg msg
+drawParticipant : Int -> Dict String Int -> Int -> String -> SvgNode
 drawParticipant radius columns bottom name =
     let
         center =
@@ -205,21 +291,63 @@ drawParticipant radius columns bottom name =
         visibleName =
             if String.length name > 16 then String.left 15 name ++ "…" else name
     in
-    Svg.g []
-        [ Svg.title [] [ Svg.text name ]
+    Element "g" []
+        [ Element "title" [] [ Text name ]
         , line "sequence-lifeline" center 52 center bottom
         , box "sequence-participant" (center - 67) 14 134 38 radius
-        , Svg.text_ [ A.class "sequence-name", intAttr A.x center, intAttr A.y 38, A.textAnchor "middle" ]
-            [ Svg.text visibleName ]
+        , Element "text" [ attr "class" "sequence-name", intAttr "x" center, intAttr "y" 38, attr "text-anchor" "middle" ]
+            [ Text visibleName ]
         ]
 
 
-drawActivation : (Endpoint -> Int) -> Activation -> Svg msg
+drawActivation : (Endpoint -> Int) -> Activation -> SvgNode
 drawActivation x activation =
-    box "sequence-activation" (x activation.endpoint - 5) activation.start 10 (max 4 (activation.end - activation.start)) 0
+    let
+        center =
+            x activation.endpoint
+
+        height =
+            max 4 (activation.end - activation.start)
+
+        bar =
+            box "sequence-activation" (center - 5) activation.start 10 height 0
+    in
+    case activation.fold of
+        Nothing ->
+            bar
+
+        Just ( path, collapsed ) ->
+            let
+                label =
+                    (if collapsed then "Expand call to " else "Collapse call to ") ++ activation.endpoint.participant
+
+                markerY =
+                    activation.start + min 10 (height // 2)
+            in
+            Element "g"
+                [ attr "class" "sequence-fold"
+                , attr "data-fold" path
+                , attr "role" "button"
+                , attr "tabindex" "0"
+                , attr "aria-label" label
+                , attr "aria-expanded" (if collapsed then "false" else "true")
+                ]
+                ([ Element "title" [] [ Text label ]
+                 , bar
+                 , box "sequence-fold-hit" (center - 9) activation.start 18 height 0
+                 ]
+                    ++ (if collapsed then
+                            [ line "sequence-fold-mark" (center - 3) (markerY - 2) (center + 3) (markerY - 2)
+                            , line "sequence-fold-mark" (center - 3) (markerY + 2) (center + 3) (markerY + 2)
+                            ]
+
+                        else
+                            []
+                       )
+                )
 
 
-drawMessage : (Endpoint -> Int) -> Message -> Svg msg
+drawMessage : (Endpoint -> Int) -> Message -> SvgNode
 drawMessage x message =
     let
         from =
@@ -280,22 +408,22 @@ drawMessage x message =
         head =
             [ ( tailX, tipY - 5 ), ( end, tipY ), ( tailX, tipY + 5 ) ]
     in
-    Svg.g []
-        ([ Svg.polyline [ A.class arrowClass, A.points (svgPoints points) ] []
+    Element "g" []
+        ([ Element "polyline" [ attr "class" arrowClass, attr "points" (svgPoints points) ] []
          , if message.arrow == Call then
-            Svg.polygon [ A.class "sequence-arrowhead", A.points (svgPoints head) ] []
+            Element "polygon" [ attr "class" "sequence-arrowhead", attr "points" (svgPoints head) ] []
 
            else
-            Svg.polyline [ A.class (arrowClass ++ " sequence-open-head"), A.points (svgPoints head) ] []
+            Element "polyline" [ attr "class" (arrowClass ++ " sequence-open-head"), attr "points" (svgPoints head) ] []
          ]
             ++ List.indexedMap
                 (\index caption ->
-                    Svg.text_
-                        [ A.class "sequence-caption", intAttr A.x captionX
-                        , intAttr A.y (y - 9 - 16 * (List.length message.caption - index - 1))
-                        , A.textAnchor (if self then "start" else "middle")
+                    Element "text"
+                        [ attr "class" "sequence-caption", intAttr "x" captionX
+                        , intAttr "y" (y - 9 - 16 * (List.length message.caption - index - 1))
+                        , attr "text-anchor" (if self then "start" else "middle")
                         ]
-                        [ Svg.text caption ]
+                        [ Text caption ]
                 )
                 message.caption
         )
@@ -306,16 +434,61 @@ svgPoints =
     List.map (\( x, y ) -> String.fromInt x ++ "," ++ String.fromInt y) >> String.join " "
 
 
-line : String -> Int -> Int -> Int -> Int -> Svg msg
+line : String -> Int -> Int -> Int -> Int -> SvgNode
 line className x1 y1 x2 y2 =
-    Svg.line [ A.class className, intAttr A.x1 x1, intAttr A.y1 y1, intAttr A.x2 x2, intAttr A.y2 y2 ] []
+    Element "line" [ attr "class" className, intAttr "x1" x1, intAttr "y1" y1, intAttr "x2" x2, intAttr "y2" y2 ] []
 
 
-box : String -> Int -> Int -> Int -> Int -> Int -> Svg msg
+box : String -> Int -> Int -> Int -> Int -> Int -> SvgNode
 box className x y width height radius =
-    Svg.rect [ A.class className, intAttr A.x x, intAttr A.y y, intAttr A.width width, intAttr A.height height, intAttr A.rx radius ] []
+    Element "rect" [ attr "class" className, intAttr "x" x, intAttr "y" y, intAttr "width" width, intAttr "height" height, intAttr "rx" radius ] []
 
 
-intAttr : (String -> Svg.Attribute msg) -> Int -> Svg.Attribute msg
-intAttr attr =
-    String.fromInt >> attr
+intAttr : String -> Int -> ( String, String )
+intAttr name value =
+    ( name, String.fromInt value )
+
+
+type SvgNode
+    = Element String (List ( String, String )) (List SvgNode)
+    | Text String
+
+
+attr : String -> String -> ( String, String )
+attr =
+    Tuple.pair
+
+
+toDom : SvgNode -> Html msg
+toDom node =
+    case node of
+        Element name attrs children ->
+            VirtualDom.nodeNS "http://www.w3.org/2000/svg" name
+                (List.map (\( key, val ) -> Html.attribute key val) attrs)
+                (List.map toDom children)
+
+        Text value ->
+            VirtualDom.text value
+
+
+serialize : SvgNode -> String
+serialize node =
+    case node of
+        Element name attrs children ->
+            let
+                attributes =
+                    List.map (\( key, val ) -> " " ++ key ++ "=\"" ++ escape val ++ "\"") attrs
+                        |> String.concat
+            in
+            "<" ++ name ++ attributes ++ ">" ++ String.concat (List.map serialize children) ++ "</" ++ name ++ ">"
+
+        Text value ->
+            escape value
+
+
+escape : String -> String
+escape =
+    String.replace "&" "&amp;"
+        >> String.replace "<" "&lt;"
+        >> String.replace ">" "&gt;"
+        >> String.replace "\"" "&quot;"

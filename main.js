@@ -519,11 +519,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.X.N === region.am.N)
+	if (region.J.Q === region.aq.Q)
 	{
-		return 'on line ' + region.X.N;
+		return 'on line ' + region.J.Q;
 	}
-	return 'on lines ' + region.X.N + ' through ' + region.am.N;
+	return 'on lines ' + region.J.Q + ' through ' + region.aq.Q;
 }
 
 
@@ -1861,9 +1861,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.a3,
-		impl.be,
-		impl.bq,
+		impl.a8,
+		impl.bj,
+		impl.bv,
 		function() { return function() {} }
 	);
 });
@@ -2727,9 +2727,9 @@ var _VirtualDom_mapEventTuple = F2(function(func, tuple)
 var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
-		bh: func(record.bh),
-		ai: record.ai,
-		ah: record.ah
+		bm: func(record.bm),
+		am: record.am,
+		al: record.al
 	}
 });
 
@@ -2997,11 +2997,11 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 		// 3 = Custom
 
 		var value = result.a;
-		var message = !tag ? value : tag < 3 ? value.a : value.bh;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.ai;
+		var message = !tag ? value : tag < 3 ? value.a : value.bm;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.am;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.ah) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.al) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -4118,11 +4118,11 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.a3,
-		impl.be,
-		impl.bq,
+		impl.a8,
+		impl.bj,
+		impl.bv,
 		function(sendToApp, initialModel) {
-			var view = impl.a7;
+			var view = impl.bc;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -4154,12 +4154,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.a3,
-		impl.be,
-		impl.bq,
+		impl.a8,
+		impl.bj,
+		impl.bv,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.ab && impl.ab(sendToApp)
-			var view = impl.a7;
+			var divertHrefToApp = impl.ag && impl.ag(sendToApp)
+			var view = impl.bc;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -4167,12 +4167,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.a1);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.a6);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.a9) && (_VirtualDom_doc.title = title = doc.a9);
+				(title !== doc.be) && (_VirtualDom_doc.title = title = doc.be);
 			});
 		}
 	);
@@ -4228,12 +4228,12 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.bl;
-	var onUrlRequest = impl.bn;
+	var onUrlChange = impl.bq;
+	var onUrlRequest = impl.bs;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		ab: function(sendToApp)
+		ag: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4249,9 +4249,9 @@ function _Browser_application(impl)
 					var next = $elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.aR === next.aR
-							&& curr.at === next.at
-							&& curr.aF.a === next.aF.a
+							&& curr.aW === next.aW
+							&& curr.ay === next.ay
+							&& curr.aK.a === next.aK.a
 						)
 							? $elm$browser$Browser$Internal(next)
 							: $elm$browser$Browser$External(href)
@@ -4259,13 +4259,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		a3: function(flags)
+		a8: function(flags)
 		{
-			return A3(impl.a3, flags, _Browser_getUrl(), key);
+			return A3(impl.a8, flags, _Browser_getUrl(), key);
 		},
-		a7: impl.a7,
-		be: impl.be,
-		bq: impl.bq
+		bc: impl.bc,
+		bj: impl.bj,
+		bv: impl.bv
 	});
 }
 
@@ -4331,17 +4331,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { bb: 'hidden', ba: 'visibilitychange' }
+		? { bg: 'hidden', bf: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { bb: 'mozHidden', ba: 'mozvisibilitychange' }
+		? { bg: 'mozHidden', bf: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { bb: 'msHidden', ba: 'msvisibilitychange' }
+		? { bg: 'msHidden', bf: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { bb: 'webkitHidden', ba: 'webkitvisibilitychange' }
-		: { bb: 'hidden', ba: 'visibilitychange' };
+		? { bg: 'webkitHidden', bf: 'webkitvisibilitychange' }
+		: { bg: 'hidden', bf: 'visibilitychange' };
 }
 
 
@@ -4422,12 +4422,12 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		aH: _Browser_getScene(),
-		aT: {
-			aj: _Browser_window.pageXOffset,
+		aM: _Browser_getScene(),
+		aY: {
+			an: _Browser_window.pageXOffset,
 			i: _Browser_window.pageYOffset,
-			aI: _Browser_doc.documentElement.clientWidth,
-			aK: _Browser_doc.documentElement.clientHeight
+			aN: _Browser_doc.documentElement.clientWidth,
+			aP: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4437,8 +4437,8 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		aI: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		aK: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		aN: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		aP: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4461,15 +4461,15 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			aH: {
-				aI: node.scrollWidth,
-				aK: node.scrollHeight
+			aM: {
+				aN: node.scrollWidth,
+				aP: node.scrollHeight
 			},
-			aT: {
-				aj: node.scrollLeft,
+			aY: {
+				an: node.scrollLeft,
 				i: node.scrollTop,
-				aI: node.clientWidth,
-				aK: node.clientHeight
+				aN: node.clientWidth,
+				aP: node.clientHeight
 			}
 		};
 	});
@@ -4499,18 +4499,18 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			aH: _Browser_getScene(),
-			aT: {
-				aj: x,
+			aM: _Browser_getScene(),
+			aY: {
+				an: x,
 				i: y,
-				aI: _Browser_doc.documentElement.clientWidth,
-				aK: _Browser_doc.documentElement.clientHeight
+				aN: _Browser_doc.documentElement.clientWidth,
+				aP: _Browser_doc.documentElement.clientHeight
 			},
-			bf: {
-				aj: x + rect.left,
+			bk: {
+				an: x + rect.left,
 				i: y + rect.top,
-				aI: rect.width,
-				aK: rect.height
+				aN: rect.width,
+				aP: rect.height
 			}
 		};
 	});
@@ -5063,6 +5063,7 @@ var $elm$core$Maybe$map = F2(
 		}
 	});
 var $elm$core$Basics$neq = _Utils_notEqual;
+var $elm$core$Basics$not = _Basics_not;
 var $author$project$Main$Code = 0;
 var $author$project$Main$Copy = function (a) {
 	return {$: 9, a: a};
@@ -5369,6 +5370,7 @@ var $author$project$Main$editor = function (source) {
 			]));
 };
 var $elm$html$Html$header = _VirtualDom_node('header');
+var $elm$html$Html$strong = _VirtualDom_node('strong');
 var $author$project$Main$Diagram = 1;
 var $elm$core$Maybe$andThen = F2(
 	function (callback, maybeValue) {
@@ -5380,6 +5382,17 @@ var $elm$core$Maybe$andThen = F2(
 		}
 	});
 var $elm$html$Html$details = _VirtualDom_node('details');
+var $elm$core$Dict$isEmpty = function (dict) {
+	if (dict.$ === -2) {
+		return true;
+	} else {
+		return false;
+	}
+};
+var $elm$core$Set$isEmpty = function (_v0) {
+	var dict = _v0;
+	return $elm$core$Dict$isEmpty(dict);
+};
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 0, a: a};
 };
@@ -5463,6 +5476,36 @@ var $author$project$Main$modeButton = F3(
 				]));
 	});
 var $elm$html$Html$code = _VirtualDom_node('code');
+var $elm$virtual_dom$VirtualDom$nodeNS = F2(
+	function (namespace, tag) {
+		return A2(
+			_VirtualDom_nodeNS,
+			namespace,
+			_VirtualDom_noScript(tag));
+	});
+var $author$project$Diagram$toDom = function (node) {
+	if (!node.$) {
+		var name = node.a;
+		var attrs = node.b;
+		var children = node.c;
+		return A4(
+			$elm$virtual_dom$VirtualDom$nodeNS,
+			'http://www.w3.org/2000/svg',
+			name,
+			A2(
+				$elm$core$List$map,
+				function (_v1) {
+					var key = _v1.a;
+					var val = _v1.b;
+					return A2($elm$html$Html$Attributes$attribute, key, val);
+				},
+				attrs),
+			A2($elm$core$List$map, $author$project$Diagram$toDom, children));
+	} else {
+		var value = node.a;
+		return $elm$virtual_dom$VirtualDom$text(value);
+	}
+};
 var $elm$core$List$any = F2(
 	function (isOkay, list) {
 		any:
@@ -5516,28 +5559,52 @@ var $elm$core$Dict$get = F2(
 			}
 		}
 	});
-var $elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
-var $elm$svg$Svg$svg = $elm$svg$Svg$trustedNode('svg');
-var $elm$svg$Svg$Attributes$class = _VirtualDom_attribute('class');
-var $elm$svg$Svg$Attributes$style = _VirtualDom_attribute('style');
-var $elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
-var $elm$svg$Svg$Attributes$height = _VirtualDom_attribute('height');
+var $elm$core$Tuple$pair = F2(
+	function (a, b) {
+		return _Utils_Tuple2(a, b);
+	});
+var $author$project$Diagram$attr = $elm$core$Tuple$pair;
+var $elm$core$List$filter = F2(
+	function (isGood, list) {
+		return A3(
+			$elm$core$List$foldr,
+			F2(
+				function (x, xs) {
+					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
+				}),
+			_List_Nil,
+			list);
+	});
+var $elm$core$Dict$member = F2(
+	function (key, dict) {
+		var _v0 = A2($elm$core$Dict$get, key, dict);
+		if (!_v0.$) {
+			return true;
+		} else {
+			return false;
+		}
+	});
+var $elm$core$Set$member = F2(
+	function (key, _v0) {
+		var dict = _v0;
+		return A2($elm$core$Dict$member, key, dict);
+	});
 var $elm$core$List$sortBy = _List_sortBy;
 var $author$project$DiagramTheme$styles = function (theme) {
 	return _List_fromArray(
 		[
-			_Utils_Tuple2('--diagram-background', theme.aY),
-			_Utils_Tuple2('--diagram-ink', theme.ax),
-			_Utils_Tuple2('--diagram-header', theme.aZ),
-			_Utils_Tuple2('--diagram-header-border', theme.a0),
-			_Utils_Tuple2('--diagram-header-text', theme.a_),
-			_Utils_Tuple2('--diagram-active', theme.aX),
-			_Utils_Tuple2('--diagram-line', theme.aP),
-			_Utils_Tuple2('--diagram-active-edge', theme.a$),
+			_Utils_Tuple2('--diagram-background', theme.a1),
+			_Utils_Tuple2('--diagram-ink', theme.aC),
+			_Utils_Tuple2('--diagram-header', theme.a2),
+			_Utils_Tuple2('--diagram-header-border', theme.a5),
+			_Utils_Tuple2('--diagram-header-text', theme.a3),
+			_Utils_Tuple2('--diagram-active', theme.a0),
+			_Utils_Tuple2('--diagram-line', theme.aU),
+			_Utils_Tuple2('--diagram-active-edge', theme.a4),
 			_Utils_Tuple2(
 			'--diagram-font',
 			function () {
-				var _v0 = theme.as;
+				var _v0 = theme.ax;
 				switch (_v0) {
 					case 'sans':
 						return 'var(--diagram-sans)';
@@ -5659,15 +5726,6 @@ var $elm$core$Dict$insert = F3(
 			return x;
 		}
 	});
-var $elm$core$Dict$member = F2(
-	function (key, dict) {
-		var _v0 = A2($elm$core$Dict$get, key, dict);
-		if (!_v0.$) {
-			return true;
-		} else {
-			return false;
-		}
-	});
 var $elm$core$Tuple$second = function (_v0) {
 	var y = _v0.b;
 	return y;
@@ -5687,19 +5745,38 @@ var $author$project$Diagram$unique = function (names) {
 			_Utils_Tuple2($elm$core$Dict$empty, _List_Nil),
 			names).b);
 };
+var $author$project$Diagram$Element = F3(
+	function (a, b, c) {
+		return {$: 0, a: a, b: b, c: c};
+	});
+var $author$project$Diagram$intAttr = F2(
+	function (name, value) {
+		return _Utils_Tuple2(
+			name,
+			$elm$core$String$fromInt(value));
+	});
+var $author$project$Diagram$Endpoint = F2(
+	function (participant, depth) {
+		return {ae: depth, a2: participant};
+	});
 var $elm$core$Basics$composeR = F3(
 	function (f, g, x) {
 		return g(
 			f(x));
 	});
-var $author$project$Diagram$intAttr = function (attr) {
-	return A2($elm$core$Basics$composeR, $elm$core$String$fromInt, attr);
+var $elm$core$Basics$identity = function (x) {
+	return x;
 };
-var $elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
-var $author$project$Diagram$Endpoint = F2(
-	function (participant, depth) {
-		return {aa: depth, aZ: participant};
+var $elm$core$Set$Set_elm_builtin = $elm$core$Basics$identity;
+var $elm$core$Set$empty = $elm$core$Dict$empty;
+var $elm$core$Set$insert = F2(
+	function (key, _v0) {
+		var dict = _v0;
+		return A3($elm$core$Dict$insert, key, 0, dict);
 	});
+var $elm$core$Set$fromList = function (list) {
+	return A3($elm$core$List$foldl, $elm$core$Set$insert, $elm$core$Set$empty, list);
+};
 var $elm$core$Dict$fromList = function (assocs) {
 	return A3(
 		$elm$core$List$foldl,
@@ -5717,7 +5794,37 @@ var $elm$core$List$concatMap = F2(
 		return $elm$core$List$concat(
 			A2($elm$core$List$map, f, list));
 	});
-var $elm$core$Basics$not = _Basics_not;
+var $elm$core$List$isEmpty = function (xs) {
+	if (!xs.b) {
+		return true;
+	} else {
+		return false;
+	}
+};
+var $author$project$Diagram$stepPath = F2(
+	function (parent, index) {
+		return parent + ('/' + $elm$core$String$fromInt(index));
+	});
+var $author$project$Diagram$foldPaths = F2(
+	function (parent, steps) {
+		return $elm$core$List$concat(
+			A2(
+				$elm$core$List$indexedMap,
+				F2(
+					function (index, _v0) {
+						var children = _v0.d;
+						if ($elm$core$List$isEmpty(children)) {
+							return _List_Nil;
+						} else {
+							var path = A2($author$project$Diagram$stepPath, parent, index);
+							return A2(
+								$elm$core$List$cons,
+								path,
+								A2($author$project$Diagram$foldPaths, path, children));
+						}
+					}),
+				steps));
+	});
 var $author$project$Diagram$Call = 0;
 var $author$project$SequenceDiagram$Model$Async = 0;
 var $author$project$Diagram$Return = 2;
@@ -5733,14 +5840,14 @@ var $elm$core$List$member = F2(
 var $elm$core$Basics$negate = function (n) {
 	return -n;
 };
-var $author$project$Diagram$Message = F5(
-	function (from, to, caption, y, arrow) {
-		return {i: y, M: to, W: from, _: arrow, ad: caption};
+var $author$project$Diagram$Message = F6(
+	function (from, to, caption, y, arrow, visible) {
+		return {i: y, H: to, Z: from, ad: arrow, ai: caption, ab: visible};
 	});
 var $author$project$Diagram$AsyncCall = 1;
-var $author$project$Diagram$Activation = F3(
-	function (endpoint, start, end) {
-		return {am: end, X: start, af: endpoint};
+var $author$project$Diagram$Activation = F5(
+	function (endpoint, start, end, visible, fold) {
+		return {aq: end, aw: fold, J: start, ab: visible, ac: endpoint};
 	});
 var $elm$core$Maybe$withDefault = F2(
 	function (_default, maybe) {
@@ -5777,14 +5884,16 @@ var $author$project$Diagram$wrapCaption = function (caption) {
 					A2($elm$core$String$dropLeft, size, caption))));
 	}
 };
-var $author$project$Diagram$placeStep = F5(
-	function (showReturns, caller, depths, _v0, layout) {
-		var name = _v0.a;
-		var options = _v0.b;
-		var caption = _v0.c;
-		var children = _v0.d;
+var $author$project$Diagram$placeStep = F8(
+	function (folding, showReturns, caller, depths, parent, visible, _v0, layout) {
+		var index = _v0.a;
+		var _v1 = _v0.b;
+		var name = _v1.a;
+		var options = _v1.b;
+		var caption = _v1.c;
+		var children = _v1.d;
 		var asynchronous = A2($elm$core$List$member, 0, options);
-		var loopHeight = _Utils_eq(caller.aZ, name) ? 22 : 0;
+		var loopHeight = _Utils_eq(caller.a2, name) ? 22 : 0;
 		var labels = $author$project$Diagram$wrapCaption(
 			A2($elm$core$Maybe$withDefault, '', caption));
 		var depth = A2(
@@ -5792,6 +5901,25 @@ var $author$project$Diagram$placeStep = F5(
 			-1,
 			A2($elm$core$Dict$get, name, depths)) + 1;
 		var callee = A2($author$project$Diagram$Endpoint, name, depth);
+		var path = A2($author$project$Diagram$stepPath, parent, index);
+		var collapsed = A2(
+			$elm$core$Maybe$withDefault,
+			false,
+			A2(
+				$elm$core$Maybe$map,
+				A2(
+					$elm$core$Basics$composeR,
+					function ($) {
+						return $.n;
+					},
+					$elm$core$Set$member(path)),
+				folding));
+		var fold = $elm$core$List$isEmpty(children) ? $elm$core$Maybe$Nothing : A2(
+			$elm$core$Maybe$map,
+			function (_v2) {
+				return _Utils_Tuple2(path, collapsed);
+			},
+			folding);
 		var y = layout.i + (16 * A2(
 			$elm$core$Basics$max,
 			0,
@@ -5800,43 +5928,55 @@ var $author$project$Diagram$placeStep = F5(
 			layout,
 			{
 				i: (y + loopHeight) + 36,
-				v: A2(
+				t: A2(
 					$elm$core$List$cons,
-					A5(
+					A6(
 						$author$project$Diagram$Message,
 						caller,
 						callee,
 						labels,
 						y,
-						asynchronous ? 1 : 0),
-					layout.v)
+						asynchronous ? 1 : 0,
+						visible),
+					layout.t)
 			});
-		var afterChildren = A3(
+		var afterChildren = (collapsed && (!A2(
+			$elm$core$Maybe$withDefault,
+			false,
+			A2(
+				$elm$core$Maybe$map,
+				function ($) {
+					return $.af;
+				},
+				folding)))) ? called : A3(
 			$elm$core$List$foldl,
-			A3(
+			A6(
 				$author$project$Diagram$placeStep,
+				folding,
 				showReturns,
 				callee,
-				A3($elm$core$Dict$insert, name, depth, depths)),
+				A3($elm$core$Dict$insert, name, depth, depths),
+				path,
+				visible && (!collapsed)),
 			called,
-			children);
+			A2($elm$core$List$indexedMap, $elm$core$Tuple$pair, children));
 		var finished = (showReturns && (!asynchronous)) ? _Utils_update(
 			afterChildren,
 			{
 				i: (afterChildren.i + loopHeight) + 36,
-				v: A2(
+				t: A2(
 					$elm$core$List$cons,
-					A5($author$project$Diagram$Message, callee, caller, _List_Nil, afterChildren.i, 2),
-					afterChildren.v)
+					A6($author$project$Diagram$Message, callee, caller, _List_Nil, afterChildren.i, 2, visible),
+					afterChildren.t)
 			}) : afterChildren;
 		var activationEnd = (showReturns && (!asynchronous)) ? (afterChildren.i + loopHeight) : (afterChildren.i - 14);
 		return _Utils_update(
 			finished,
 			{
-				U: A2(
+				W: A2(
 					$elm$core$List$cons,
-					A3($author$project$Diagram$Activation, callee, y + loopHeight, activationEnd),
-					finished.U)
+					A5($author$project$Diagram$Activation, callee, y + loopHeight, activationEnd, visible, fold),
+					finished.W)
 			});
 	});
 var $elm$core$Dict$singleton = F2(
@@ -5852,15 +5992,10 @@ var $author$project$Diagram$stepNames = function (_v0) {
 		A2($elm$core$List$concatMap, $author$project$Diagram$stepNames, children));
 };
 var $author$project$Diagram$columnInset = 86;
-var $elm$svg$Svg$g = $elm$svg$Svg$trustedNode('g');
-var $elm$svg$Svg$Attributes$x = _VirtualDom_attribute('x');
-var $elm$svg$Svg$Attributes$y = _VirtualDom_attribute('y');
 var $elm$core$Basics$ge = _Utils_ge;
-var $elm$svg$Svg$text = $elm$virtual_dom$VirtualDom$text;
-var $elm$svg$Svg$text_ = $elm$svg$Svg$trustedNode('text');
-var $elm$svg$Svg$Attributes$points = _VirtualDom_attribute('points');
-var $elm$svg$Svg$polygon = $elm$svg$Svg$trustedNode('polygon');
-var $elm$svg$Svg$polyline = $elm$svg$Svg$trustedNode('polyline');
+var $author$project$Diagram$Text = function (a) {
+	return {$: 1, a: a};
+};
 var $author$project$Diagram$svgPoints = A2(
 	$elm$core$Basics$composeR,
 	$elm$core$List$map(
@@ -5870,11 +6005,10 @@ var $author$project$Diagram$svgPoints = A2(
 			return $elm$core$String$fromInt(x) + (',' + $elm$core$String$fromInt(y));
 		}),
 	$elm$core$String$join(' '));
-var $elm$svg$Svg$Attributes$textAnchor = _VirtualDom_attribute('text-anchor');
 var $author$project$Diagram$drawMessage = F2(
 	function (x, message) {
 		var arrowClass = function () {
-			var _v0 = message._;
+			var _v0 = message.ad;
 			switch (_v0) {
 				case 0:
 					return 'sequence-arrow';
@@ -5884,9 +6018,9 @@ var $author$project$Diagram$drawMessage = F2(
 					return 'sequence-arrow sequence-return';
 			}
 		}();
-		var self = _Utils_eq(message.W.aZ, message.M.aZ);
-		var from = x(message.W);
-		var to = x(message.M);
+		var self = _Utils_eq(message.Z.a2, message.H.a2);
+		var from = x(message.Z);
+		var to = x(message.H);
 		var direction = (_Utils_cmp(to, from) > -1) ? 1 : (-1);
 		var end = to + (self ? 5 : ((-direction) * 5));
 		var start = from + (self ? 5 : (direction * 5));
@@ -5912,35 +6046,45 @@ var $author$project$Diagram$drawMessage = F2(
 				_Utils_Tuple2(start, y),
 				_Utils_Tuple2(end, y)
 			]);
-		return A2(
-			$elm$svg$Svg$g,
+		return A3(
+			$author$project$Diagram$Element,
+			'g',
 			_List_Nil,
 			_Utils_ap(
 				_List_fromArray(
 					[
-						A2(
-						$elm$svg$Svg$polyline,
+						A3(
+						$author$project$Diagram$Element,
+						'polyline',
 						_List_fromArray(
 							[
-								$elm$svg$Svg$Attributes$class(arrowClass),
-								$elm$svg$Svg$Attributes$points(
+								A2($author$project$Diagram$attr, 'class', arrowClass),
+								A2(
+								$author$project$Diagram$attr,
+								'points',
 								$author$project$Diagram$svgPoints(points))
 							]),
 						_List_Nil),
-						(!message._) ? A2(
-						$elm$svg$Svg$polygon,
+						(!message.ad) ? A3(
+						$author$project$Diagram$Element,
+						'polygon',
 						_List_fromArray(
 							[
-								$elm$svg$Svg$Attributes$class('sequence-arrowhead'),
-								$elm$svg$Svg$Attributes$points(
+								A2($author$project$Diagram$attr, 'class', 'sequence-arrowhead'),
+								A2(
+								$author$project$Diagram$attr,
+								'points',
 								$author$project$Diagram$svgPoints(head))
 							]),
-						_List_Nil) : A2(
-						$elm$svg$Svg$polyline,
+						_List_Nil) : A3(
+						$author$project$Diagram$Element,
+						'polyline',
 						_List_fromArray(
 							[
-								$elm$svg$Svg$Attributes$class(arrowClass + ' sequence-open-head'),
-								$elm$svg$Svg$Attributes$points(
+								A2($author$project$Diagram$attr, 'class', arrowClass + ' sequence-open-head'),
+								A2(
+								$author$project$Diagram$attr,
+								'points',
 								$author$project$Diagram$svgPoints(head))
 							]),
 						_List_Nil)
@@ -5949,74 +6093,116 @@ var $author$project$Diagram$drawMessage = F2(
 					$elm$core$List$indexedMap,
 					F2(
 						function (index, caption) {
-							return A2(
-								$elm$svg$Svg$text_,
+							return A3(
+								$author$project$Diagram$Element,
+								'text',
 								_List_fromArray(
 									[
-										$elm$svg$Svg$Attributes$class('sequence-caption'),
-										A2($author$project$Diagram$intAttr, $elm$svg$Svg$Attributes$x, captionX),
+										A2($author$project$Diagram$attr, 'class', 'sequence-caption'),
+										A2($author$project$Diagram$intAttr, 'x', captionX),
 										A2(
 										$author$project$Diagram$intAttr,
-										$elm$svg$Svg$Attributes$y,
-										(y - 9) - (16 * (($elm$core$List$length(message.ad) - index) - 1))),
-										$elm$svg$Svg$Attributes$textAnchor(
+										'y',
+										(y - 9) - (16 * (($elm$core$List$length(message.ai) - index) - 1))),
+										A2(
+										$author$project$Diagram$attr,
+										'text-anchor',
 										self ? 'start' : 'middle')
 									]),
 								_List_fromArray(
 									[
-										$elm$svg$Svg$text(caption)
+										$author$project$Diagram$Text(caption)
 									]));
 						}),
-					message.ad)));
+					message.ai)));
 	});
-var $elm$svg$Svg$Attributes$rx = _VirtualDom_attribute('rx');
-var $elm$svg$Svg$rect = $elm$svg$Svg$trustedNode('rect');
 var $author$project$Diagram$box = F6(
 	function (className, x, y, width, height, radius) {
-		return A2(
-			$elm$svg$Svg$rect,
+		return A3(
+			$author$project$Diagram$Element,
+			'rect',
 			_List_fromArray(
 				[
-					$elm$svg$Svg$Attributes$class(className),
-					A2($author$project$Diagram$intAttr, $elm$svg$Svg$Attributes$x, x),
-					A2($author$project$Diagram$intAttr, $elm$svg$Svg$Attributes$y, y),
-					A2($author$project$Diagram$intAttr, $elm$svg$Svg$Attributes$width, width),
-					A2($author$project$Diagram$intAttr, $elm$svg$Svg$Attributes$height, height),
-					A2($author$project$Diagram$intAttr, $elm$svg$Svg$Attributes$rx, radius)
+					A2($author$project$Diagram$attr, 'class', className),
+					A2($author$project$Diagram$intAttr, 'x', x),
+					A2($author$project$Diagram$intAttr, 'y', y),
+					A2($author$project$Diagram$intAttr, 'width', width),
+					A2($author$project$Diagram$intAttr, 'height', height),
+					A2($author$project$Diagram$intAttr, 'rx', radius)
+				]),
+			_List_Nil);
+	});
+var $elm$core$Basics$min = F2(
+	function (x, y) {
+		return (_Utils_cmp(x, y) < 0) ? x : y;
+	});
+var $author$project$Diagram$line = F5(
+	function (className, x1, y1, x2, y2) {
+		return A3(
+			$author$project$Diagram$Element,
+			'line',
+			_List_fromArray(
+				[
+					A2($author$project$Diagram$attr, 'class', className),
+					A2($author$project$Diagram$intAttr, 'x1', x1),
+					A2($author$project$Diagram$intAttr, 'y1', y1),
+					A2($author$project$Diagram$intAttr, 'x2', x2),
+					A2($author$project$Diagram$intAttr, 'y2', y2)
 				]),
 			_List_Nil);
 	});
 var $author$project$Diagram$drawActivation = F2(
 	function (x, activation) {
-		return A6(
-			$author$project$Diagram$box,
-			'sequence-activation',
-			x(activation.af) - 5,
-			activation.X,
-			10,
-			A2($elm$core$Basics$max, 4, activation.am - activation.X),
-			0);
+		var height = A2($elm$core$Basics$max, 4, activation.aq - activation.J);
+		var center = x(activation.ac);
+		var bar = A6($author$project$Diagram$box, 'sequence-activation', center - 5, activation.J, 10, height, 0);
+		var _v0 = activation.aw;
+		if (_v0.$ === 1) {
+			return bar;
+		} else {
+			var _v1 = _v0.a;
+			var path = _v1.a;
+			var collapsed = _v1.b;
+			var markerY = activation.J + A2($elm$core$Basics$min, 10, (height / 2) | 0);
+			var label = _Utils_ap(
+				collapsed ? 'Expand call to ' : 'Collapse call to ',
+				activation.ac.a2);
+			return A3(
+				$author$project$Diagram$Element,
+				'g',
+				_List_fromArray(
+					[
+						A2($author$project$Diagram$attr, 'class', 'sequence-fold'),
+						A2($author$project$Diagram$attr, 'data-fold', path),
+						A2($author$project$Diagram$attr, 'role', 'button'),
+						A2($author$project$Diagram$attr, 'tabindex', '0'),
+						A2($author$project$Diagram$attr, 'aria-label', label),
+						A2(
+						$author$project$Diagram$attr,
+						'aria-expanded',
+						collapsed ? 'false' : 'true')
+					]),
+				_Utils_ap(
+					_List_fromArray(
+						[
+							A3(
+							$author$project$Diagram$Element,
+							'title',
+							_List_Nil,
+							_List_fromArray(
+								[
+									$author$project$Diagram$Text(label)
+								])),
+							bar,
+							A6($author$project$Diagram$box, 'sequence-fold-hit', center - 9, activation.J, 18, height, 0)
+						]),
+					collapsed ? _List_fromArray(
+						[
+							A5($author$project$Diagram$line, 'sequence-fold-mark', center - 3, markerY - 2, center + 3, markerY - 2),
+							A5($author$project$Diagram$line, 'sequence-fold-mark', center - 3, markerY + 2, center + 3, markerY + 2)
+						]) : _List_Nil));
+		}
 	});
-var $elm$svg$Svg$Attributes$x1 = _VirtualDom_attribute('x1');
-var $elm$svg$Svg$Attributes$x2 = _VirtualDom_attribute('x2');
-var $elm$svg$Svg$Attributes$y1 = _VirtualDom_attribute('y1');
-var $elm$svg$Svg$Attributes$y2 = _VirtualDom_attribute('y2');
-var $elm$svg$Svg$line = $elm$svg$Svg$trustedNode('line');
-var $author$project$Diagram$line = F5(
-	function (className, x1, y1, x2, y2) {
-		return A2(
-			$elm$svg$Svg$line,
-			_List_fromArray(
-				[
-					$elm$svg$Svg$Attributes$class(className),
-					A2($author$project$Diagram$intAttr, $elm$svg$Svg$Attributes$x1, x1),
-					A2($author$project$Diagram$intAttr, $elm$svg$Svg$Attributes$y1, y1),
-					A2($author$project$Diagram$intAttr, $elm$svg$Svg$Attributes$x2, x2),
-					A2($author$project$Diagram$intAttr, $elm$svg$Svg$Attributes$y2, y2)
-				]),
-			_List_Nil);
-	});
-var $elm$svg$Svg$title = $elm$svg$Svg$trustedNode('title');
 var $author$project$Diagram$drawParticipant = F4(
 	function (radius, columns, bottom, name) {
 		var visibleName = ($elm$core$String$length(name) > 16) ? (A2($elm$core$String$left, 15, name) + '…') : name;
@@ -6024,75 +6210,101 @@ var $author$project$Diagram$drawParticipant = F4(
 			$elm$core$Maybe$withDefault,
 			$author$project$Diagram$columnInset,
 			A2($elm$core$Dict$get, name, columns));
-		return A2(
-			$elm$svg$Svg$g,
+		return A3(
+			$author$project$Diagram$Element,
+			'g',
 			_List_Nil,
 			_List_fromArray(
 				[
-					A2(
-					$elm$svg$Svg$title,
+					A3(
+					$author$project$Diagram$Element,
+					'title',
 					_List_Nil,
 					_List_fromArray(
 						[
-							$elm$svg$Svg$text(name)
+							$author$project$Diagram$Text(name)
 						])),
 					A5($author$project$Diagram$line, 'sequence-lifeline', center, 52, center, bottom),
 					A6($author$project$Diagram$box, 'sequence-participant', center - 67, 14, 134, 38, radius),
-					A2(
-					$elm$svg$Svg$text_,
+					A3(
+					$author$project$Diagram$Element,
+					'text',
 					_List_fromArray(
 						[
-							$elm$svg$Svg$Attributes$class('sequence-name'),
-							A2($author$project$Diagram$intAttr, $elm$svg$Svg$Attributes$x, center),
-							A2($author$project$Diagram$intAttr, $elm$svg$Svg$Attributes$y, 38),
-							$elm$svg$Svg$Attributes$textAnchor('middle')
+							A2($author$project$Diagram$attr, 'class', 'sequence-name'),
+							A2($author$project$Diagram$intAttr, 'x', center),
+							A2($author$project$Diagram$intAttr, 'y', 38),
+							A2($author$project$Diagram$attr, 'text-anchor', 'middle')
 						]),
 					_List_fromArray(
 						[
-							$elm$svg$Svg$text(visibleName)
+							$author$project$Diagram$Text(visibleName)
 						]))
 				]));
 	});
-var $author$project$Diagram$view = F3(
-	function (showReturns, theme, _v0) {
+var $author$project$Diagram$diagram = F4(
+	function (folding, showReturns, theme, _v0) {
 		var initiator = _v0.a;
 		var steps = _v0.b;
-		var names = $author$project$Diagram$unique(
+		var root = A2($author$project$Diagram$Endpoint, initiator, 0);
+		var layout = A3(
+			$elm$core$List$foldl,
+			A6(
+				$author$project$Diagram$placeStep,
+				folding,
+				showReturns,
+				root,
+				A2($elm$core$Dict$singleton, initiator, 0),
+				'',
+				true),
+			{i: 94, t: _List_Nil, W: _List_Nil},
+			A2($elm$core$List$indexedMap, $elm$core$Tuple$pair, steps));
+		var height = layout.i + 12;
+		var visible = $elm$core$Set$fromList(
 			A2(
 				$elm$core$List$cons,
 				initiator,
-				A2($elm$core$List$concatMap, $author$project$Diagram$stepNames, steps)));
+				A2(
+					$elm$core$List$map,
+					A2(
+						$elm$core$Basics$composeR,
+						function ($) {
+							return $.H;
+						},
+						function ($) {
+							return $.a2;
+						}),
+					layout.t)));
+		var names = A2(
+			$elm$core$List$filter,
+			function (name) {
+				return A2($elm$core$Set$member, name, visible);
+			},
+			$author$project$Diagram$unique(
+				A2(
+					$elm$core$List$cons,
+					initiator,
+					A2($elm$core$List$concatMap, $author$project$Diagram$stepNames, steps))));
 		var lastParticipant = A2(
 			$elm$core$Maybe$withDefault,
 			initiator,
 			$elm$core$List$head(
 				$elm$core$List$reverse(names)));
-		var root = A2($author$project$Diagram$Endpoint, initiator, 0);
-		var layout = A3(
-			$elm$core$List$foldl,
-			A3(
-				$author$project$Diagram$placeStep,
-				showReturns,
-				root,
-				A2($elm$core$Dict$singleton, initiator, 0)),
-			{i: 94, v: _List_Nil, U: _List_Nil},
-			steps);
-		var height = layout.i + 12;
 		var rightPadding = A2(
 			$elm$core$List$any,
 			function (message) {
-				return _Utils_eq(message.W.aZ, message.M.aZ) && _Utils_eq(message.M.aZ, lastParticipant);
+				return _Utils_eq(message.Z.a2, message.H.a2) && _Utils_eq(message.H.a2, lastParticipant);
 			},
-			layout.v) ? 226 : $author$project$Diagram$columnInset;
+			layout.t) ? 226 : $author$project$Diagram$columnInset;
 		var activations = A2(
 			$elm$core$List$cons,
-			A3($author$project$Diagram$Activation, root, 58, layout.i - 12),
-			layout.U);
+			A5($author$project$Diagram$Activation, root, 58, layout.i - 12, true, $elm$core$Maybe$Nothing),
+			layout.W);
 		var depthPadding = 8 * A3(
 			$elm$core$List$foldl,
 			F2(
 				function (bar, largest) {
-					return A2($elm$core$Basics$max, largest, bar.af.aa);
+					return A2($elm$core$Basics$max, largest, bar.ac.ae);
 				}),
 			0,
 			activations);
@@ -6107,39 +6319,65 @@ var $author$project$Diagram$view = F3(
 					}),
 				names));
 		var x = function (endpoint) {
-			return (8 * endpoint.aa) + A2(
+			return (8 * endpoint.ae) + A2(
 				$elm$core$Maybe$withDefault,
 				$author$project$Diagram$columnInset,
-				A2($elm$core$Dict$get, endpoint.aZ, columns));
+				A2($elm$core$Dict$get, endpoint.a2, columns));
 		};
-		return A2(
-			$elm$svg$Svg$svg,
-			_List_fromArray(
-				[
-					$elm$svg$Svg$Attributes$class('sequence-svg'),
-					$elm$svg$Svg$Attributes$style(
-					A2(
-						$elm$core$String$join,
-						'; ',
+		return A3(
+			$author$project$Diagram$Element,
+			'svg',
+			_Utils_ap(
+				_List_fromArray(
+					[
+						A2($author$project$Diagram$attr, 'class', 'sequence-svg'),
 						A2(
-							$elm$core$List$map,
-							function (_v1) {
-								var name = _v1.a;
-								var value = _v1.b;
-								return name + (': ' + value);
-							},
-							$author$project$DiagramTheme$styles(theme)))),
-					A2($author$project$Diagram$intAttr, $elm$svg$Svg$Attributes$width, width),
-					A2($author$project$Diagram$intAttr, $elm$svg$Svg$Attributes$height, height),
-					$elm$svg$Svg$Attributes$viewBox(
-					'0 0 ' + ($elm$core$String$fromInt(width) + (' ' + $elm$core$String$fromInt(height)))),
-					A2($elm$html$Html$Attributes$attribute, 'role', 'img'),
-					A2($elm$html$Html$Attributes$attribute, 'aria-label', 'Sequence diagram')
-				]),
+						$author$project$Diagram$attr,
+						'style',
+						A2(
+							$elm$core$String$join,
+							'; ',
+							A2(
+								$elm$core$List$map,
+								function (_v1) {
+									var name = _v1.a;
+									var value = _v1.b;
+									return name + (': ' + value);
+								},
+								$author$project$DiagramTheme$styles(theme)))),
+						A2($author$project$Diagram$intAttr, 'width', width),
+						A2($author$project$Diagram$intAttr, 'height', height),
+						A2(
+						$author$project$Diagram$attr,
+						'viewBox',
+						'0 0 ' + ($elm$core$String$fromInt(width) + (' ' + $elm$core$String$fromInt(height)))),
+						A2(
+						$author$project$Diagram$attr,
+						'role',
+						_Utils_eq(folding, $elm$core$Maybe$Nothing) ? 'img' : 'group'),
+						A2($author$project$Diagram$attr, 'aria-label', 'Sequence diagram')
+					]),
+				function () {
+					if (!folding.$) {
+						var state = folding.a;
+						return _List_fromArray(
+							[
+								A2(
+								$author$project$Diagram$attr,
+								'data-can-collapse',
+								_Utils_eq(
+									state.n,
+									$elm$core$Set$fromList(
+										A2($author$project$Diagram$foldPaths, '', steps))) ? 'false' : 'true')
+							]);
+					} else {
+						return _List_Nil;
+					}
+				}()),
 			_Utils_ap(
 				A2(
 					$elm$core$List$map,
-					A3($author$project$Diagram$drawParticipant, theme.Y, columns, height - 20),
+					A3($author$project$Diagram$drawParticipant, theme._, columns, height - 20),
 					names),
 				_Utils_ap(
 					A2(
@@ -6148,13 +6386,35 @@ var $author$project$Diagram$view = F3(
 						A2(
 							$elm$core$List$sortBy,
 							function ($) {
-								return $.X;
+								return $.J;
 							},
-							activations)),
+							A2(
+								$elm$core$List$filter,
+								function ($) {
+									return $.ab;
+								},
+								activations))),
 					A2(
 						$elm$core$List$map,
 						$author$project$Diagram$drawMessage(x),
-						$elm$core$List$reverse(layout.v)))));
+						$elm$core$List$reverse(
+							A2(
+								$elm$core$List$filter,
+								function ($) {
+									return $.ab;
+								},
+								layout.t))))));
+	});
+var $author$project$Diagram$view = F5(
+	function (collapsed, fixed, showReturns, theme, sequence) {
+		return $author$project$Diagram$toDom(
+			A4(
+				$author$project$Diagram$diagram,
+				$elm$core$Maybe$Just(
+					{af: fixed, n: collapsed}),
+				showReturns,
+				theme,
+				sequence));
 	});
 var $elm$html$Html$Attributes$alt = $elm$html$Html$Attributes$stringProperty('alt');
 var $elm$html$Html$img = _VirtualDom_node('img');
@@ -6166,14 +6426,14 @@ var $elm$html$Html$Attributes$src = function (url) {
 };
 var $elm$html$Html$Attributes$hidden = $elm$html$Html$Attributes$boolProperty('hidden');
 var $author$project$Main$PreviewFailed = function (a) {
-	return {$: 18, a: a};
+	return {$: 20, a: a};
 };
 var $author$project$Main$PreviewLoaded = F2(
 	function (a, b) {
-		return {$: 17, a: a, b: b};
+		return {$: 19, a: a, b: b};
 	});
 var $author$project$Main$RenderPreview = function (a) {
-	return {$: 15, a: a};
+	return {$: 17, a: a};
 };
 var $author$project$Main$previewView = F3(
 	function (request, preview, source) {
@@ -6299,7 +6559,7 @@ var $author$project$DiagramTheme$Theme = function (background) {
 							return function (font) {
 								return function (radius) {
 									return function (participantBorder) {
-										return {as: font, ax: text, Y: radius, aP: lifeline, aX: activation, aY: background, aZ: participant, a_: participantText, a$: activationBorder, a0: participantBorder};
+										return {ax: font, aC: text, _: radius, aU: lifeline, a0: activation, a1: background, a2: participant, a3: participantText, a4: activationBorder, a5: participantBorder};
 									};
 								};
 							};
@@ -6313,28 +6573,33 @@ var $author$project$DiagramTheme$Theme = function (background) {
 var $author$project$DiagramTheme$dark = $author$project$DiagramTheme$Theme('#172321')('#e4f0ea')('#315845')('#ffffff')('#436c57')('#80988c')('#9ccdaf')('mono')(9)('#80988c');
 var $author$project$DiagramTheme$classic = $author$project$DiagramTheme$Theme('#ffffff')('#17382a')('#21543e')('#ffffff')('#c7ebd7')('#899d92')('#39815d')('mono')(3)('#17382a');
 var $author$project$DiagramTheme$monochrome = $author$project$DiagramTheme$Theme('#ffffff')('#202521')('#323a34')('#ffffff')('#e1e6e2')('#929292')('#565656')('mono')(9)('#202521');
-var $author$project$DiagramTheme$highContrastBlack = {as: 'mono', ax: '#fafffd', Y: 0, aP: '#ffffff', aX: '#000000', aY: '#000000', aZ: '#000000', a_: '#ffffff', a$: '#ffffff', a0: '#faf9f9'};
+var $author$project$DiagramTheme$highContrastBlack = {ax: 'mono', aC: '#fafffd', _: 0, aU: '#ffffff', a0: '#000000', a1: '#000000', a2: '#000000', a3: '#ffffff', a4: '#ffffff', a5: '#faf9f9'};
 var $author$project$DiagramTheme$inverseMonochrome = $author$project$DiagramTheme$Theme('#202020')('#f4f4f4')('#ededed')('#202020')('#454545')('#929292')('#bdbdbd')('mono')(9)('#bdbdbd');
-var $author$project$Main$diagramTheme = function (model) {
-	var _v0 = model.E;
-	switch (_v0) {
+var $author$project$DiagramTheme$preset = function (name) {
+	switch (name) {
+		case 'classic':
+			return $elm$core$Maybe$Just($author$project$DiagramTheme$classic);
 		case 'monochrome':
-			return $author$project$DiagramTheme$monochrome;
+			return $elm$core$Maybe$Just($author$project$DiagramTheme$monochrome);
 		case 'inverse-monochrome':
-			return $author$project$DiagramTheme$inverseMonochrome;
+			return $elm$core$Maybe$Just($author$project$DiagramTheme$inverseMonochrome);
 		case 'dark':
-			return $author$project$DiagramTheme$dark;
+			return $elm$core$Maybe$Just($author$project$DiagramTheme$dark);
 		case 'high-contrast-black':
-			return $author$project$DiagramTheme$highContrastBlack;
-		case 'custom':
-			return model.K;
+			return $elm$core$Maybe$Just($author$project$DiagramTheme$highContrastBlack);
 		default:
-			return $author$project$DiagramTheme$classic;
+			return $elm$core$Maybe$Nothing;
 	}
+};
+var $author$project$Main$diagramTheme = function (model) {
+	return (model.y === 'custom') ? model.O : A2(
+		$elm$core$Maybe$withDefault,
+		$author$project$DiagramTheme$classic,
+		$author$project$DiagramTheme$preset(model.y));
 };
 var $author$project$Main$outputView = F2(
 	function (model, output) {
-		var _v0 = _Utils_Tuple2(model.T, output);
+		var _v0 = _Utils_Tuple2(model.E, output);
 		_v0$2:
 		while (true) {
 			if (!_v0.a.$) {
@@ -6368,20 +6633,22 @@ var $author$project$Main$outputView = F2(
 									_List_fromArray(
 										[
 											$elm$html$Html$Attributes$class(
-											model.J ? 'diagram-preview local-diagram diagram-fit' : 'diagram-preview local-diagram'),
+											model.N ? 'diagram-preview local-diagram diagram-fit' : 'diagram-preview local-diagram'),
 											A2($elm$html$Html$Attributes$attribute, 'tabindex', '0'),
 											A2($elm$html$Html$Attributes$attribute, 'aria-label', 'Diagram preview')
 										]),
 									_List_fromArray(
 										[
-											A3(
+											A5(
 											$author$project$Diagram$view,
-											model.L,
+											model.n,
+											model.X,
+											model.P,
 											$author$project$Main$diagramTheme(model),
 											sequence)
 										]));
 							default:
-								return A3($author$project$Main$previewView, model.x, model.j, source);
+								return A3($author$project$Main$previewView, model.z, model.j, source);
 						}
 					} else {
 						break _v0$2;
@@ -6617,6 +6884,9 @@ var $author$project$SequenceDiagram$Renderer$toPlantUml = F3(
 						_List_fromArray(
 							['@enduml\u000A'])))));
 	});
+var $author$project$Main$FoldDiagram = function (a) {
+	return {$: 13, a: a};
+};
 var $author$project$Main$LoadExample = {$: 1};
 var $author$project$Main$ShowReturns = function (a) {
 	return {$: 3, a: a};
@@ -6625,6 +6895,20 @@ var $author$project$Main$IncludeTheme = function (a) {
 	return {$: 4, a: a};
 };
 var $author$project$Main$ServerPreview = 2;
+var $author$project$Diagram$foldableCalls = function (_v0) {
+	var steps = _v0.b;
+	return $elm$core$Set$fromList(
+		A2($author$project$Diagram$foldPaths, '', steps));
+};
+var $author$project$Main$foldableCalls = function (model) {
+	return A2(
+		$elm$core$Maybe$withDefault,
+		$elm$core$Set$empty,
+		A2(
+			$elm$core$Maybe$map,
+			$author$project$Diagram$foldableCalls,
+			A2($elm$core$Maybe$andThen, $elm$core$Result$toMaybe, model.E)));
+};
 var $author$project$DiagramTheme$fonts = _List_fromArray(
 	[
 		_Utils_Tuple2('mono', 'Monospace'),
@@ -6698,7 +6982,7 @@ var $author$project$Main$themeSettings = function (model) {
 						_List_Nil)
 					]));
 		});
-	var theme = model.K;
+	var theme = model.O;
 	return A2(
 		$elm$html$Html$section,
 		_List_fromArray(
@@ -6719,7 +7003,7 @@ var $author$project$Main$themeSettings = function (model) {
 						A4(
 						$author$project$Main$themeSelect,
 						'Diagram theme',
-						model.E,
+						model.y,
 						$author$project$Main$SelectDiagramTheme,
 						_List_fromArray(
 							[
@@ -6760,7 +7044,7 @@ var $author$project$Main$themeSettings = function (model) {
 								_List_Nil)
 							]))
 					])),
-				(model.E === 'custom') ? A2(
+				(model.y === 'custom') ? A2(
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
@@ -6771,33 +7055,51 @@ var $author$project$Main$themeSettings = function (model) {
 						A3(
 						colorPicker,
 						'Background',
-						theme.aY,
+						theme.a1,
 						function (color) {
 							return _Utils_update(
 								theme,
-								{aY: color});
+								{a1: color});
 						}),
 						A3(
 						colorPicker,
 						'Text and arrows',
-						theme.ax,
+						theme.aC,
 						function (color) {
 							return _Utils_update(
 								theme,
-								{ax: color});
+								{aC: color});
 						}),
 						A3(
 						colorPicker,
 						'Participants',
-						theme.aZ,
+						theme.a2,
 						function (color) {
 							return _Utils_update(
 								theme,
-								{aZ: color});
+								{a2: color});
 						}),
 						A3(
 						colorPicker,
 						'Participant outline',
+						theme.a5,
+						function (color) {
+							return _Utils_update(
+								theme,
+								{a5: color});
+						}),
+						A3(
+						colorPicker,
+						'Participant labels',
+						theme.a3,
+						function (color) {
+							return _Utils_update(
+								theme,
+								{a3: color});
+						}),
+						A3(
+						colorPicker,
+						'Activations',
 						theme.a0,
 						function (color) {
 							return _Utils_update(
@@ -6806,49 +7108,31 @@ var $author$project$Main$themeSettings = function (model) {
 						}),
 						A3(
 						colorPicker,
-						'Participant labels',
-						theme.a_,
-						function (color) {
-							return _Utils_update(
-								theme,
-								{a_: color});
-						}),
-						A3(
-						colorPicker,
-						'Activations',
-						theme.aX,
-						function (color) {
-							return _Utils_update(
-								theme,
-								{aX: color});
-						}),
-						A3(
-						colorPicker,
 						'Lifelines',
-						theme.aP,
+						theme.aU,
 						function (color) {
 							return _Utils_update(
 								theme,
-								{aP: color});
+								{aU: color});
 						}),
 						A3(
 						colorPicker,
 						'Activation border',
-						theme.a$,
+						theme.a4,
 						function (color) {
 							return _Utils_update(
 								theme,
-								{a$: color});
+								{a4: color});
 						}),
 						A4(
 						$author$project$Main$themeSelect,
 						'Font',
-						theme.as,
+						theme.ax,
 						function (font) {
 							return $author$project$Main$EditTheme(
 								_Utils_update(
 									theme,
-									{as: font}));
+									{ax: font}));
 						},
 						$author$project$DiagramTheme$fonts),
 						A2(
@@ -6857,7 +7141,7 @@ var $author$project$Main$themeSettings = function (model) {
 						_List_fromArray(
 							[
 								$elm$html$Html$text(
-								'Participant corner radius (' + ($elm$core$String$fromInt(theme.Y) + ' px)')),
+								'Participant corner radius (' + ($elm$core$String$fromInt(theme._) + ' px)')),
 								A2(
 								$elm$html$Html$input,
 								_List_fromArray(
@@ -6866,16 +7150,16 @@ var $author$project$Main$themeSettings = function (model) {
 										A2($elm$html$Html$Attributes$attribute, 'min', '0'),
 										A2($elm$html$Html$Attributes$attribute, 'max', '19'),
 										$elm$html$Html$Attributes$value(
-										$elm$core$String$fromInt(theme.Y)),
+										$elm$core$String$fromInt(theme._)),
 										$elm$html$Html$Events$onInput(
 										function (radius) {
 											return $author$project$Main$EditTheme(
 												_Utils_update(
 													theme,
 													{
-														Y: A2(
+														_: A2(
 															$elm$core$Maybe$withDefault,
-															theme.Y,
+															theme._,
 															$elm$core$String$toInt(radius))
 													}));
 										})
@@ -6892,18 +7176,21 @@ var $author$project$Main$themeSettings = function (model) {
 					]),
 				_List_fromArray(
 					[
-						$elm$html$Html$text(model.D)
+						$elm$html$Html$text(model.G)
 					]))
 			]));
 };
-var $author$project$Main$DownloadDiagram = {$: 13};
+var $author$project$Main$DownloadDiagram = {$: 15};
+var $author$project$Main$SetFixedDiagram = function (a) {
+	return {$: 14, a: a};
+};
 var $author$project$Main$ToggleDiagramFit = {$: 12};
-var $author$project$Main$OpenDiagramViewer = {$: 14};
+var $author$project$Main$OpenDiagramViewer = {$: 16};
 var $author$project$Main$view = function (model) {
 	var output = A2(
 		$elm$core$Maybe$map,
-		A2($author$project$SequenceDiagram$Renderer$toPlantUml, model.L, model.V),
-		A2($elm$core$Maybe$andThen, $elm$core$Result$toMaybe, model.T));
+		A2($author$project$SequenceDiagram$Renderer$toPlantUml, model.P, model.Y),
+		A2($elm$core$Maybe$andThen, $elm$core$Result$toMaybe, model.E));
 	return A2(
 		$elm$html$Html$div,
 		_List_fromArray(
@@ -7043,7 +7330,7 @@ var $author$project$Main$view = function (model) {
 														$elm$html$Html$text('Load example')
 													]))
 											])),
-										$author$project$Main$editor(model.G),
+										$author$project$Main$editor(model.K),
 										$author$project$Main$syntaxHelp
 									])),
 								A2(
@@ -7099,7 +7386,7 @@ var $author$project$Main$view = function (model) {
 																		A2(
 																		$elm$html$Html$Attributes$attribute,
 																		'aria-pressed',
-																		model.J ? 'true' : 'false')
+																		model.N ? 'true' : 'false')
 																	]),
 																_List_fromArray(
 																	[
@@ -7130,6 +7417,115 @@ var $author$project$Main$view = function (model) {
 													]))
 											])),
 										A2($author$project$Main$outputView, model, output),
+										((model.o === 1) && (!$elm$core$Set$isEmpty(
+										$author$project$Main$foldableCalls(model)))) ? A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('fold-settings')
+											]),
+										_List_fromArray(
+											[
+												A2(
+												$elm$html$Html$div,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('diagram-tools')
+													]),
+												_List_fromArray(
+													[
+														A2(
+														$elm$html$Html$button,
+														_List_fromArray(
+															[
+																$elm$html$Html$Events$onClick(
+																$author$project$Main$FoldDiagram('collapse')),
+																$elm$html$Html$Attributes$disabled(
+																_Utils_eq(
+																	model.n,
+																	$author$project$Main$foldableCalls(model)))
+															]),
+														_List_fromArray(
+															[
+																$elm$html$Html$text('Collapse all')
+															])),
+														A2(
+														$elm$html$Html$button,
+														_List_fromArray(
+															[
+																$elm$html$Html$Events$onClick(
+																$author$project$Main$FoldDiagram('expand')),
+																$elm$html$Html$Attributes$disabled(
+																$elm$core$Set$isEmpty(model.n))
+															]),
+														_List_fromArray(
+															[
+																$elm$html$Html$text('Expand all')
+															])),
+														A3($author$project$Main$checkbox, 'Keep positions fixed', model.X, $author$project$Main$SetFixedDiagram)
+													])),
+												A2(
+												$elm$html$Html$details,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('walkthrough-help')
+													]),
+												_List_fromArray(
+													[
+														A2(
+														$elm$html$Html$summary,
+														_List_Nil,
+														_List_fromArray(
+															[
+																$elm$html$Html$text('Walk through a flow')
+															])),
+														A2(
+														$elm$html$Html$p,
+														_List_Nil,
+														_List_fromArray(
+															[
+																$elm$html$Html$text('For a complex sequence, start with '),
+																A2(
+																$elm$html$Html$strong,
+																_List_Nil,
+																_List_fromArray(
+																	[
+																		$elm$html$Html$text('Collapse all')
+																	])),
+																$elm$html$Html$text(' to show the main flow. Select an activation bar marked with two short lines to reveal its nested calls one level at a time. Select it again to hide them.')
+															])),
+														A2(
+														$elm$html$Html$p,
+														_List_Nil,
+														_List_fromArray(
+															[
+																$elm$html$Html$text('Leave '),
+																A2(
+																$elm$html$Html$strong,
+																_List_Nil,
+																_List_fromArray(
+																	[
+																		$elm$html$Html$text('Keep positions fixed')
+																	])),
+																$elm$html$Html$text(' on so the audience can follow the same arrows as you reveal details. Turn it off to close the gaps left by hidden calls.')
+															])),
+														A2(
+														$elm$html$Html$p,
+														_List_Nil,
+														_List_fromArray(
+															[
+																$elm$html$Html$text('Use '),
+																A2(
+																$elm$html$Html$strong,
+																_List_Nil,
+																_List_fromArray(
+																	[
+																		$elm$html$Html$text('Full screen')
+																	])),
+																$elm$html$Html$text(' to present. It opens with your current theme and the same calls expanded or collapsed.')
+															]))
+													]))
+											])) : $elm$html$Html$text(''),
 										A2(
 										$elm$html$Html$div,
 										_List_fromArray(
@@ -7198,8 +7594,8 @@ var $author$project$Main$view = function (model) {
 									]),
 								_List_fromArray(
 									[
-										A3($author$project$Main$checkbox, 'Show return arrows', model.L, $author$project$Main$ShowReturns),
-										(model.o === 1) ? $elm$html$Html$text('') : A3($author$project$Main$checkbox, 'Include monochrome theme', model.V, $author$project$Main$IncludeTheme)
+										A3($author$project$Main$checkbox, 'Show return arrows', model.P, $author$project$Main$ShowReturns),
+										(model.o === 1) ? $elm$html$Html$text('') : A3($author$project$Main$checkbox, 'Include monochrome theme', model.Y, $author$project$Main$IncludeTheme)
 									])),
 								A2(
 								$elm$html$Html$p,
@@ -7210,7 +7606,7 @@ var $author$project$Main$view = function (model) {
 									]),
 								_List_fromArray(
 									[
-										$elm$html$Html$text(model.s)
+										$elm$html$Html$text(model.u)
 									]))
 							])),
 						(model.o === 1) ? $author$project$Main$themeSettings(model) : $elm$html$Html$text(''),
@@ -7233,17 +7629,6 @@ var $author$project$Main$Copied = function (a) {
 	return {$: 10, a: a};
 };
 var $elm$core$String$trim = _String_trim;
-var $elm$core$List$filter = F2(
-	function (isGood, list) {
-		return A3(
-			$elm$core$List$foldr,
-			F2(
-				function (x, xs) {
-					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
-				}),
-			_List_Nil,
-			list);
-	});
 var $elm$core$String$foldr = _String_foldr;
 var $elm$core$String$toList = function (string) {
 	return A3($elm$core$String$foldr, $elm$core$List$cons, _List_Nil, string);
@@ -7271,10 +7656,10 @@ var $author$project$SequenceDiagram$Parser$toLine = F2(
 			0,
 			$elm$core$String$toList(raw));
 		return {
-			ax: $elm$core$String$isEmpty(
+			aC: $elm$core$String$isEmpty(
 				$elm$core$String$trim(raw)) ? '' : A2($elm$core$String$dropLeft, indent, raw),
-			z: indent,
-			ac: index + 1
+			B: indent,
+			ah: index + 1
 		};
 	});
 var $author$project$SequenceDiagram$Model$Sequence = F2(
@@ -7283,7 +7668,7 @@ var $author$project$SequenceDiagram$Model$Sequence = F2(
 	});
 var $author$project$SequenceDiagram$Parser$lineError = F3(
 	function (line, column, message) {
-		return 'Line ' + ($elm$core$String$fromInt(line.ac) + (', column ' + ($elm$core$String$fromInt(line.z + column) + (': ' + message))));
+		return 'Line ' + ($elm$core$String$fromInt(line.ah) + (', column ' + ($elm$core$String$fromInt(line.B + column) + (': ' + message))));
 	});
 var $elm$parser$Parser$Advanced$bagToList = F2(
 	function (bag, list) {
@@ -7315,7 +7700,7 @@ var $elm$parser$Parser$Advanced$run = F2(
 	function (_v0, src) {
 		var parse = _v0;
 		var _v1 = parse(
-			{ak: 1, aq: 1, a: src, z: 1, b: 0, c: _List_Nil});
+			{ao: 1, au: 1, a: src, B: 1, b: 0, c: _List_Nil});
 		if (!_v1.$) {
 			var value = _v1.b;
 			return $elm$core$Result$Ok(value);
@@ -7327,10 +7712,10 @@ var $elm$parser$Parser$Advanced$run = F2(
 	});
 var $elm$parser$Parser$DeadEnd = F3(
 	function (row, col, problem) {
-		return {ak: col, aq: row, bi: problem};
+		return {ao: col, au: row, bn: problem};
 	});
 var $elm$parser$Parser$problemToDeadEnd = function (p) {
-	return A3($elm$parser$Parser$DeadEnd, p.aq, p.ak, p.bi);
+	return A3($elm$parser$Parser$DeadEnd, p.au, p.ao, p.bn);
 };
 var $elm$parser$Parser$run = F2(
 	function (parser, source) {
@@ -7374,7 +7759,7 @@ var $author$project$SequenceDiagram$Parser$describeProblem = function (problem) 
 };
 var $author$project$SequenceDiagram$Parser$parseLine = F2(
 	function (parser, line) {
-		return A2($elm$core$String$startsWith, '\u0009', line.ax) ? $elm$core$Result$Err(
+		return A2($elm$core$String$startsWith, '\u0009', line.aC) ? $elm$core$Result$Err(
 			A3($author$project$SequenceDiagram$Parser$lineError, line, 1, 'Use spaces for indentation.')) : A2(
 			$elm$core$Result$mapError,
 			function (deadEnds) {
@@ -7384,7 +7769,7 @@ var $author$project$SequenceDiagram$Parser$parseLine = F2(
 						A2(
 							$elm$core$Basics$composeR,
 							function ($) {
-								return $.ak;
+								return $.ao;
 							},
 							$elm$core$Basics$negate),
 						deadEnds));
@@ -7393,13 +7778,13 @@ var $author$project$SequenceDiagram$Parser$parseLine = F2(
 					return A3(
 						$author$project$SequenceDiagram$Parser$lineError,
 						line,
-						deadEnd.ak,
-						$author$project$SequenceDiagram$Parser$describeProblem(deadEnd.bi));
+						deadEnd.ao,
+						$author$project$SequenceDiagram$Parser$describeProblem(deadEnd.bn));
 				} else {
 					return A3($author$project$SequenceDiagram$Parser$lineError, line, 1, 'Invalid syntax.');
 				}
 			},
-			A2($elm$parser$Parser$run, parser, line.ax));
+			A2($elm$parser$Parser$run, parser, line.aC));
 	});
 var $elm$parser$Parser$Advanced$Bad = F2(
 	function (a, b) {
@@ -7409,14 +7794,11 @@ var $elm$parser$Parser$Advanced$Good = F3(
 	function (a, b, c) {
 		return {$: 0, a: a, b: b, c: c};
 	});
-var $elm$core$Basics$identity = function (x) {
-	return x;
-};
 var $elm$parser$Parser$Advanced$Parser = $elm$core$Basics$identity;
 var $elm$parser$Parser$Advanced$Empty = {$: 0};
 var $elm$parser$Parser$Advanced$DeadEnd = F4(
 	function (row, col, problem, contextStack) {
-		return {ak: col, aq: row, bi: problem, bm: contextStack};
+		return {ao: col, au: row, bn: problem, br: contextStack};
 	});
 var $elm$parser$Parser$Advanced$AddRight = F2(
 	function (a, b) {
@@ -7427,7 +7809,7 @@ var $elm$parser$Parser$Advanced$fromState = F2(
 		return A2(
 			$elm$parser$Parser$Advanced$AddRight,
 			$elm$parser$Parser$Advanced$Empty,
-			A4($elm$parser$Parser$Advanced$DeadEnd, s.aq, s.ak, x, s.c));
+			A4($elm$parser$Parser$Advanced$DeadEnd, s.au, s.ao, x, s.c));
 	});
 var $elm$parser$Parser$Advanced$end = function (x) {
 	return function (s) {
@@ -7531,7 +7913,7 @@ var $elm$parser$Parser$Advanced$chompWhileHelp = F5(
 					$elm$parser$Parser$Advanced$Good,
 					_Utils_cmp(s0.b, offset) < 0,
 					0,
-					{ak: col, aq: row, a: s0.a, z: s0.z, b: offset, c: s0.c});
+					{ao: col, au: row, a: s0.a, B: s0.B, b: offset, c: s0.c});
 			} else {
 				if (_Utils_eq(newOffset, -2)) {
 					var $temp$isGood = isGood,
@@ -7563,7 +7945,7 @@ var $elm$parser$Parser$Advanced$chompWhileHelp = F5(
 	});
 var $elm$parser$Parser$Advanced$chompWhile = function (isGood) {
 	return function (s) {
-		return A5($elm$parser$Parser$Advanced$chompWhileHelp, isGood, s.b, s.aq, s.ak, s);
+		return A5($elm$parser$Parser$Advanced$chompWhileHelp, isGood, s.b, s.au, s.ao, s);
 	};
 };
 var $elm$parser$Parser$chompWhile = $elm$parser$Parser$Advanced$chompWhile;
@@ -7579,7 +7961,7 @@ var $elm$parser$Parser$Advanced$token = function (_v0) {
 	var expecting = _v0.b;
 	var progress = !$elm$core$String$isEmpty(str);
 	return function (s) {
-		var _v1 = A5($elm$parser$Parser$Advanced$isSubString, str, s.b, s.aq, s.ak, s.a);
+		var _v1 = A5($elm$parser$Parser$Advanced$isSubString, str, s.b, s.au, s.ao, s.a);
 		var newOffset = _v1.a;
 		var newRow = _v1.b;
 		var newCol = _v1.c;
@@ -7590,7 +7972,7 @@ var $elm$parser$Parser$Advanced$token = function (_v0) {
 			$elm$parser$Parser$Advanced$Good,
 			progress,
 			0,
-			{ak: newCol, aq: newRow, a: s.a, z: s.z, b: newOffset, c: s.c});
+			{ao: newCol, au: newRow, a: s.a, B: s.B, b: newOffset, c: s.c});
 	};
 };
 var $elm$parser$Parser$Advanced$symbol = $elm$parser$Parser$Advanced$token;
@@ -7618,7 +8000,7 @@ var $elm$parser$Parser$Advanced$keyword = function (_v0) {
 	var expecting = _v0.b;
 	var progress = !$elm$core$String$isEmpty(kwd);
 	return function (s) {
-		var _v1 = A5($elm$parser$Parser$Advanced$isSubString, kwd, s.b, s.aq, s.ak, s.a);
+		var _v1 = A5($elm$parser$Parser$Advanced$isSubString, kwd, s.b, s.au, s.ao, s.a);
 		var newOffset = _v1.a;
 		var newRow = _v1.b;
 		var newCol = _v1.c;
@@ -7635,7 +8017,7 @@ var $elm$parser$Parser$Advanced$keyword = function (_v0) {
 			$elm$parser$Parser$Advanced$Good,
 			progress,
 			0,
-			{ak: newCol, aq: newRow, a: s.a, z: s.z, b: newOffset, c: s.c});
+			{ao: newCol, au: newRow, a: s.a, B: s.B, b: newOffset, c: s.c});
 	};
 };
 var $elm$parser$Parser$ExpectingKeyword = function (a) {
@@ -8015,17 +8397,17 @@ var $elm$parser$Parser$Advanced$sequenceEnd = F5(
 var $elm$parser$Parser$Advanced$sequence = function (i) {
 	return A2(
 		$elm$parser$Parser$Advanced$skip,
-		$elm$parser$Parser$Advanced$token(i.X),
+		$elm$parser$Parser$Advanced$token(i.J),
 		A2(
 			$elm$parser$Parser$Advanced$skip,
-			i.bd,
+			i.bi,
 			A5(
 				$elm$parser$Parser$Advanced$sequenceEnd,
-				$elm$parser$Parser$Advanced$token(i.am),
-				i.bd,
-				i.a4,
-				$elm$parser$Parser$Advanced$token(i.bk),
-				i.bj)));
+				$elm$parser$Parser$Advanced$token(i.aq),
+				i.bi,
+				i.a9,
+				$elm$parser$Parser$Advanced$token(i.bp),
+				i.bo)));
 };
 var $elm$parser$Parser$Advanced$Optional = 1;
 var $elm$parser$Parser$Advanced$Forbidden = 0;
@@ -8043,28 +8425,28 @@ var $elm$parser$Parser$toAdvancedTrailing = function (trailing) {
 var $elm$parser$Parser$sequence = function (i) {
 	return $elm$parser$Parser$Advanced$sequence(
 		{
-			am: $elm$parser$Parser$toToken(i.am),
-			a4: i.a4,
-			X: $elm$parser$Parser$toToken(i.X),
-			bd: i.bd,
-			bj: $elm$parser$Parser$toAdvancedTrailing(i.bj),
-			bk: $elm$parser$Parser$toToken(i.bk)
+			aq: $elm$parser$Parser$toToken(i.aq),
+			a9: i.a9,
+			J: $elm$parser$Parser$toToken(i.J),
+			bi: i.bi,
+			bo: $elm$parser$Parser$toAdvancedTrailing(i.bo),
+			bp: $elm$parser$Parser$toToken(i.bp)
 		});
 };
 var $elm$parser$Parser$Forbidden = 0;
 var $author$project$SequenceDiagram$Parser$options = $elm$parser$Parser$sequence(
 	{
-		am: ']',
-		a4: A2(
+		aq: ']',
+		a9: A2(
 			$elm$parser$Parser$map,
 			function (_v0) {
 				return 0;
 			},
 			$elm$parser$Parser$keyword('async')),
-		X: '[',
-		bd: $author$project$SequenceDiagram$Parser$spaces,
-		bj: 0,
-		bk: ','
+		J: '[',
+		bi: $author$project$SequenceDiagram$Parser$spaces,
+		bo: 0,
+		bp: ','
 	});
 var $author$project$SequenceDiagram$Parser$step = A2(
 	$elm$parser$Parser$keeper,
@@ -8104,13 +8486,13 @@ var $author$project$SequenceDiagram$Parser$parseSteps = F3(
 			} else {
 				var line = lines.a;
 				var rest = lines.b;
-				if (_Utils_cmp(line.z, indent) < 0) {
+				if (_Utils_cmp(line.B, indent) < 0) {
 					return $elm$core$Result$Ok(
 						_Utils_Tuple2(
 							$elm$core$List$reverse(reversed),
 							lines));
 				} else {
-					if (_Utils_cmp(line.z, indent) > 0) {
+					if (_Utils_cmp(line.B, indent) > 0) {
 						return $elm$core$Result$Err(
 							A3($author$project$SequenceDiagram$Parser$lineError, line, 1, 'Expected the same indentation as the previous sibling step.'));
 					} else {
@@ -8149,7 +8531,7 @@ var $author$project$SequenceDiagram$Parser$parseChildren = F2(
 	function (parentIndent, lines) {
 		if (lines.b) {
 			var first = lines.a;
-			return (_Utils_cmp(first.z, parentIndent) > 0) ? A3($author$project$SequenceDiagram$Parser$parseSteps, first.z, _List_Nil, lines) : $elm$core$Result$Ok(
+			return (_Utils_cmp(first.B, parentIndent) > 0) ? A3($author$project$SequenceDiagram$Parser$parseSteps, first.B, _List_Nil, lines) : $elm$core$Result$Ok(
 				_Utils_Tuple2(_List_Nil, lines));
 		} else {
 			return $elm$core$Result$Ok(
@@ -8194,13 +8576,66 @@ var $author$project$SequenceDiagram$Parser$parse = function (input) {
 		A2(
 			$elm$core$List$filter,
 			function (line) {
-				return !$elm$core$String$isEmpty(line.ax);
+				return !$elm$core$String$isEmpty(line.aC);
 			},
 			A2(
 				$elm$core$List$indexedMap,
 				$author$project$SequenceDiagram$Parser$toLine,
 				$elm$core$String$lines(input))));
 };
+var $elm$core$Basics$modBy = _Basics_modBy;
+var $elm$core$Bitwise$and = _Bitwise_and;
+var $elm$core$Bitwise$shiftRightBy = _Bitwise_shiftRightBy;
+var $elm$core$String$repeatHelp = F3(
+	function (n, chunk, result) {
+		return (n <= 0) ? result : A3(
+			$elm$core$String$repeatHelp,
+			n >> 1,
+			_Utils_ap(chunk, chunk),
+			(!(n & 1)) ? result : _Utils_ap(result, chunk));
+	});
+var $elm$core$String$repeat = F2(
+	function (n, chunk) {
+		return A3($elm$core$String$repeatHelp, n, chunk, '');
+	});
+var $author$project$SequenceInput$expandIndentTabs = F2(
+	function (column, line) {
+		var _v0 = $elm$core$String$uncons(line);
+		_v0$2:
+		while (true) {
+			if (!_v0.$) {
+				switch (_v0.a.a) {
+					case ' ':
+						var _v1 = _v0.a;
+						var rest = _v1.b;
+						return ' ' + A2($author$project$SequenceInput$expandIndentTabs, column + 1, rest);
+					case '\t':
+						var _v2 = _v0.a;
+						var rest = _v2.b;
+						var spaces = 4 - A2($elm$core$Basics$modBy, 4, column);
+						return _Utils_ap(
+							A2($elm$core$String$repeat, spaces, ' '),
+							A2($author$project$SequenceInput$expandIndentTabs, column + spaces, rest));
+					default:
+						break _v0$2;
+				}
+			} else {
+				break _v0$2;
+			}
+		}
+		return line;
+	});
+var $author$project$SequenceInput$parse = A2(
+	$elm$core$Basics$composeR,
+	$elm$core$String$lines,
+	A2(
+		$elm$core$Basics$composeR,
+		$elm$core$List$map(
+			$author$project$SequenceInput$expandIndentTabs(0)),
+		A2(
+			$elm$core$Basics$composeR,
+			$elm$core$String$join('\u000A'),
+			$author$project$SequenceDiagram$Parser$parse)));
 var $author$project$Main$Failed = {$: 4};
 var $author$project$Main$Loaded = function (a) {
 	return {$: 3, a: a};
@@ -8279,8 +8714,8 @@ var $author$project$DiagramTheme$decode = $elm$json$Json$Decode$decodeString(
 			A2($elm$json$Json$Decode$field, 'participant', $author$project$DiagramTheme$color),
 			A2($elm$json$Json$Decode$field, 'participantText', $author$project$DiagramTheme$color),
 			A2($elm$json$Json$Decode$field, 'activation', $author$project$DiagramTheme$color),
-			A2($author$project$DiagramTheme$optionalColor, 'lifeline', $author$project$DiagramTheme$classic.aP),
-			A2($author$project$DiagramTheme$optionalColor, 'activationBorder', $author$project$DiagramTheme$classic.a$),
+			A2($author$project$DiagramTheme$optionalColor, 'lifeline', $author$project$DiagramTheme$classic.aU),
+			A2($author$project$DiagramTheme$optionalColor, 'activationBorder', $author$project$DiagramTheme$classic.a4),
 			A2(
 				$elm$json$Json$Decode$field,
 				'font',
@@ -8331,36 +8766,403 @@ var $author$project$DiagramTheme$encode = function (theme) {
 				[
 					_Utils_Tuple2(
 					'background',
-					$elm$json$Json$Encode$string(theme.aY)),
+					$elm$json$Json$Encode$string(theme.a1)),
 					_Utils_Tuple2(
 					'text',
-					$elm$json$Json$Encode$string(theme.ax)),
+					$elm$json$Json$Encode$string(theme.aC)),
 					_Utils_Tuple2(
 					'participant',
-					$elm$json$Json$Encode$string(theme.aZ)),
+					$elm$json$Json$Encode$string(theme.a2)),
 					_Utils_Tuple2(
 					'participantBorder',
-					$elm$json$Json$Encode$string(theme.a0)),
+					$elm$json$Json$Encode$string(theme.a5)),
 					_Utils_Tuple2(
 					'participantText',
-					$elm$json$Json$Encode$string(theme.a_)),
+					$elm$json$Json$Encode$string(theme.a3)),
 					_Utils_Tuple2(
 					'activation',
-					$elm$json$Json$Encode$string(theme.aX)),
+					$elm$json$Json$Encode$string(theme.a0)),
 					_Utils_Tuple2(
 					'lifeline',
-					$elm$json$Json$Encode$string(theme.aP)),
+					$elm$json$Json$Encode$string(theme.aU)),
 					_Utils_Tuple2(
 					'activationBorder',
-					$elm$json$Json$Encode$string(theme.a$)),
+					$elm$json$Json$Encode$string(theme.a4)),
 					_Utils_Tuple2(
 					'font',
-					$elm$json$Json$Encode$string(theme.as)),
+					$elm$json$Json$Encode$string(theme.ax)),
 					_Utils_Tuple2(
 					'radius',
-					$elm$json$Json$Encode$int(theme.Y))
+					$elm$json$Json$Encode$int(theme._))
 				])));
 };
+var $elm$core$Dict$getMin = function (dict) {
+	getMin:
+	while (true) {
+		if ((dict.$ === -1) && (dict.d.$ === -1)) {
+			var left = dict.d;
+			var $temp$dict = left;
+			dict = $temp$dict;
+			continue getMin;
+		} else {
+			return dict;
+		}
+	}
+};
+var $elm$core$Dict$moveRedLeft = function (dict) {
+	if (((dict.$ === -1) && (dict.d.$ === -1)) && (dict.e.$ === -1)) {
+		if ((dict.e.d.$ === -1) && (!dict.e.d.a)) {
+			var clr = dict.a;
+			var k = dict.b;
+			var v = dict.c;
+			var _v1 = dict.d;
+			var lClr = _v1.a;
+			var lK = _v1.b;
+			var lV = _v1.c;
+			var lLeft = _v1.d;
+			var lRight = _v1.e;
+			var _v2 = dict.e;
+			var rClr = _v2.a;
+			var rK = _v2.b;
+			var rV = _v2.c;
+			var rLeft = _v2.d;
+			var _v3 = rLeft.a;
+			var rlK = rLeft.b;
+			var rlV = rLeft.c;
+			var rlL = rLeft.d;
+			var rlR = rLeft.e;
+			var rRight = _v2.e;
+			return A5(
+				$elm$core$Dict$RBNode_elm_builtin,
+				0,
+				rlK,
+				rlV,
+				A5(
+					$elm$core$Dict$RBNode_elm_builtin,
+					1,
+					k,
+					v,
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, lK, lV, lLeft, lRight),
+					rlL),
+				A5($elm$core$Dict$RBNode_elm_builtin, 1, rK, rV, rlR, rRight));
+		} else {
+			var clr = dict.a;
+			var k = dict.b;
+			var v = dict.c;
+			var _v4 = dict.d;
+			var lClr = _v4.a;
+			var lK = _v4.b;
+			var lV = _v4.c;
+			var lLeft = _v4.d;
+			var lRight = _v4.e;
+			var _v5 = dict.e;
+			var rClr = _v5.a;
+			var rK = _v5.b;
+			var rV = _v5.c;
+			var rLeft = _v5.d;
+			var rRight = _v5.e;
+			if (clr === 1) {
+				return A5(
+					$elm$core$Dict$RBNode_elm_builtin,
+					1,
+					k,
+					v,
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, lK, lV, lLeft, lRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, rK, rV, rLeft, rRight));
+			} else {
+				return A5(
+					$elm$core$Dict$RBNode_elm_builtin,
+					1,
+					k,
+					v,
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, lK, lV, lLeft, lRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, rK, rV, rLeft, rRight));
+			}
+		}
+	} else {
+		return dict;
+	}
+};
+var $elm$core$Dict$removeMin = function (dict) {
+	if ((dict.$ === -1) && (dict.d.$ === -1)) {
+		var color = dict.a;
+		var key = dict.b;
+		var value = dict.c;
+		var left = dict.d;
+		var lColor = left.a;
+		var lLeft = left.d;
+		var right = dict.e;
+		if (lColor === 1) {
+			if ((lLeft.$ === -1) && (!lLeft.a)) {
+				var _v3 = lLeft.a;
+				return A5(
+					$elm$core$Dict$RBNode_elm_builtin,
+					color,
+					key,
+					value,
+					$elm$core$Dict$removeMin(left),
+					right);
+			} else {
+				var _v4 = $elm$core$Dict$moveRedLeft(dict);
+				if (_v4.$ === -1) {
+					var nColor = _v4.a;
+					var nKey = _v4.b;
+					var nValue = _v4.c;
+					var nLeft = _v4.d;
+					var nRight = _v4.e;
+					return A5(
+						$elm$core$Dict$balance,
+						nColor,
+						nKey,
+						nValue,
+						$elm$core$Dict$removeMin(nLeft),
+						nRight);
+				} else {
+					return $elm$core$Dict$RBEmpty_elm_builtin;
+				}
+			}
+		} else {
+			return A5(
+				$elm$core$Dict$RBNode_elm_builtin,
+				color,
+				key,
+				value,
+				$elm$core$Dict$removeMin(left),
+				right);
+		}
+	} else {
+		return $elm$core$Dict$RBEmpty_elm_builtin;
+	}
+};
+var $elm$core$Dict$moveRedRight = function (dict) {
+	if (((dict.$ === -1) && (dict.d.$ === -1)) && (dict.e.$ === -1)) {
+		if ((dict.d.d.$ === -1) && (!dict.d.d.a)) {
+			var clr = dict.a;
+			var k = dict.b;
+			var v = dict.c;
+			var _v1 = dict.d;
+			var lClr = _v1.a;
+			var lK = _v1.b;
+			var lV = _v1.c;
+			var _v2 = _v1.d;
+			var _v3 = _v2.a;
+			var llK = _v2.b;
+			var llV = _v2.c;
+			var llLeft = _v2.d;
+			var llRight = _v2.e;
+			var lRight = _v1.e;
+			var _v4 = dict.e;
+			var rClr = _v4.a;
+			var rK = _v4.b;
+			var rV = _v4.c;
+			var rLeft = _v4.d;
+			var rRight = _v4.e;
+			return A5(
+				$elm$core$Dict$RBNode_elm_builtin,
+				0,
+				lK,
+				lV,
+				A5($elm$core$Dict$RBNode_elm_builtin, 1, llK, llV, llLeft, llRight),
+				A5(
+					$elm$core$Dict$RBNode_elm_builtin,
+					1,
+					k,
+					v,
+					lRight,
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, rK, rV, rLeft, rRight)));
+		} else {
+			var clr = dict.a;
+			var k = dict.b;
+			var v = dict.c;
+			var _v5 = dict.d;
+			var lClr = _v5.a;
+			var lK = _v5.b;
+			var lV = _v5.c;
+			var lLeft = _v5.d;
+			var lRight = _v5.e;
+			var _v6 = dict.e;
+			var rClr = _v6.a;
+			var rK = _v6.b;
+			var rV = _v6.c;
+			var rLeft = _v6.d;
+			var rRight = _v6.e;
+			if (clr === 1) {
+				return A5(
+					$elm$core$Dict$RBNode_elm_builtin,
+					1,
+					k,
+					v,
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, lK, lV, lLeft, lRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, rK, rV, rLeft, rRight));
+			} else {
+				return A5(
+					$elm$core$Dict$RBNode_elm_builtin,
+					1,
+					k,
+					v,
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, lK, lV, lLeft, lRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, rK, rV, rLeft, rRight));
+			}
+		}
+	} else {
+		return dict;
+	}
+};
+var $elm$core$Dict$removeHelpPrepEQGT = F7(
+	function (targetKey, dict, color, key, value, left, right) {
+		if ((left.$ === -1) && (!left.a)) {
+			var _v1 = left.a;
+			var lK = left.b;
+			var lV = left.c;
+			var lLeft = left.d;
+			var lRight = left.e;
+			return A5(
+				$elm$core$Dict$RBNode_elm_builtin,
+				color,
+				lK,
+				lV,
+				lLeft,
+				A5($elm$core$Dict$RBNode_elm_builtin, 0, key, value, lRight, right));
+		} else {
+			_v2$2:
+			while (true) {
+				if ((right.$ === -1) && (right.a === 1)) {
+					if (right.d.$ === -1) {
+						if (right.d.a === 1) {
+							var _v3 = right.a;
+							var _v4 = right.d;
+							var _v5 = _v4.a;
+							return $elm$core$Dict$moveRedRight(dict);
+						} else {
+							break _v2$2;
+						}
+					} else {
+						var _v6 = right.a;
+						var _v7 = right.d;
+						return $elm$core$Dict$moveRedRight(dict);
+					}
+				} else {
+					break _v2$2;
+				}
+			}
+			return dict;
+		}
+	});
+var $elm$core$Dict$removeHelp = F2(
+	function (targetKey, dict) {
+		if (dict.$ === -2) {
+			return $elm$core$Dict$RBEmpty_elm_builtin;
+		} else {
+			var color = dict.a;
+			var key = dict.b;
+			var value = dict.c;
+			var left = dict.d;
+			var right = dict.e;
+			if (_Utils_cmp(targetKey, key) < 0) {
+				if ((left.$ === -1) && (left.a === 1)) {
+					var _v4 = left.a;
+					var lLeft = left.d;
+					if ((lLeft.$ === -1) && (!lLeft.a)) {
+						var _v6 = lLeft.a;
+						return A5(
+							$elm$core$Dict$RBNode_elm_builtin,
+							color,
+							key,
+							value,
+							A2($elm$core$Dict$removeHelp, targetKey, left),
+							right);
+					} else {
+						var _v7 = $elm$core$Dict$moveRedLeft(dict);
+						if (_v7.$ === -1) {
+							var nColor = _v7.a;
+							var nKey = _v7.b;
+							var nValue = _v7.c;
+							var nLeft = _v7.d;
+							var nRight = _v7.e;
+							return A5(
+								$elm$core$Dict$balance,
+								nColor,
+								nKey,
+								nValue,
+								A2($elm$core$Dict$removeHelp, targetKey, nLeft),
+								nRight);
+						} else {
+							return $elm$core$Dict$RBEmpty_elm_builtin;
+						}
+					}
+				} else {
+					return A5(
+						$elm$core$Dict$RBNode_elm_builtin,
+						color,
+						key,
+						value,
+						A2($elm$core$Dict$removeHelp, targetKey, left),
+						right);
+				}
+			} else {
+				return A2(
+					$elm$core$Dict$removeHelpEQGT,
+					targetKey,
+					A7($elm$core$Dict$removeHelpPrepEQGT, targetKey, dict, color, key, value, left, right));
+			}
+		}
+	});
+var $elm$core$Dict$removeHelpEQGT = F2(
+	function (targetKey, dict) {
+		if (dict.$ === -1) {
+			var color = dict.a;
+			var key = dict.b;
+			var value = dict.c;
+			var left = dict.d;
+			var right = dict.e;
+			if (_Utils_eq(targetKey, key)) {
+				var _v1 = $elm$core$Dict$getMin(right);
+				if (_v1.$ === -1) {
+					var minKey = _v1.b;
+					var minValue = _v1.c;
+					return A5(
+						$elm$core$Dict$balance,
+						color,
+						minKey,
+						minValue,
+						left,
+						$elm$core$Dict$removeMin(right));
+				} else {
+					return $elm$core$Dict$RBEmpty_elm_builtin;
+				}
+			} else {
+				return A5(
+					$elm$core$Dict$balance,
+					color,
+					key,
+					value,
+					left,
+					A2($elm$core$Dict$removeHelp, targetKey, right));
+			}
+		} else {
+			return $elm$core$Dict$RBEmpty_elm_builtin;
+		}
+	});
+var $elm$core$Dict$remove = F2(
+	function (key, dict) {
+		var _v0 = A2($elm$core$Dict$removeHelp, key, dict);
+		if ((_v0.$ === -1) && (!_v0.a)) {
+			var _v1 = _v0.a;
+			var k = _v0.b;
+			var v = _v0.c;
+			var l = _v0.d;
+			var r = _v0.e;
+			return A5($elm$core$Dict$RBNode_elm_builtin, 1, k, v, l, r);
+		} else {
+			var x = _v0;
+			return x;
+		}
+	});
+var $elm$core$Set$remove = F2(
+	function (key, _v0) {
+		var dict = _v0;
+		return A2($elm$core$Dict$remove, key, dict);
+	});
 var $author$project$Main$Loading = function (a) {
 	return {$: 2, a: a};
 };
@@ -8377,10 +9179,10 @@ var $author$project$Main$preparePreview = _Platform_outgoingPort(
 				[
 					_Utils_Tuple2(
 					'source',
-					$elm$json$Json$Encode$string($.G)),
+					$elm$json$Json$Encode$string($.K)),
 					_Utils_Tuple2(
 					'request',
-					$elm$json$Json$Encode$int($.Z))
+					$elm$json$Json$Encode$int($.aa))
 				]));
 	});
 var $elm$json$Json$Encode$null = _Json_encodeNull;
@@ -8388,48 +9190,6 @@ var $author$project$Main$downloadDiagram = _Platform_outgoingPort(
 	'downloadDiagram',
 	function ($) {
 		return $elm$json$Json$Encode$null;
-	});
-var $elm$core$Basics$modBy = _Basics_modBy;
-var $elm$core$Bitwise$and = _Bitwise_and;
-var $elm$core$Bitwise$shiftRightBy = _Bitwise_shiftRightBy;
-var $elm$core$String$repeatHelp = F3(
-	function (n, chunk, result) {
-		return (n <= 0) ? result : A3(
-			$elm$core$String$repeatHelp,
-			n >> 1,
-			_Utils_ap(chunk, chunk),
-			(!(n & 1)) ? result : _Utils_ap(result, chunk));
-	});
-var $elm$core$String$repeat = F2(
-	function (n, chunk) {
-		return A3($elm$core$String$repeatHelp, n, chunk, '');
-	});
-var $author$project$Main$expandIndentTabs = F2(
-	function (column, line) {
-		var _v0 = $elm$core$String$uncons(line);
-		_v0$2:
-		while (true) {
-			if (!_v0.$) {
-				switch (_v0.a.a) {
-					case ' ':
-						var _v1 = _v0.a;
-						var rest = _v1.b;
-						return ' ' + A2($author$project$Main$expandIndentTabs, column + 1, rest);
-					case '\t':
-						var _v2 = _v0.a;
-						var rest = _v2.b;
-						var spaces = 4 - A2($elm$core$Basics$modBy, 4, column);
-						return _Utils_ap(
-							A2($elm$core$String$repeat, spaces, ' '),
-							A2($author$project$Main$expandIndentTabs, column + spaces, rest));
-					default:
-						break _v0$2;
-				}
-			} else {
-				break _v0$2;
-			}
-		}
-		return line;
 	});
 var $author$project$Main$openDiagramViewer = _Platform_outgoingPort(
 	'openDiagramViewer',
@@ -8443,23 +9203,18 @@ var $author$project$Main$update = F2(
 			switch (msg.$) {
 				case 0:
 					var source = msg.a;
+					var diagram = $elm$core$String$isEmpty(
+						$elm$core$String$trim(source)) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
+						$author$project$SequenceInput$parse(source));
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								G: source,
-								T: $elm$core$String$isEmpty(
-									$elm$core$String$trim(source)) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
-									$author$project$SequenceDiagram$Parser$parse(
-										A2(
-											$elm$core$String$join,
-											'\u000A',
-											A2(
-												$elm$core$List$map,
-												$author$project$Main$expandIndentTabs(0),
-												$elm$core$String$lines(source))))),
+								K: source,
+								E: diagram,
 								j: $author$project$Main$NotRequested,
-								s: ''
+								n: _Utils_eq(diagram, model.E) ? model.n : $elm$core$Set$empty,
+								u: ''
 							}),
 						$elm$core$Platform$Cmd$none);
 				case 1:
@@ -8479,28 +9234,28 @@ var $author$project$Main$update = F2(
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{j: $author$project$Main$NotRequested, s: '', L: enabled}),
+							{j: $author$project$Main$NotRequested, u: '', P: enabled}),
 						$elm$core$Platform$Cmd$none);
 				case 4:
 					var enabled = msg.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{j: $author$project$Main$NotRequested, s: '', V: enabled}),
+							{j: $author$project$Main$NotRequested, u: '', Y: enabled}),
 						$elm$core$Platform$Cmd$none);
 				case 5:
 					var preset = msg.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{D: '', E: preset}),
+							{G: '', y: preset}),
 						$elm$core$Platform$Cmd$none);
 				case 6:
 					var theme = msg.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{K: theme, D: ''}),
+							{O: theme, G: ''}),
 						$elm$core$Platform$Cmd$none);
 				case 7:
 					return _Utils_Tuple2(
@@ -8519,13 +9274,13 @@ var $author$project$Main$update = F2(
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
-								{K: theme, D: 'Theme loaded.', E: 'custom'}),
+								{O: theme, G: 'Theme loaded.', y: 'custom'}),
 							$elm$core$Platform$Cmd$none);
 					} else {
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
-								{D: 'Could not load theme. Choose a valid theme JSON file.'}),
+								{G: 'Could not load theme. Choose a valid theme JSON file.'}),
 							$elm$core$Platform$Cmd$none);
 					}
 				case 9:
@@ -8533,7 +9288,7 @@ var $author$project$Main$update = F2(
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{s: ''}),
+							{u: ''}),
 						$author$project$Main$copyOutput(output));
 				case 10:
 					var ok = msg.a;
@@ -8541,7 +9296,7 @@ var $author$project$Main$update = F2(
 						_Utils_update(
 							model,
 							{
-								s: ok ? 'Copied to clipboard.' : 'Copy failed. Select the output to copy it manually.'
+								u: ok ? 'Copied to clipboard.' : 'Copy failed. Select the output to copy it manually.'
 							}),
 						$elm$core$Platform$Cmd$none);
 				case 11:
@@ -8549,47 +9304,72 @@ var $author$project$Main$update = F2(
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{s: '', o: mode}),
+							{u: '', o: mode}),
 						$elm$core$Platform$Cmd$none);
 				case 12:
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{J: !model.J}),
+							{N: !model.N}),
 						$elm$core$Platform$Cmd$none);
-				case 13:
-					return _Utils_Tuple2(
-						model,
-						$author$project$Main$downloadDiagram(0));
 				case 14:
-					return _Utils_Tuple2(
-						model,
-						$author$project$Main$openDiagramViewer(0));
-				case 15:
-					var source = msg.a;
-					var request = model.x + 1;
+					var enabled = msg.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{j: $author$project$Main$Preparing, x: request}),
-						$author$project$Main$preparePreview(
-							{G: source, Z: request}));
+							{X: enabled}),
+						$elm$core$Platform$Cmd$none);
+				case 13:
+					var target = msg.a;
+					var collapsed = function () {
+						switch (target) {
+							case 'expand':
+								return $elm$core$Set$empty;
+							case 'collapse':
+								return $author$project$Main$foldableCalls(model);
+							default:
+								var path = target;
+								return A2($elm$core$Set$member, path, model.n) ? A2($elm$core$Set$remove, path, model.n) : A2($elm$core$Set$insert, path, model.n);
+						}
+					}();
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{n: collapsed}),
+						$elm$core$Platform$Cmd$none);
+				case 15:
+					return _Utils_Tuple2(
+						model,
+						$author$project$Main$downloadDiagram(0));
 				case 16:
+					return _Utils_Tuple2(
+						model,
+						$author$project$Main$openDiagramViewer(0));
+				case 17:
+					var source = msg.a;
+					var request = model.z + 1;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{j: $author$project$Main$Preparing, z: request}),
+						$author$project$Main$preparePreview(
+							{K: source, aa: request}));
+				case 18:
 					var result = msg.a;
-					return (_Utils_eq(result.Z, model.x) && _Utils_eq(model.j, $author$project$Main$Preparing)) ? _Utils_Tuple2(
+					return (_Utils_eq(result.aa, model.z) && _Utils_eq(model.j, $author$project$Main$Preparing)) ? _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
 								j: A2(
 									$elm$core$Maybe$withDefault,
 									$author$project$Main$Failed,
-									A2($elm$core$Maybe$map, $author$project$Main$Loading, result.ar))
+									A2($elm$core$Maybe$map, $author$project$Main$Loading, result.av))
 							}),
 						$elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-				case 17:
+				case 19:
 					var request = msg.a;
 					var url = msg.b;
-					return (_Utils_eq(request, model.x) && _Utils_eq(
+					return (_Utils_eq(request, model.z) && _Utils_eq(
 						model.j,
 						$author$project$Main$Loading(url))) ? _Utils_Tuple2(
 						_Utils_update(
@@ -8600,9 +9380,9 @@ var $author$project$Main$update = F2(
 						$elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				default:
 					var request = msg.a;
-					var _v2 = model.j;
-					if (_v2.$ === 2) {
-						return _Utils_eq(request, model.x) ? _Utils_Tuple2(
+					var _v3 = model.j;
+					if (_v3.$ === 2) {
+						return _Utils_eq(request, model.z) ? _Utils_Tuple2(
 							_Utils_update(
 								model,
 								{j: $author$project$Main$Failed}),
@@ -8708,7 +9488,7 @@ var $elm$url$Url$Http = 0;
 var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {at: host, au: path, aF: port_, aG: query, aO: fragment, aR: protocol};
+		return {ay: host, az: path, aK: port_, aL: query, aT: fragment, aW: protocol};
 	});
 var $elm$url$Url$chompBeforePath = F5(
 	function (protocol, path, params, frag, str) {
@@ -8826,6 +9606,7 @@ var $author$project$Main$themeFile = _Platform_incomingPort(
 				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
 			])));
 var $author$project$Main$copyResult = _Platform_incomingPort('copyResult', $elm$json$Json$Decode$bool);
+var $author$project$Main$foldDiagram = _Platform_incomingPort('foldDiagram', $elm$json$Json$Decode$string);
 var $author$project$Main$previewResult = _Platform_incomingPort(
 	'previewResult',
 	A2(
@@ -8835,7 +9616,7 @@ var $author$project$Main$previewResult = _Platform_incomingPort(
 				$elm$json$Json$Decode$andThen,
 				function (url) {
 					return $elm$json$Json$Decode$succeed(
-						{ar: url, Z: request});
+						{av: url, aa: request});
 				},
 				A2(
 					$elm$json$Json$Decode$field,
@@ -8849,32 +9630,33 @@ var $author$project$Main$previewResult = _Platform_incomingPort(
 		},
 		A2($elm$json$Json$Decode$field, 'request', $elm$json$Json$Decode$int)));
 var $author$project$Main$PreviewPrepared = function (a) {
-	return {$: 16, a: a};
+	return {$: 18, a: a};
 };
 var $author$project$Main$main = $elm$browser$Browser$document(
 	{
-		a3: function (_v0) {
+		a8: function (_v0) {
 			return _Utils_Tuple2(
-				{G: '', T: $elm$core$Maybe$Nothing, j: $author$project$Main$NotRequested, s: '', J: true, o: 1, K: $author$project$DiagramTheme$classic, L: true, D: '', V: false, E: 'classic', x: 0},
+				{K: '', E: $elm$core$Maybe$Nothing, j: $author$project$Main$NotRequested, n: $elm$core$Set$empty, u: '', N: true, o: 1, O: $author$project$DiagramTheme$classic, P: true, G: '', X: true, Y: false, y: 'classic', z: 0},
 				$elm$core$Platform$Cmd$none);
 		},
-		a7: function (model) {
+		bc: function (model) {
 			return {
-				a1: _List_fromArray(
+				a6: _List_fromArray(
 					[
 						$author$project$Main$view(model)
 					]),
-				a9: 'Sequence Diagram Generator'
+				be: 'Sequence Diagram Generator'
 			};
 		},
-		be: $author$project$Main$update,
-		bq: function (_v1) {
+		bj: $author$project$Main$update,
+		bv: function (_v1) {
 			return $elm$core$Platform$Sub$batch(
 				_List_fromArray(
 					[
 						$author$project$Main$copyResult($author$project$Main$Copied),
 						$author$project$Main$previewResult($author$project$Main$PreviewPrepared),
-						$author$project$Main$themeFile($author$project$Main$LoadTheme)
+						$author$project$Main$themeFile($author$project$Main$LoadTheme),
+						$author$project$Main$foldDiagram($author$project$Main$FoldDiagram)
 					]));
 		}
 	});
