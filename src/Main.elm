@@ -96,17 +96,17 @@ type Msg
     | PreviewFailed Int
 
 
-main : Program () Model Msg
+main : Program Bool Model Msg
 main =
     Browser.document
         { init =
-            \() ->
+            \prefersDark ->
                 ( { source = ""
                   , diagram = Nothing
                   , showReturns = True
                   , includeTheme = False
-                  , diagramPreset = "classic"
-                  , customTheme = DiagramTheme.classic
+                  , diagramPreset = if prefersDark then "dark" else "classic"
+                  , customTheme = if prefersDark then DiagramTheme.dark else DiagramTheme.classic
                   , themeStatus = ""
                   , copyStatus = ""
                   , outputMode = Diagram
@@ -147,7 +147,13 @@ update msg model =
             )
 
         LoadExample ->
-            update (Edit example) model
+            update (Edit example)
+                (if model.diagram == Nothing then
+                    { model | outputMode = Diagram }
+
+                 else
+                    model
+                )
 
         LoadSyntaxExample ->
             update (Edit syntaxExample) model
@@ -274,7 +280,11 @@ view model =
                 [ span [ class "brand-icon", attribute "aria-hidden" "true" ] [ text "⇄" ]
                 , text "Sequence diagrams"
                 ]
-            , a [ href "https://github.com/eelcoh/plantuml-generator" ] [ text "View on GitHub ↗" ]
+            , div [ class "tool-links" ]
+                [ a [ href "../" ] [ text "Home" ]
+                , a [ href "../json-schema/" ] [ text "JSON Schema Viewer" ]
+                , a [ href "https://github.com/eelcoh/plantuml-generator" ] [ text "View on GitHub ↗" ]
+                ]
             ]
         , main_ []
             [ div [ class "intro" ]
@@ -285,7 +295,11 @@ view model =
                 [ section [ class "panel", attribute "aria-labelledby" "source-heading" ]
                     [ div [ class "panel-header" ]
                         [ h2 [ id "source-heading" ] [ label [ for "source" ] [ text "Sequence input" ] ]
-                        , button [ class "example-button", onClick LoadExample ] [ text "Load example" ]
+                        , if model.diagram == Nothing then
+                            text ""
+
+                          else
+                            button [ class "example-button", onClick LoadExample ] [ text "Load example" ]
                         ]
                     , editor model.source
                     , syntaxHelp
@@ -487,8 +501,11 @@ outputView model output =
             div [ class "output-message output-error" ] [ text message ]
 
         _ ->
-            div [ class "output-message" ]
-                [ p [] [ text "Enter a sequence or load the example to see the preview." ] ]
+            div [ class "output-message output-empty" ]
+                [ p [ class "output-message-title" ] [ text "Your diagram starts here" ]
+                , p [] [ text "Type or paste a sequence to see its diagram." ]
+                , button [ class "example-button", onClick LoadExample ] [ text "Try an example" ]
+                ]
 
 
 foldableCalls : Model -> Set String

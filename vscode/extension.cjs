@@ -1,8 +1,5 @@
 const vscode = require('vscode');
 const { randomBytes } = require('node:crypto');
-const { renderSequence } = require('./renderer.cjs');
-
-const language = 'seqdiagram';
 const presets = [
     ['Classic', 'classic'],
     ['Monochrome', 'monochrome'],
@@ -11,15 +8,20 @@ const presets = [
     ['High Contrast Black', 'high-contrast-black'],
 ];
 
-function activate(context) {
+function activatePreview(context, options) {
+    const { language, title, example, render, supports, folding = false } = options;
+    const prompt = `Open ${options.fileDescription} to use the ${title} preview.`;
+    const isSupported = document => document && supports(document);
+    const isTracked = document => isSupported(document) &&
+        (!options.track || options.track(document) || previews.has(document.uri.toString()));
     const diagnostics = vscode.languages.createDiagnosticCollection(language);
     const previews = new Map();
     const pending = new Map();
-    const themeKey = document => `seqdiagram.theme:${document.uri.toString()}`;
+    const themeKey = document => `${language}.theme:${document.uri.toString()}`;
 
     async function selectTheme(document) {
-        if (document?.languageId !== language) {
-            await vscode.window.showInformationMessage('Open a .seq file to choose its theme.');
+        if (!isSupported(document)) {
+            await vscode.window.showInformationMessage(prompt);
             return;
         }
         const choices = [
@@ -40,8 +42,8 @@ function activate(context) {
             if (!files?.length) return;
             try {
                 const themeJson = new TextDecoder().decode(await vscode.workspace.fs.readFile(files[0]));
-                const result = await renderSequence({ source: 'sequence user', themeJson });
-                if (!result.ok) throw new Error('Choose a valid Sequence Diagram theme JSON file.');
+                const result = await render({ source: example, themeJson });
+                if (!result.ok) throw new Error('Choose a valid diagram theme JSON file.');
                 override = { themeJson };
             } catch (error) {
                 await vscode.window.showErrorMessage(error.message);
@@ -59,35 +61,43 @@ function activate(context) {
         const preview = previews.get(key);
         const override = context.workspaceState.get(themeKey(document));
         const settings = vscode.workspace.getConfiguration(language, document.uri);
+        if (preview && preview.source !== source) {
+            preview.source = source;
+            preview.folding = { mode: 'initial', paths: new Set() };
+        }
+        const state = preview?.folding;
+        const request = {
+            source,
+            theme: settings.get('theme', 'classic'),
+            showReturns: settings.get('showReturns', true),
+            ...override,
+            ...(folding && state ? { mode: state.mode, paths: [...state.paths], interactive: true } : {}),
+        };
         const result = source.trim()
-            ? await renderSequence({
-                source,
-                theme: settings.get('theme', 'classic'),
-                showReturns: settings.get('showReturns', true),
-                ...override,
-            })
+            ? await render(request)
             : { ok: true, text: '' };
 
-        if (document.isClosed || document.version !== version || document.languageId !== language) return;
+        if (document.isClosed || document.version !== version || !isSupported(document) || (preview && preview.folding !== state)) return;
 
-        const problem = result.ok ? null : parserDiagnostic(document, result.text);
+        const problem = result.ok ? null : (options.diagnostic ?? parserDiagnostic)(document, result.text);
         if (problem) diagnostics.set(document.uri, [problem]);
         else diagnostics.delete(document.uri);
 
         if (preview && previews.get(key) === preview) {
+            preview.request = result.ok && result.text ? request : null;
             preview.svg = result.ok ? result.text : '';
-            preview.webview.html = previewHtml(result);
+            preview.webview.html = previewHtml(result, title, folding);
         }
     }
 
     function report(error) {
-        console.error('[seqdiagram]', error);
+        console.error(`[${language}]`, error);
     }
 
     function schedule(document) {
         const key = document.uri.toString();
         clearTimeout(pending.get(key));
-        if (document.languageId !== language) return;
+        if (!isTracked(document)) return;
         pending.set(key, setTimeout(() => {
             pending.delete(key);
             refresh(document).catch(report);
@@ -111,12 +121,12 @@ function activate(context) {
                 if (previews.has(document.uri.toString())) schedule(document);
             }
         }),
-        vscode.commands.registerCommand('seqdiagram.selectTheme', () =>
+        vscode.commands.registerCommand(`${language}.selectTheme`, () =>
             selectTheme(vscode.window.activeTextEditor?.document)),
-        vscode.commands.registerCommand('seqdiagram.openPreview', async () => {
+        vscode.commands.registerCommand(`${language}.openPreview`, async () => {
             const document = vscode.window.activeTextEditor?.document;
-            if (document?.languageId !== language) {
-                await vscode.window.showInformationMessage('Open a .seq file to preview a sequence diagram.');
+            if (!isSupported(document)) {
+                await vscode.window.showInformationMessage(prompt);
                 return;
             }
 
@@ -127,7 +137,7 @@ function activate(context) {
             } else {
                 const name = document.uri.path.split('/').pop();
                 panel = vscode.window.createWebviewPanel(
-                    'seqdiagram.preview', `Diagram: ${name}`,
+                    `${language}.preview`, `${title}: ${name}`,
                     { viewColumn: vscode.ViewColumn.Beside, preserveFocus: true },
                     { enableScripts: true, localResourceRoots: [] },
                 );
@@ -135,8 +145,25 @@ function activate(context) {
                 const messages = panel.webview.onDidReceiveMessage(async message => {
                     try {
                         if (message?.action === 'theme') await selectTheme(document);
+                        if (message?.action === 'fold' && folding && panel.request && typeof message.path === 'string') {
+                            const paths = new Set(panel.folding.paths);
+                            let mode = panel.folding.mode;
+                            if (message.path === 'expand' || message.path === 'collapse') {
+                                paths.clear();
+                                mode = message.path === 'expand' ? 'expanded' : 'overview';
+                            } else if (paths.has(message.path)) {
+                                paths.delete(message.path);
+                            } else {
+                                paths.add(message.path);
+                            }
+                            panel.folding = { mode, paths };
+                            await refresh(document);
+                        }
                         if (message?.action === 'copySvg' && panel.svg) {
-                            await vscode.env.clipboard.writeText(panel.svg);
+                            const svg = folding
+                                ? (await render({ ...panel.request, interactive: false })).text
+                                : panel.svg;
+                            await vscode.env.clipboard.writeText(svg);
                             await panel.webview.postMessage({ status: 'SVG copied.' });
                         }
                     } catch (error) {
@@ -191,16 +218,16 @@ function parserDiagnostic(document, message) {
     return diagnostic;
 }
 
-function previewHtml({ ok, text }) {
+function previewHtml({ ok, text }, title, folding) {
     const nonce = randomBytes(18).toString('base64');
     const content = ok && text
         ? text
-        : `<p>${escapeHtml(text || 'Enter a sequence to see its preview.')}</p>`;
+        : `<p>${escapeHtml(text || 'Enter a document to see its preview.')}</p>`;
     return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'nonce-${nonce}'; img-src blob:">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sequence diagram preview</title>
+<title>${escapeHtml(title)} preview</title>
 <style>
     body { padding: 1rem; }
     svg { display: block; max-width: 100%; height: auto; margin-inline: auto; }
@@ -217,6 +244,7 @@ function previewHtml({ ok, text }) {
 </style></head><body>
 <nav aria-label="Preview actions">
 <button id="theme">Theme…</button>
+${folding && ok && text ? '<button data-action="collapse">Collapse all</button><button data-action="expand">Expand all</button>' : ''}
 ${ok && text ? '<button id="image">Copy image</button><button id="svg">Copy SVG</button>' : ''}
 <span id="status" role="status"></span>
 </nav>
@@ -226,6 +254,20 @@ ${content}
     const status = document.getElementById('status');
     document.getElementById('theme').onclick = () => vscode.postMessage({ action: 'theme' });
     document.getElementById('svg')?.addEventListener('click', () => vscode.postMessage({ action: 'copySvg' }));
+    function sendFold(path) {
+        vscode.postMessage({ action: 'fold', path });
+    }
+    document.addEventListener('click', event => {
+        const control = event.target.closest('[data-fold], [data-action]');
+        if (control) sendFold(control.dataset.fold ?? control.dataset.action);
+    });
+    document.addEventListener('keydown', event => {
+        const control = event.target.closest('[data-fold]');
+        if (control && (event.key === 'Enter' || event.key === ' ')) {
+            event.preventDefault();
+            if (!event.repeat) sendFold(control.dataset.fold);
+        }
+    });
     window.addEventListener('message', event => { status.textContent = event.data.status; });
 
     async function renderPng() {
@@ -269,4 +311,16 @@ function escapeHtml(value) {
     return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 }
 
-module.exports = { activate };
+function activate(context) {
+    const { renderSequence } = require('./renderer.cjs');
+    activatePreview(context, {
+        language: 'seqdiagram',
+        title: 'Diagram',
+        example: 'sequence user',
+        fileDescription: 'a .seq file',
+        render: renderSequence,
+        supports: document => document.languageId === 'seqdiagram',
+    });
+}
+
+module.exports = { activate, activatePreview };

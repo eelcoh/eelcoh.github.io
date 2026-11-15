@@ -1,0 +1,256 @@
+function setupDiagramViewer(app, { title, filename, themeFilename }) {
+    app.ports.downloadDiagram.subscribe(() => {
+        const svg = document.querySelector('.local-diagram .sequence-svg');
+        if (svg) saveDiagram(svg);
+    });
+
+    function saveDiagram(svg) {
+        const exported = svg.cloneNode(true);
+        // The viewer's inline dimensions reflect the current zoom.
+        exported.style.removeProperty('width');
+        exported.style.removeProperty('height');
+        const properties = [
+            'fill', 'stroke', 'stroke-width', 'stroke-dasharray', 'stroke-linejoin',
+            'stroke-linecap', 'paint-order', 'font-family', 'font-size', 'font-weight',
+        ];
+        const originals = svg.querySelectorAll('[class]');
+        exported.querySelectorAll('[class]').forEach((node, index) => {
+            const computed = getComputedStyle(originals[index]);
+            for (const property of properties) {
+                node.style.setProperty(property, computed.getPropertyValue(property));
+            }
+        });
+
+        exported.querySelectorAll('[data-fold]').forEach(control => {
+            const title = control.querySelector('title');
+            if (title && control.getAttribute('aria-expanded') === 'false') title.textContent = 'Nested details hidden';
+            else title?.remove();
+            for (const name of ['tabindex', 'role', 'aria-expanded', 'aria-label', 'data-fold']) {
+                control.removeAttribute(name);
+            }
+            control.querySelector('.sequence-fold-hit')?.remove();
+        });
+        exported.setAttribute('role', 'img');
+        exported.removeAttribute('data-can-collapse');
+
+        // Put the background inside the SVG so it also appears in image viewers.
+        const background = document.createElementNS(svg.namespaceURI, 'rect');
+        background.setAttribute('width', '100%');
+        background.setAttribute('height', '100%');
+        background.setAttribute('fill', getComputedStyle(svg).backgroundColor);
+        exported.prepend(background);
+
+        const xml = new XMLSerializer().serializeToString(exported);
+        downloadFile(xml, 'image/svg+xml;charset=utf-8', filename);
+    }
+
+    function downloadFile(contents, type, filename) {
+        const url = URL.createObjectURL(new Blob([contents], { type }));
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.append(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    app.ports.saveTheme.subscribe(contents => {
+        downloadFile(contents, 'application/json;charset=utf-8', themeFilename);
+    });
+
+    document.addEventListener('change', async event => {
+        if (event.target.id !== 'theme-file') return;
+        const file = event.target.files[0];
+        if (!file) return;
+
+        try {
+            app.ports.themeFile.send(await file.text());
+        } catch {
+            app.ports.themeFile.send(null);
+        }
+        event.target.value = '';
+    });
+
+    function foldControl(target) {
+        return target?.closest('[data-fold]');
+    }
+
+    document.addEventListener('click', event => {
+        const control = foldControl(event.target);
+        if (control) app.ports.foldDiagram.send(control.dataset.fold);
+    });
+
+    document.addEventListener('keydown', event => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        const control = foldControl(event.target);
+        if (!control) return;
+        event.preventDefault();
+        if (!event.repeat) app.ports.foldDiagram.send(control.dataset.fold);
+    });
+
+    app.ports.openDiagramViewer.subscribe(() => {
+        const preview = document.querySelector('.local-diagram .sequence-svg');
+        if (!preview) return;
+
+        const opener = document.activeElement;
+        let diagram = preview.cloneNode(true);
+        const dialog = document.createElement('dialog');
+        dialog.className = 'diagram-viewer';
+        dialog.setAttribute('aria-labelledby', 'diagram-viewer-title');
+        dialog.innerHTML = `
+            <header class="diagram-viewer-header">
+                <h2 id="diagram-viewer-title">${title}</h2>
+                <div class="diagram-tools" role="group" aria-label="Diagram zoom">
+                    <button type="button" data-action="out" aria-label="Zoom out">−</button>
+                    <output aria-live="polite"></output>
+                    <button type="button" data-action="in" aria-label="Zoom in">+</button>
+                    <button type="button" data-action="actual">Actual size</button>
+                    <button type="button" data-action="fit" aria-pressed="true">Fit to screen</button>
+                </div>
+                <div class="diagram-tools" role="group" aria-label="Diagram detail">
+                    <button type="button" data-action="collapse">Collapse all</button>
+                    <button type="button" data-action="expand">Expand all</button>
+                </div>
+                <button type="button" data-action="download">Download SVG</button>
+                <button type="button" data-action="close" autofocus>Close</button>
+            </header>
+            <div class="diagram-viewer-viewport local-diagram" tabindex="0" aria-label="Diagram canvas">
+                <div class="diagram-viewer-stage"></div>
+            </div>`;
+
+        const viewport = dialog.querySelector('.diagram-viewer-viewport');
+        const stage = dialog.querySelector('.diagram-viewer-stage');
+        const readout = dialog.querySelector('output');
+        const zoomOut = dialog.querySelector('[data-action="out"]');
+        const zoomIn = dialog.querySelector('[data-action="in"]');
+        const fitButton = dialog.querySelector('[data-action="fit"]');
+        const expand = dialog.querySelector('[data-action="expand"]');
+        const collapse = dialog.querySelector('[data-action="collapse"]');
+        let width = Number(diagram.getAttribute('width'));
+        let height = Number(diagram.getAttribute('height'));
+        let scale = 1;
+        let fitted = true;
+        let drag;
+
+        stage.append(diagram);
+        document.querySelector('.page').append(dialog);
+        dialog.showModal();
+
+        function zoom(nextScale) {
+            const centerX = stage.clientWidth / 2 - viewport.scrollLeft;
+            const centerY = stage.clientHeight / 2 - viewport.scrollTop;
+            const offsetX = (viewport.clientWidth / 2 - centerX) / scale;
+            const offsetY = (viewport.clientHeight / 2 - centerY) / scale;
+
+            scale = nextScale;
+            diagram.style.width = `${width * scale}px`;
+            diagram.style.height = `${height * scale}px`;
+            viewport.scrollLeft = stage.clientWidth / 2 + offsetX * scale - viewport.clientWidth / 2;
+            viewport.scrollTop = stage.clientHeight / 2 + offsetY * scale - viewport.clientHeight / 2;
+            readout.value = `${Math.round(scale * 100)}%`;
+            fitButton.setAttribute('aria-pressed', String(fitted));
+            zoomOut.disabled = scale <= .1;
+            zoomIn.disabled = scale >= 4;
+        }
+
+        function fit() {
+            const availableWidth = Math.max(1, viewport.clientWidth - 32);
+            const availableHeight = Math.max(1, viewport.clientHeight - 32);
+            zoom(Math.min(availableWidth / width, availableHeight / height));
+            viewport.scrollTo(0, 0);
+        }
+
+        dialog.addEventListener('click', event => {
+            switch (event.target.dataset.action) {
+                case 'out':
+                    fitted = false;
+                    zoom(scale > 4 ? scale / 1.25 : Math.max(.1, scale / 1.25));
+                    break;
+                case 'in':
+                    fitted = false;
+                    zoom(Math.min(4, scale * 1.25));
+                    break;
+                case 'actual':
+                    fitted = false;
+                    zoom(1);
+                    break;
+                case 'fit':
+                    fitted = true;
+                    fit();
+                    break;
+                case 'expand':
+                case 'collapse':
+                    app.ports.foldDiagram.send(event.target.dataset.action);
+                    break;
+                case 'download':
+                    saveDiagram(diagram);
+                    break;
+                case 'close':
+                    dialog.close();
+                    break;
+            }
+        });
+
+        viewport.addEventListener('pointerdown', event => {
+            if (event.pointerType === 'touch' || event.button !== 0 || !stage.contains(event.target) || foldControl(event.target)) return;
+            if (viewport.scrollWidth <= viewport.clientWidth && viewport.scrollHeight <= viewport.clientHeight) return;
+            viewport.focus({ preventScroll: true });
+            viewport.setPointerCapture(event.pointerId);
+            drag = { id: event.pointerId, x: event.clientX + viewport.scrollLeft, y: event.clientY + viewport.scrollTop };
+            viewport.classList.add('is-dragging');
+        });
+
+        viewport.addEventListener('pointermove', event => {
+            if (drag?.id !== event.pointerId) return;
+            viewport.scrollTo(drag.x - event.clientX, drag.y - event.clientY);
+        });
+
+        viewport.addEventListener('lostpointercapture', event => {
+            if (drag?.id !== event.pointerId) return;
+            drag = undefined;
+            viewport.classList.remove('is-dragging');
+        });
+
+        function updateExpandButton() {
+            expand.disabled = ![...diagram.querySelectorAll('[data-fold][aria-expanded="false"]')].some(control => !control.closest('[display="none"]'));
+            collapse.disabled = diagram.dataset.canCollapse !== 'true';
+            if (document.activeElement === expand && expand.disabled) collapse.focus();
+            else if (document.activeElement === collapse && collapse.disabled) expand.focus();
+        }
+
+        const diagramObserver = new MutationObserver(() => {
+            const focused = foldControl(document.activeElement)?.dataset.fold;
+            const scrollLeft = viewport.scrollLeft;
+            const scrollTop = viewport.scrollTop;
+            diagram = preview.cloneNode(true);
+            width = Number(diagram.getAttribute('width'));
+            height = Number(diagram.getAttribute('height'));
+            stage.replaceChildren(diagram);
+            const nextControl = focused && diagram.querySelector(`[data-fold="${CSS.escape(focused)}"]`);
+            if (nextControl) nextControl.focus({ preventScroll: true });
+            else if (focused) viewport.focus({ preventScroll: true });
+            updateExpandButton();
+            if (fitted) fit();
+            else {
+                zoom(scale);
+                viewport.scrollTo(scrollLeft, scrollTop);
+            }
+        });
+        diagramObserver.observe(preview, { subtree: true, attributes: true, childList: true, characterData: true });
+
+        const observer = new ResizeObserver(() => {
+            if (fitted) fit();
+        });
+        observer.observe(viewport);
+        dialog.addEventListener('close', () => {
+            observer.disconnect();
+            diagramObserver.disconnect();
+            dialog.remove();
+            opener?.focus();
+        }, { once: true });
+
+        updateExpandButton();
+        fit();
+    });
+}

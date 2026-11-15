@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="sequence-svg" style="--diagram-background: #ffffff; --diagram-ink: #17382a; --diagram-header: #21543e; --diagram-header-border: #17382a; --diagram-header-text: #ffffff; --diagram-active: #c7ebd7; --diagram-line: #899d92; --diagram-active-edge: #39815d; --diagram-font: var(--code)" width="536" height="250" viewBox="0 0 536 250" role="img" aria-label="Sequence diagram">
+  <style>.sequence-svg {
+    --code: "IBM Plex Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+    --diagram-sans: "Instrument Sans", "Avenir Next", system-ui, sans-serif;
+    --diagram-return: color-mix(in srgb, var(--diagram-ink) 72%, var(--diagram-background));
+}
+
+.sequence-participant {
+    fill: var(--diagram-header);
+    stroke: var(--diagram-header-border);
+    stroke-width: 1.5px;
+}
+
+.sequence-name,
+.sequence-caption {
+    font-family: var(--diagram-font);
+    font-size: 14px;
+}
+
+.sequence-name {
+    fill: var(--diagram-header-text);
+    font-weight: 700;
+}
+
+.sequence-caption {
+    fill: var(--diagram-ink);
+    stroke: var(--diagram-background);
+    stroke-width: 4px;
+    stroke-linejoin: round;
+    paint-order: stroke fill;
+}
+
+.sequence-lifeline {
+    stroke: var(--diagram-line);
+    stroke-width: 1.5px;
+    stroke-dasharray: 2 5;
+    stroke-linecap: round;
+}
+
+.sequence-activation {
+    fill: var(--diagram-active);
+    stroke: var(--diagram-active-edge);
+    stroke-width: 1.5px;
+}
+
+.sequence-arrow {
+    fill: none;
+    stroke: var(--diagram-ink);
+    stroke-width: 2px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+
+.sequence-return {
+    stroke: var(--diagram-return);
+    stroke-width: 1.5px;
+    stroke-dasharray: 5 4;
+}
+
+.sequence-open-head { stroke-dasharray: none; }
+
+.sequence-arrowhead { fill: var(--diagram-ink); }
+
+.sequence-fold { cursor: pointer; }
+
+.sequence-fold-hit {
+    fill: transparent;
+    pointer-events: all;
+}
+
+.sequence-fold-mark {
+    stroke: var(--diagram-ink);
+    stroke-width: 1.5px;
+    pointer-events: none;
+}
+
+.sequence-fold:hover .sequence-activation {
+    fill: color-mix(in srgb, var(--diagram-active) 86%, var(--diagram-ink));
+}
+
+.sequence-fold:focus {
+    outline: none;
+}
+
+.sequence-fold:focus-visible .sequence-activation {
+    stroke: var(--diagram-ink);
+    stroke-width: 2px;
+    vector-effect: non-scaling-stroke;
+}
+
+@media (forced-colors: active) {
+    .sequence-fold:focus-visible .sequence-activation {
+        stroke: Highlight;
+    }
+}
+</style>
+  <rect width="100%" height="100%" fill="#ffffff" />
+  <g>
+    <title>Client</title>
+    <line class="sequence-lifeline" x1="86" y1="52" x2="86" y2="230" />
+    <rect class="sequence-participant" x="19" y="14" width="134" height="38" rx="3" />
+    <text class="sequence-name" x="86" y="38" text-anchor="middle">Client</text>
+  </g>
+  <g>
+    <title>API</title>
+    <line class="sequence-lifeline" x1="268" y1="52" x2="268" y2="230" />
+    <rect class="sequence-participant" x="201" y="14" width="134" height="38" rx="3" />
+    <text class="sequence-name" x="268" y="38" text-anchor="middle">API</text>
+  </g>
+  <g>
+    <title>Store</title>
+    <line class="sequence-lifeline" x1="450" y1="52" x2="450" y2="230" />
+    <rect class="sequence-participant" x="383" y="14" width="134" height="38" rx="3" />
+    <text class="sequence-name" x="450" y="38" text-anchor="middle">Store</text>
+  </g>
+  <rect class="sequence-activation" x="81" y="58" width="10" height="168" rx="0" />
+  <rect class="sequence-activation" x="263" y="94" width="10" height="108" rx="0" />
+  <rect class="sequence-activation" x="445" y="130" width="10" height="36" rx="0" />
+  <g>
+    <polyline class="sequence-arrow" points="91,94 263,94" />
+    <polygon class="sequence-arrowhead" points="254,89 263,94 254,99" />
+    <text class="sequence-caption" x="177" y="85" text-anchor="middle">Place order</text>
+  </g>
+  <g>
+    <polyline class="sequence-arrow" points="273,130 445,130" />
+    <polygon class="sequence-arrowhead" points="436,125 445,130 436,135" />
+    <text class="sequence-caption" x="359" y="121" text-anchor="middle">Save order</text>
+  </g>
+  <g>
+    <polyline class="sequence-arrow sequence-return" points="445,166 273,166" />
+    <polyline class="sequence-arrow sequence-return sequence-open-head" points="282,161 273,166 282,171" />
+  </g>
+  <g>
+    <polyline class="sequence-arrow sequence-return" points="263,202 91,202" />
+    <polyline class="sequence-arrow sequence-return sequence-open-head" points="100,197 91,202 100,207" />
+  </g>
+</svg>

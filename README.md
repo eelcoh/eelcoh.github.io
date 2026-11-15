@@ -1,10 +1,13 @@
-# Sequence Diagram Generator
+# Diagram Tools
 
-Turn indented text into a sequence diagram as you type. The editor and SVG renderer run locally in your browser. [Open the generator](https://eelcoh.github.io/).
+The [home page](https://eelcoh.github.io/) shows examples of both tools. The site follows your system’s light or dark appearance.
 
-## Quick start
+- [Sequence Diagram Generator](https://eelcoh.github.io/sequence-diagram/) turns indented text into a sequence diagram as you type.
+- [JSON Schema Viewer](https://eelcoh.github.io/json-schema/) makes JSON Schema and OpenAPI documents explorable. It also has a [CLI and VS Code extension](schema/README.md).
 
-Click **Load example** on the site or paste this into the editor:
+## Sequence diagram quick start
+
+Click **Try an example** in the preview or paste this into the editor:
 
 ```text
 sequence user
@@ -29,7 +32,7 @@ Start with `sequence NAME` to name the first participant. Each indented line is 
 
 ## Build with mise
 
-Install [mise](https://mise.jdx.dev/) and place a checkout of [plantuml-generator](https://github.com/eelcoh/plantuml-generator) next to this repository. If it lives elsewhere, set `SEQDIAGRAM_GENERATOR_DIR` to its path before running a build.
+Install [mise](https://mise.jdx.dev/) and place a checkout of [plantuml-generator](https://github.com/eelcoh/plantuml-generator) next to this repository. If it lives elsewhere, set `SEQDIAGRAM_GENERATOR_DIR` to its path before running a build. For the JSON Schema viewer, place a checkout of [jsonschema-viewer](https://github.com/eelcoh/jsonschema-viewer) alongside it or set `JSONSCHEMA_SOURCE_DIR`.
 
 ```sh
 mise install
@@ -43,5 +46,7 @@ Open [localhost:8000](http://localhost:8000/) after starting the server. Set `SE
 - `mise run build:cli` creates `dist/seqdiagram` for the current platform.
 - `mise run build:cli-js` creates `dist/seqdiagram.cjs`.
 - `mise run build:vscode` packages the extension as a versioned VSIX in `dist/`.
+
+Run `mise run build:schema` for all JSON Schema targets, or see the [individual build commands](schema/README.md).
 
 See the [roadmap](ROADMAP.md) for the project’s feature list. The repository uses the [MIT License](LICENSE).

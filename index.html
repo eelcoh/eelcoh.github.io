@@ -3,13 +3,58 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#f5f7f2">
-    <title>Sequence Diagram Generator</title>
-    <link rel="stylesheet" href="styles.css?v=walkthrough-help-1">
-    <link rel="stylesheet" href="diagram.css?v=diagram-fold-4">
-    <script defer src="main.js?v=walkthrough-help-1"></script>
-    <script defer src="site.js?v=diagram-fold-2"></script>
-    <script defer src="editor.js"></script>
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#f5f7f2" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#131e18" media="(prefers-color-scheme: dark)">
+    <meta name="description" content="Explore JSON Schema and create interactive sequence diagrams in your browser.">
+    <title>Diagram Tools</title>
+    <link rel="stylesheet" href="styles.css?v=home-1">
+    <link rel="stylesheet" href="home.css?v=2">
 </head>
-<body></body>
+<body>
+    <div class="page diagram-home">
+        <header class="site-header">
+            <span class="brand"><span class="brand-icon" aria-hidden="true">↳</span> Diagram Tools</span>
+        </header>
+        <main>
+            <div class="intro">
+                <h1>Diagrams <span>from text</span></h1>
+            </div>
+            <nav class="tool-grid" aria-label="Diagram tools">
+                <a class="tool-card" href="json-schema/" aria-labelledby="schema-title" aria-describedby="schema-description">
+                    <div class="tool-preview">
+                        <span class="example-label" aria-hidden="true">Example <span>·</span> Order schema</span>
+                        <picture>
+                            <source media="(prefers-color-scheme: dark)" srcset="assets/previews/order-schema-dark.svg">
+                            <img src="assets/previews/order-schema.svg" alt="An order schema branching into ID, shipping, status, and total fields.">
+                        </picture>
+                    </div>
+                    <div class="tool-description">
+                        <div>
+                            <h2 id="schema-title">JSON Schema Viewer</h2>
+                            <p id="schema-description">Explore JSON Schema and OpenAPI one branch at a time.</p>
+                        </div>
+                        <span class="tool-arrow" aria-hidden="true">↗</span>
+                    </div>
+                </a>
+                <a class="tool-card" href="sequence-diagram/" aria-labelledby="sequence-title" aria-describedby="sequence-description">
+                    <div class="tool-preview">
+                        <span class="example-label" aria-hidden="true">Example <span>·</span> Place an order</span>
+                        <picture>
+                            <source media="(prefers-color-scheme: dark)" srcset="assets/previews/place-order-dark.svg">
+                            <img src="assets/previews/place-order.svg" alt="A client places an order through an API, which saves it to a store.">
+                        </picture>
+                    </div>
+                    <div class="tool-description">
+                        <div>
+                            <h2 id="sequence-title">Sequence Diagram Generator</h2>
+                            <p id="sequence-description">Describe a flow with indented text and see who calls whom.</p>
+                        </div>
+                        <span class="tool-arrow" aria-hidden="true">↗</span>
+                    </div>
+                </a>
+            </nav>
+        </main>
+    </div>
+</body>
 </html>

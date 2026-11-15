@@ -1,0 +1,125 @@
+.diagram-home {
+    max-width: 78rem;
+    padding-bottom: 3rem;
+}
+
+.diagram-home .site-header { min-height: 4rem; }
+
+.diagram-home .intro {
+    padding-block: clamp(1.8rem, 3.8vw, 3.1rem) clamp(1.35rem, 2.5vw, 2.2rem);
+}
+
+.diagram-home h1 {
+    font-size: clamp(2.6rem, 6.8vw, 5.65rem);
+    text-wrap: wrap;
+}
+
+.tool-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(.85rem, 2vw, 1.5rem);
+}
+
+.tool-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 0;
+    border: 1px solid var(--line);
+    border-radius: 1rem;
+    background: var(--surface);
+    color: var(--ink);
+    text-decoration: none;
+    transition: border-color .18s ease, box-shadow .18s ease;
+}
+
+.tool-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 .5rem 1.5rem var(--card-shadow);
+}
+
+.tool-preview {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    align-items: center;
+    gap: .7rem;
+    aspect-ratio: 1.7;
+    padding: clamp(.75rem, 2.15vw, 1.55rem);
+    border-bottom: 1px solid var(--line);
+    background: var(--canvas);
+    background-image: radial-gradient(var(--canvas-dot) .8px, transparent .8px);
+    background-size: 14px 14px;
+}
+
+.example-label {
+    color: var(--muted);
+    font-size: .8rem;
+    font-weight: 650;
+}
+
+.example-label span { margin-inline: .2em; }
+
+.tool-preview picture {
+    display: grid;
+    align-items: center;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+}
+
+.tool-preview img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    object-fit: contain;
+    border-radius: .55rem;
+    background: var(--example-paper);
+}
+
+.tool-description {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: space-between;
+    gap: .85rem;
+    padding: clamp(1rem, 2.4vw, 1.7rem);
+}
+
+.tool-description h2 {
+    font-size: clamp(1.23rem, 2.2vw, 1.8rem);
+    letter-spacing: -.035em;
+    line-height: 1.15;
+}
+
+.tool-description p {
+    margin: .45rem 0 0;
+    color: var(--muted);
+    font-size: .92rem;
+    line-height: 1.55;
+}
+
+.tool-arrow {
+    display: grid;
+    flex: 0 0 auto;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: var(--selected-surface);
+    color: var(--accent);
+    font-size: 1.15rem;
+}
+
+.tool-card:is(:hover, :focus-visible) .tool-arrow {
+    background: var(--accent);
+    color: var(--accent-ink);
+}
+
+@media (max-width: 47rem) {
+    .tool-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tool-card { transition: none; }
+}

@@ -5,8 +5,8 @@ node = "26.13.1"
 python = "3.15.2"
 
 [tasks.build]
-description = "Build the website, standalone CLI, and VS Code extension"
-depends = ["build:web", "build:cli", "build:vscode"]
+description = "Build both viewers, standalone CLIs, and VS Code extensions"
+depends = ["build:web", "build:cli", "build:vscode", "build:schema"]
 
 [tasks."build:web"]
 description = "Compile the website to main.js"
@@ -24,7 +24,27 @@ run = "./build.sh --cli-js"
 description = "Package the VS Code extension as a VSIX"
 run = "./build.sh --vscode"
 
+[tasks."build:schema"]
+description = "Build the JSON Schema website, CLI, and VS Code extension"
+depends = ["build:schema-web", "build:schema-cli", "build:schema-vscode"]
+
+[tasks."build:schema-web"]
+description = "Compile the JSON Schema website"
+run = "./build.sh --schema-web"
+
+[tasks."build:schema-cli"]
+description = "Build the standalone JSON Schema CLI"
+run = "./build.sh --schema-cli"
+
+[tasks."build:schema-cli-js"]
+description = "Build the Node.js version of the JSON Schema CLI"
+run = "./build.sh --schema-cli-js"
+
+[tasks."build:schema-vscode"]
+description = "Package the JSON Schema VS Code extension"
+run = "./build.sh --schema-vscode"
+
 [tasks.serve]
-description = "Build the website and serve it on localhost:8000"
-depends = ["build:web"]
+description = "Build both web viewers and serve them on localhost:8000"
+depends = ["build:web", "build:schema-web"]
 run = 'python -m http.server "${SEQDIAGRAM_PORT:-8000}" --bind 127.0.0.1'

@@ -1,0 +1,169 @@
+.schema-page {
+    --workspace-height: clamp(23rem, 58vh, 45rem);
+    --schema-surface: var(--surface-muted);
+}
+
+.schema-page .site-header { min-height: 4rem; }
+
+.schema-page .intro {
+    padding-block: clamp(1.65rem, 4vw, 3.25rem) clamp(1.3rem, 3vw, 2rem);
+}
+
+.schema-page h1 { font-size: clamp(2rem, 4.3vw, 3.65rem); }
+
+.schema-page .intro p {
+    max-width: 60ch;
+    margin-top: .65rem;
+    font-size: 1rem;
+    text-wrap: pretty;
+}
+
+.schema-page .workbench {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 5fr);
+    align-items: start;
+}
+
+.schema-page .panel-header {
+    min-height: 3.5rem;
+    padding: .55rem .8rem;
+}
+
+.schema-page .panel-header > .diagram-tools { margin-inline-start: auto; }
+
+.schema-page .source-editor { background: #192820; }
+
+.schema-page :is(#source, .source-highlight) {
+    padding: 1rem;
+    font-size: .875rem;
+    line-height: 1.6;
+}
+
+.schema-page .local-diagram {
+    padding: .85rem;
+    background-color: var(--canvas);
+    background-image: radial-gradient(var(--canvas-dot) .75px, transparent .75px);
+    background-size: 14px 14px;
+}
+
+.schema-page .schema-svg {
+    margin-inline: 0;
+    border-radius: .55rem;
+}
+
+.schema-panel-footer {
+    min-height: 3.25rem;
+    padding: .55rem .8rem;
+    background: var(--schema-surface);
+}
+
+.schema-page .syntax-help { padding-block: .875rem; }
+
+.schema-page .fold-settings {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: .45rem .8rem;
+}
+
+.schema-page .fold-settings label {
+    min-height: 1.8rem;
+    margin-inline-start: .2rem;
+}
+
+.schema-page .fold-settings input { margin: 0; }
+
+.schema-page .walkthrough-help { margin: 0; }
+.schema-page .walkthrough-help[open] { flex-basis: 100%; }
+
+.schema-page .syntax-help p,
+.schema-page .walkthrough-help p { max-width: 68ch; }
+
+.schema-page :is(.panel-header, .fold-settings, .theme-controls) .diagram-tools { gap: .35rem; }
+
+.schema-page :is(.panel-header, .fold-settings, .theme-controls) button,
+.schema-file-button {
+    padding: .4rem .6rem;
+    border: 1px solid transparent;
+    border-radius: .4rem;
+    background: transparent;
+    color: var(--accent);
+    font: inherit;
+    font-size: .8rem;
+    font-weight: 650;
+    line-height: 1.25;
+}
+
+.schema-page button:disabled { color: var(--disabled-ink); }
+.schema-page .diagram-tools button[aria-pressed="true"] {
+    border-color: var(--selected-line);
+    background: var(--selected-surface);
+}
+
+.schema-page .theme-settings {
+    margin-block: .8rem 1.2rem;
+    padding: .55rem .8rem;
+    background: var(--schema-surface);
+}
+
+.schema-page .theme-controls > label { font-weight: 650; }
+.schema-page .theme-controls select { font-weight: 500; }
+.schema-theme-actions { margin-inline-start: auto; }
+
+.schema-file-button {
+    display: inline-flex;
+    position: relative;
+    align-items: center;
+    cursor: pointer;
+}
+
+.schema-file-button:hover { background: var(--hover-surface); }
+.schema-file-button:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.schema-file-button input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.schema-error pre {
+    margin: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font: .82rem/1.55 var(--code);
+}
+
+.schema-tooltip {
+    position: fixed;
+    z-index: 2;
+    transform: translate(.75rem, .75rem);
+    max-width: min(23rem, 50vw);
+    padding: .4rem .75rem;
+    border: 1px solid #466054;
+    border-radius: .5rem;
+    color: #f3faf5;
+    background: #21382c;
+    box-shadow: 0 4px 16px #18282033;
+    font-size: .82rem;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+    pointer-events: none;
+}
+
+.schema-tooltip p { margin: .25rem 0; }
+.tk-key { color: #a2e5b8; }
+.tk-string { color: #f2cd8c; }
+.tk-number, .tk-bool, .tk-null { color: #c9b5fa; }
+.tk-invalid { color: #ffad9c; }
+
+@media (max-width: 50rem) {
+    .schema-page .workbench { grid-template-columns: minmax(0, 1fr); }
+    .schema-page .output-empty { height: auto; min-height: 13rem; }
+}
+
+@media (max-width: 25rem) {
+    .schema-page .panel-header > .diagram-tools,
+    .schema-theme-actions { margin-inline-start: 0; }
+}
